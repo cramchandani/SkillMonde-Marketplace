@@ -66,31 +66,7 @@
                                         text="name" />
                                 </div>
                             </div>
-
-                            {{-- City --}}
-                            <div class="col-span-12 md:col-span-6">
-                                <x-forms.text-input 
-                                    label="{{ __('messages.t_city') }}" 
-                                    placeholder="{{ __('messages.t_enter_city') }}" 
-                                    model="city" />
-                            </div>
-
-                            {{-- Timezone --}}
-                            <div class="col-span-12 md:col-span-6">
-                                <div class="w-full" wire:ignore>
-                                    <x-forms.select2
-                                        :label="__('messages.t_timezone')"
-                                        :placeholder="__('messages.t_choose_timezone')"
-                                        model="timezone"
-                                        :options="config('timezones')"
-                                        :isDefer="true"
-                                        :isAssociative="false"
-                                        :componentId="$this->id"
-                                        value="tzCode"
-                                        text="label" />
-                                </div>
-                            </div>
-
+                            <?php /* ?>
                             {{-- Current password --}}
                             @if (auth()->user()->password)
                                 <div class="col-span-12">
@@ -102,13 +78,15 @@
                                         icon="key" />
                                 </div>
                             @endif
+                            
+                            <?php */ ?>
 
                         </div>
 
                     </div>
 
                     {{-- Actions --}}
-                    <div class="py-4 px-4 flex justify-end sm:px-6 bg-gray-50 dark:bg-zinc-700">
+                    <div class="py-2 px-4 flex justify-end sm:px-6 bg-gray-50 dark:bg-zinc-700" id="update-button">
                         <x-forms.button action="update" text="{{ __('messages.t_update') }}"  />
                     </div>                    
 

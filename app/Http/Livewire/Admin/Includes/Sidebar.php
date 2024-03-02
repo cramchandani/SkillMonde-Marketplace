@@ -130,16 +130,6 @@ class Sidebar extends Component
                 ],
             ],
 
-            // Offers
-            [
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"> <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/> <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>',
-                'href' => null,
-                'text' => __('messages.t_offers'),
-                'childs' => [
-                    [ 'text' => __('messages.t_browse_all'), 'href' => "$dashboard/offers" ]
-                ],
-            ],
-
             // Categories
             [
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"> <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z"/></svg>',
@@ -165,14 +155,14 @@ class Sidebar extends Component
             ],
 
             // Conversations
-            [
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/></svg>',
-                'href' => null,
-                'text' => __('messages.t_conversations'),
-                'childs' => [
-                    [ 'text' => __('messages.t_browse_all'), 'href' => "$dashboard/conversations" ]
-                ],
-            ],
+            // [
+            //     'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/></svg>',
+            //     'href' => null,
+            //     'text' => __('messages.t_conversations'),
+            //     'childs' => [
+            //         [ 'text' => __('messages.t_browse_all'), 'href' => "$dashboard/conversations" ]
+            //     ],
+            // ],
 
             // Advertisements
             // [
@@ -257,9 +247,26 @@ class Sidebar extends Component
                 'href' => null,
                 'text' => __('messages.t_services'),
                 'childs' => [
-                    [ 'text' => __('dashboard.t_payment_gateways'), 'href' => "$dashboard/services/payment" ],
+                    [ 'text' => __('messages.t_paypal'), 'href' => "$dashboard/services/paypal" ],
+                    [ 'text' => __('messages.t_stripe'), 'href' => "$dashboard/services/stripe" ],
+                    [ 'text' => __('messages.t_paystack'), 'href' => "$dashboard/services/paystack" ],
+                    [ 'text' => __('messages.t_cashfree'), 'href' => "$dashboard/services/cashfree" ],
+                    [ 'text' => __('messages.t_xendit'), 'href' => "$dashboard/services/xendit" ],
+                    [ 'text' => __('messages.t_flutterwave'), 'href' => "$dashboard/services/flutterwave" ],
+                    [ 'text' => __('messages.t_vnpay'), 'href' => "$dashboard/services/vnpay" ],
+                    [ 'text' => __('messages.t_paymob'), 'href' => "$dashboard/services/paymob" ],
+                    [ 'text' => __('messages.t_mercadopago'), 'href' => "$dashboard/services/mercadopago" ],
+                    [ 'text' => __('messages.t_paytabs'), 'href' => "$dashboard/services/paytabs" ],
+                    [ 'text' => __('messages.t_razorpay'), 'href' => "$dashboard/services/razorpay" ],
+                    [ 'text' => __('messages.t_mollie'), 'href' => "$dashboard/services/mollie" ],
+                    [ 'text' => __('messages.t_paytr'), 'href' => "$dashboard/services/paytr" ],
+                    [ 'text' => __('messages.t_jazzcash'), 'href' => "$dashboard/services/jazzcash" ],
+                    [ 'text' => __('messages.t_offline_payment'), 'href' => "$dashboard/services/offline" ],
+                    [ 'text' => 'YouCanPay', 'href' => "$dashboard/services/youcanpay" ],
+                    [ 'text' => 'NowPayments.io', 'href' => "$dashboard/services/nowpayments" ],
+                    [ 'text' => 'Epoint.az', 'href' => "$dashboard/services/epoint" ],
                     [ 'text' => __('messages.t_recaptcha'), 'href' => "$dashboard/services/recaptcha" ],
-                    // [ 'text' => __('messages.t_cloudinary'), 'href' => "$dashboard/services/cloudinary" ],
+                    [ 'text' => __('messages.t_cloudinary'), 'href' => "$dashboard/services/cloudinary" ],
                 ],
             ],
             
@@ -278,7 +285,7 @@ class Sidebar extends Component
                     [ 'text' => __('messages.t_footer_settings_sidebar'), 'href' => "$dashboard/settings/footer" ],
                     [ 'text' => __('messages.t_media_settings_sidebar'), 'href' => "$dashboard/settings/media" ],
                     [ 'text' => __('messages.t_publish_settings_sidebar'), 'href' => "$dashboard/settings/publish" ],
-                    [ 'text' => __('messages.t_security_settings_sidebar'), 'href' => "$dashboard/settings/security" ],
+                    // [ 'text' => __('messages.t_security_settings_sidebar'), 'href' => "$dashboard/settings/security" ],
                     [ 'text' => __('messages.t_seo_settings_sidebar'), 'href' => "$dashboard/settings/seo" ],
                     [ 'text' => __('messages.t_smtp_settings_sidebar'), 'href' => "$dashboard/settings/smtp" ],
                     [ 'text' => __('messages.t_hero_section'), 'href' => "$dashboard/settings/hero" ],

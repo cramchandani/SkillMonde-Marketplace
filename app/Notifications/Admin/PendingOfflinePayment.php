@@ -3,10 +3,9 @@
 namespace App\Notifications\Admin;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PendingOfflinePayment extends Notification implements ShouldQueue
 {
@@ -46,12 +45,12 @@ class PendingOfflinePayment extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_pending_offline_payment');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_pending_offline_payment');
 
         return (new MailMessage)
                     ->subject($subject)
-                    ->greeting(new HtmlString(__('messages.t_hi_admin')))
-                    ->line(new HtmlString(__('messages.t_notification_admin_pending_offline_payment')))
+                    ->greeting(__('messages.t_hi_admin'))
+                    ->line(__('messages.t_notification_admin_pending_offline_payment'))
                     ->action(__('messages.t_invoices'), admin_url('invoices'));
     }
 

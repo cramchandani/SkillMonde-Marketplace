@@ -48,16 +48,11 @@ class CreateComponent extends Component
             // Validate form
             CreateValidator::validate($this);
 
-            // Check if directory exists
-            if (!File::exists(lang_path(strtolower($this->language_code)))) {
-               
-                // Create new folder
-                File::makeDirectory(lang_path(strtolower($this->language_code)));
-    
-                // Copy translation file to new folder
-                File::copy(lang_path('en/messages.php'), lang_path(strtolower($this->language_code) . "/messages.php"));
+            // Create new folder
+            File::makeDirectory(lang_path(strtolower($this->language_code)));
 
-            }
+            // Copy translation file to new folder
+            File::copy(lang_path('en/messages.php'), lang_path(strtolower($this->language_code) . "/messages.php"));
 
             // Create new language
             $language                         = new Language();

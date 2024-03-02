@@ -42,12 +42,12 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('subcategory_id')->references('id')->on('subcategories')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('image_thumb_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('image_medium_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('image_large_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('subcategory_id')->references('id')->on('subcategories');
+            $table->foreign('image_thumb_id')->references('id')->on('file_manager');
+            $table->foreign('image_medium_id')->references('id')->on('file_manager');
+            $table->foreign('image_large_id')->references('id')->on('file_manager');
         });
     }
 

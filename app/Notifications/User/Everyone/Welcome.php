@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class Welcome extends Notification implements ShouldQueue
 {
@@ -46,10 +45,10 @@ class Welcome extends Notification implements ShouldQueue
 
         return (new MailMessage)
                     ->subject( $subject )
-                    ->greeting(new HtmlString(__('messages.t_welcome_to_the_future_of_work')))
-                    ->line(new HtmlString(__('messages.t_notification_user_everyone_welcome_1')))
+                    ->greeting(__('messages.t_welcome_to_the_future_of_work'))
+                    ->line(__('messages.t_notification_user_everyone_welcome_1'))
                     ->action(__('messages.t_start_exploring'), url('/'))
-                    ->line(new HtmlString(__('messages.t_notification_user_everyone_welcome_2')));
+                    ->line(__('messages.t_notification_user_everyone_welcome_2'));
     }
 
     /**

@@ -19,20 +19,17 @@ class SecurityValidator
 
             // Set rules
             $rules    = [
-                'is_social_media_accounts' => 'boolean',
-                'debug'                    => 'boolean',
+                'is_recaptcha'  => 'boolean'
             ];
 
             // Set errors messages
             $messages = [
-                'is_social_media_accounts.boolean' => __('messages.t_validator_boolean'),
-                'debug.boolean'                    => __('messages.t_validator_boolean'),
+                'is_recaptcha.boolean' => __('messages.t_validator_boolean'),
             ];
 
             // Set data to validate
             $data     = [
-                'is_social_media_accounts' => $request->is_social_media_accounts,
-                'debug'                    => $request->debug
+                'is_recaptcha' => $request->is_recaptcha
             ];
 
             // Validate data

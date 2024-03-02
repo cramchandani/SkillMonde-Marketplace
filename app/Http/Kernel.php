@@ -40,8 +40,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\UserLastActivity::class,
             \App\Http\Middleware\UpgradeLevel::class,
             \App\Http\Middleware\XFrameHeaders::class,
-            \RalphJSmit\Livewire\Urls\Middleware\LivewireUrlsMiddleware::class,
-            \Illuminate\Session\Middleware\AuthenticateSession::class
+            \RalphJSmit\Livewire\Urls\Middleware\LivewireUrlsMiddleware::class
         ],
 
         'api' => [
@@ -71,5 +70,6 @@ class Kernel extends HttpKernel
         'signed'           => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle'         => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified'         => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'minify'           => \HTMLMin\HTMLMin\Http\Middleware\MinifyMiddleware::class
     ];
 }

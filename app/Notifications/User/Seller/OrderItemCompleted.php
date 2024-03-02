@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Seller;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class OrderItemCompleted extends Notification implements ShouldQueue
 {
@@ -44,12 +43,12 @@ class OrderItemCompleted extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_seller_order_item_completed');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_seller_order_item_completed');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_seller_line_1_order_completed')))
+                    ->line(__('messages.t_notification_seller_line_1_order_completed'))
                     ->action(__('messages.t_order_details'), url('seller/orders/details', $this->item->uid));
     }
 

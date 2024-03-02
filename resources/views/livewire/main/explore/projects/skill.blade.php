@@ -1,4 +1,4 @@
-<div class="w-full">
+<div class="max-w-7xl mx-auto">
 
     {{-- Breadcrumbs --}}
     <nav class="flex" aria-label="Breadcrumb">

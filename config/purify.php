@@ -67,7 +67,7 @@ return [
         |
         */
 
-        'HTML.Allowed' => 'h1,h2,h3,h4,h5,h6,b,strong,i,em,ul,ol,li,p[style],br,span[class|style],table[summary|class|style],th[abbr|class],tr,tbody[class],td[abbr|class],colgroup,col[style],div[class],blockquote,iframe[class|src|allowfullscreen]',
+        'HTML.Allowed' => 'h1,h2,h3,h4,h5,h6,b,strong,i,em,ul,ol,li,p[style],br,span[class|style],table[summary|class|style],th[abbr|class],tr,tbody[class],td[abbr|class],colgroup,col[style],div[class],blockquote',
 
         /*
         |--------------------------------------------------------------------------

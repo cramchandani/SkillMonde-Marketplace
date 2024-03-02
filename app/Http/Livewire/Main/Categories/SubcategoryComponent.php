@@ -16,6 +16,7 @@ class SubcategoryComponent extends Component
 
     public $category;
     public $subcategory;
+    public $categories;
 
     // filters
     public $sort_by;
@@ -61,6 +62,8 @@ class SubcategoryComponent extends Component
             ['value' => 21, 'text' => __('messages.t_3_weeks')],
             ['value' => 30, 'text' => __('messages.t_1_month')]
         ];
+        
+        $this->categories = Category::with('subcategories')->get();
     }
 
 
@@ -98,7 +101,8 @@ class SubcategoryComponent extends Component
         $this->seo()->jsonLd()->setType('WebSite');
 
         return view('livewire.main.categories.subcategory', [
-            'gigs' => $this->gigs
+            'gigs' => $this->gigs,
+            'categories' => $this->categories,
         ])->extends('livewire.main.layout.app')->section('content');
     }
 

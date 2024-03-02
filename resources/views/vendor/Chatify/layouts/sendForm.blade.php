@@ -1,5 +1,8 @@
+    <div class="container">
+        <div id="jitsi-iframe-container" style="position: absolute;bottom: 11%;z-index: 9;"></div>
+    </div>
 <div class="messenger-sendCard" x-data="window.ieFgUjXUHsNGdOd" x-init="initialize">
-
+    
     {{-- Emojis box --}}
     @if (settings('live_chat')->enable_emojis)
         <div id="emojis-box-container" style="display: none"></div>
@@ -28,7 +31,7 @@
         @endif
 
         {{-- Message content --}}
-        <div class="w-full px-3 flex items-center justify-center">
+        <div class="w-full px-3 flex items-center justify-center border rounded-md">
             <textarea x-model="message" id="live-chat-message-textarea" readonly='readonly' name="message" class="m-send app-scroll dark:placeholder:text-zinc-400" placeholder="@lang('messages.t_type_ur_message_here')"></textarea>
         </div>
 
@@ -41,6 +44,23 @@
 
 </div>
 
+
+<?php /* ?>
+        <!-- Modal -->
+        <div class="modal fade modal-full" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-full modal-dialog-scrollable">
+            <div class="modal-content modal-content-full">
+              <div class="modal-header">
+                <button type="button" class="btn-close bg-gray-600" data-bs-dismiss="modal" aria-label="Close">X</button>
+              </div>
+              <div class="modal-body" style="height:75vh;">
+                <!--<div id="jaas-container" /></div>-->
+                <div id="jitsi-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+<?php */ ?>        
 <script>
     function ieFgUjXUHsNGdOd() {
         return {
@@ -296,3 +316,123 @@
     }
     window.ieFgUjXUHsNGdOd = ieFgUjXUHsNGdOd();
 </script>
+
+<script>
+    // Get the text area element
+    const textarea = document.getElementById('live-chat-message-textarea');
+    
+    // Add an event listener to detect when the user pastes or types in the text area
+    textarea.addEventListener('input', function() {
+      // Get the text content of the text area
+      const text = textarea.value;
+    
+      // Regular expressions for detecting email addresses, phone/mobile numbers, and bank account numbers
+     // const emailRegex = /\S+@\S+\.\S+/;
+      
+      const emailRegex = /(\S+@\S+\.\S+)|(\S+\[at]\S+\[dot]\S+)/;
+
+      //const phoneRegex = /\d{10,}/;
+      const phoneRegex = /(\+?91[\-\.\s]?)?[2-9]\d{9}|(\+?1[\-\.\s]?)?\(?[2-9][0-9]{2}\)?[\-\.\s]?[0-9]{3}[\-\.\s]?[0-9]{4}|(\+?61[\-\.\s]?)?\(?(0?[2-57-8])\)?[\-\.\s]?[0-9]{4}[\-\.\s]?[0-9]{4}|(\+?44[\-\.\s]?)?\(?0?\d{4}\)?[\-\.\s]?\d{3}[\-\.\s]?\d{3}|(\+?7[\-\.\s]?)?(\d{3}[\-\.\s]?){2}\d{2}|\+86[\-\.\s]?1[3456789]\d{9}|(\+?92[\-\.\s]?)?3\d{9}|(\+?880[\-\.\s]?)?((\d{10})|(1\d{9}))|(\+?90[\-\.\s]?)?0?5\d{9}/;
+
+      const bankAccountRegex = /(\b\d{8}(?:\d{2})?\b)|(\b\d{2}-\d{4}-\d{7}-\d{2}\b)|(\b\d{3}-\d{7}-\d{1}\b)|(\b\d{7}-\d{1}\b)|(\b\d{10}\b)|(\b\d{12}\b)|(\b\d{16}\b)|(\b\d{4}.\d{4}.\d{4}.\d{4}\b)/;
+      const mobileRegex = /(\+?91[\-\.\s]?)?[2-9]\d{9}|(\+?1[\-\.\s]?)?\(?[2-9][0-9]{2}\)?[\-\.\s]?[0-9]{3}[\-\.\s]?[0-9]{4}|(\+?61[\-\.\s]?)?\(?(0?[2-57-8])\)?[\-\.\s]?[0-9]{4}[\-\.\s]?[0-9]{4}|(\+?44[\-\.\s]?)?\(?0?\d{4}\)?[\-\.\s]?\d{3}[\-\.\s]?\d{3}|(\+?7[\-\.\s]?)?(\d{3}[\-\.\s]?){2}\d{2}|\+86[\-\.\s]?1[3456789]\d{9}|(\+?92[\-\.\s]?)?3\d{9}|(\+?880[\-\.\s]?)?((\d{10})|(1\d{9}))|(\+?90[\-\.\s]?)?0?5\d{9}/;
+
+      // Detect and remove any email addresses, phone/mobile numbers, or bank account numbers from the text content
+      const filteredText = text.replace(emailRegex, '').replace(phoneRegex, '').replace(bankAccountRegex, '').replace(mobileRegex, '');
+    
+      // If email, phone number, or bank account number detected, alert the user
+      if (text !== filteredText) {
+        alert("Oops! It looks like you've included some sensitive information in your message. Please remove any traces of email addresses, phone numbers, or bank account numbers before sending.");
+      }
+    
+      // Update the text area with the final filtered text content
+      textarea.value = filteredText;
+    });
+    
+</script>
+
+
+<script>
+  let api;
+  
+  const randomNumber = Math.floor(Math.random() * 1000);
+  const randomLetters = Math.random().toString(36).substring(2, 6);
+  const roomName = `skillmonde-meeting-room-for-{{ auth()->user()->username }}-${randomNumber}${randomLetters}`;
+
+
+  function startVideoChat() {
+    const domain = 'meet.jit.si';
+    const options = {
+      roomName: roomName,
+      width: '600px',
+      height: '400px',
+      parentNode: document.getElementById('jitsi-iframe-container'),
+      userInfo: {
+        displayName: '{{ auth()->user()->username }}',
+      },
+      configOverwrite: {
+        enableWelcomePage: false,
+      },
+      interfaceConfigOverwrite: {
+        SHOW_BRAND_WATERMARK: true,
+        JITSI_WATERMARK_LINK: 'https://skillmonde.com/public/img/assets/logo.png',
+        DISABLE_FOCUS_INDICATOR: true,
+        TOOLBAR_BUTTONS: [
+          'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
+          'fodeviceselection', 'profile', 'chat',
+          'whiteboard', 'settings', 
+          'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts', 'tileview', 'videobackgroundblur', 'mute-everyone', 'security'
+        ],
+        HIDE_DEEP_LINKING_LOGO: true,
+        SHOW_JITSI_WATERMARK: false,
+        TILE_VIEW_MAX_COLUMNS: 5,
+        DISABLE_POLLING: true,
+      },
+    };
+
+    api = new JitsiMeetExternalAPI(domain, options);
+
+    // hide the "Start Meeting" button
+    document.getElementById('start-button').style.display = 'none';
+    // hide the "Start Meeting" button
+    document.getElementById('hang-button').style.display = 'block';
+    
+    const elements = document.querySelectorAll('#msg-card-content');
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.maxWidth = '50%';
+    }
+  }
+
+  function hangVideoChat() {
+    if (api) {
+      api.dispose();
+      api = null;
+    }
+
+    // remove the iframe
+    const iframeContainer = document.getElementById('jitsi-iframe-container');
+    if (iframeContainer) {
+      iframeContainer.innerHTML = '';
+    }
+
+    // display the "Start Meeting" button again
+    document.getElementById('start-button').style.display = 'block';
+    document.getElementById('hang-button').style.display = 'none';
+    const elements = document.querySelectorAll('#msg-card-content');
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.maxWidth = '80%';
+    }
+  }
+
+  const startButton = document.getElementById('start-button');
+  startButton.addEventListener('click', startVideoChat);
+
+  const hangButton = document.getElementById('hang-button');
+  hangButton.addEventListener('click', hangVideoChat);
+
+  window.addEventListener('beforeunload', hangVideoChat);
+</script>
+
+
+
+

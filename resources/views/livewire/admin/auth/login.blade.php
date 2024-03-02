@@ -80,7 +80,7 @@
 			{{-- reCaptcha --}}
 			@if (settings('security')->is_recaptcha)
 				<div class="col-span-12" wire:ignore>
-					<div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}" data-theme="{{ current_theme() }}"></div>
+					<div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
 				</div>
 			@endif
 
@@ -154,7 +154,7 @@
 					var _this = this;
 
 					// Is recapctah enabled
-					if (_this.recaptcha && document.getElementById('g-recaptcha-response')) {
+					if (_this.recaptcha) {
 
 						// Get recaptcha response
 						var recaptcha_token = document.getElementById('g-recaptcha-response').value;

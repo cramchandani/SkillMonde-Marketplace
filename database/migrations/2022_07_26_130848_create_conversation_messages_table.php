@@ -23,9 +23,9 @@ return new class extends Migration
             $table->boolean('is_seen')->default(false);
             $table->timestamp('created_at');
 
-            $table->foreign('conversation_id')->references('id')->on('conversations')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('message_from')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('message_to')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('conversation_id')->references('id')->on('conversations');
+            $table->foreign('message_from')->references('id')->on('users');
+            $table->foreign('message_to')->references('id')->on('users');
         });
     }
 

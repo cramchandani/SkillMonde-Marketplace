@@ -235,6 +235,20 @@
                                     @endif
                                 </dd>
                             </div>
+                            
+                            {{-- Referrel --}}
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-bold text-gray-400">
+                                    {{ __('messages.t_referrer') }}
+                                </dt>
+                                <dd class="mt-1 text-[13px] font-medium text-gray-900">
+                                    @if ($user->referrer)
+                                        {{ $user->referrer }}
+                                    @else
+                                        -
+                                    @endif
+                                </dd>
+                            </div>
 
                             {{-- Description --}}
                             <div class="sm:col-span-2">

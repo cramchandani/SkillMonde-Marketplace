@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Employer;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class YourProjectApproved extends Notification implements ShouldQueue
 {
@@ -39,12 +38,12 @@ class YourProjectApproved extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_employer_project_approved');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_employer_project_approved');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_ur_project_has_been_approved')))
+                    ->line(__('messages.t_notification_ur_project_has_been_approved'))
                     ->line($this->project->title)
                     ->action(__('messages.t_view_project'), url('project/' . $this->project->pid . '/' . $this->project->slug));
     }

@@ -3,10 +3,9 @@
 namespace App\Notifications\Admin;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PendingMessage extends Notification implements ShouldQueue
 {
@@ -44,13 +43,13 @@ class PendingMessage extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_admin_new_support_message');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_admin_new_support_message');
 
         return (new MailMessage)
                     ->subject($subject)
-                    ->greeting(new HtmlString(__('messages.t_hi_admin')))
-                    ->line(new HtmlString(__('messages.t_notification_admin_support_message')))
-                    ->line(new HtmlString($this->message->message))
+                    ->greeting(__('messages.t_hi_admin'))
+                    ->line(__('messages.t_notification_admin_support_message'))
+                    ->line($this->message->message)
                     ->action(__('messages.t_messages'), admin_url('support'));
     }
 

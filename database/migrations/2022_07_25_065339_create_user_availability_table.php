@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->timestamp('expected_available_date');
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

@@ -3,10 +3,9 @@
 namespace App\Notifications\Admin;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PendingArticleComment extends Notification implements ShouldQueue
 {
@@ -46,12 +45,12 @@ class PendingArticleComment extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
          // Set subject
-         $subject = __('messages.t_subject_admin_pending_article_comment');
+         $subject = "[" . config('app.name') . "] " . __('messages.t_subject_admin_pending_article_comment');
 
          return (new MailMessage)
                      ->subject($subject)
-                     ->greeting(new HtmlString(__('messages.t_hi_admin')))
-                     ->line( new HtmlString(nl2br($this->comment->comment)) )
+                     ->greeting(__('messages.t_hi_admin'))
+                     ->line( nl2br($this->comment->comment) )
                      ->action(__('messages.t_comments'), admin_url('blog/comments/edit/' . $this->comment->uid));
     }
 

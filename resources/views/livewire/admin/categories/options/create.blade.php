@@ -15,18 +15,23 @@
                 <div class="col-span-12">
                     <x-forms.text-input
                         label="{{ __('messages.t_category_name') }}" 
-                        placeholder="{{ __('messages.t_enter_category_name') }}" 
+                        placeholder="{{ __('messages.t_enter_category_name') }}"
                         model="name"
-                        icon="format-title" />
+                        icon="format-title" 
+                        wire:model.defer="name"
+                        wire:change="setSlug"
+                        wire:keydown.debounce.500ms="setSlug" />
                 </div>
 
                 {{-- Category slug --}}
                 <div class="col-span-12">
                     <x-forms.text-input
                         label="{{ __('messages.t_category_slug') }}" 
-                        placeholder="{{ __('messages.t_enter_category_slug') }}" 
+                        placeholder="{{ __('messages.t_enter_category_slug') }}"
                         model="slug"
-                        icon="link-variant" />
+                        icon="link-variant" 
+                        wire:model="slug"
+                        wire:model.defer="slug"/>
                 </div>
 
                 {{-- Category description --}}
@@ -68,3 +73,12 @@
     </div>
 
 </div>    
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:load', function () {
+            Livewire.on('setSlug', (name) => {
+                Livewire.emit('updateSlug', title.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+            });
+        });
+    </script>
+@endpush

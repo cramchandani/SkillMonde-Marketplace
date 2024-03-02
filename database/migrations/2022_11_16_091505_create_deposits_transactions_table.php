@@ -28,7 +28,7 @@ return new class extends Migration
             $table->ipAddress()->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

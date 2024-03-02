@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Seller;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class RefundClosed extends Notification implements ShouldQueue
 {
@@ -44,12 +43,12 @@ class RefundClosed extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_seller_refund_closed');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_seller_refund_closed');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_seller_line_1_refund_closed')))
+                    ->line(__('messages.t_notification_seller_line_1_refund_closed'))
                     ->action(__('messages.t_refund_details'), url('seller/refunds/details', $this->refund->uid));
     }
 

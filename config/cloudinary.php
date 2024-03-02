@@ -32,11 +32,11 @@ return [
     |
     |
     */
-    'cloud_url' => "",
+    'cloud_url' => 'CLOUDINARY_URL=cloudinary://986383247819617:zDVpsofYt5CO6oxzabG-lfW-09k@dvxec5myz',
 
     /**
      * Upload Preset From Cloudinary Dashboard
      *
      */
-    'upload_preset' => ""
+    'upload_preset' => 'dvxec5myz'
 ];

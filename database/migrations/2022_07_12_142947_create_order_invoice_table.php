@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('address');
             $table->timestamp('created_at');
 
-            $table->foreign('order_id')->references('id')->on('orders')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('order_id')->references('id')->on('orders');
         });
     }
 

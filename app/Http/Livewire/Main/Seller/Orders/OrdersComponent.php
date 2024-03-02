@@ -61,10 +61,7 @@ class OrdersComponent extends Component
     public function getOrdersProperty()
     {
         // Get orders by this seller
-        $orders = OrderItem::where('owner_id', auth()->id())
-                            ->whereHas('gig')
-                            ->whereHas('order.invoice')
-                            ->latest()->paginate(42);
+        $orders = OrderItem::where('owner_id', auth()->id())->latest()->paginate(42);
 
         // Return orders
         return $orders;
@@ -141,7 +138,7 @@ class OrdersComponent extends Component
         $item->save();
 
         // Decrement orders in queue
-        if ($item->gig->total_orders_in_queue() > 0) {
+        if ($item->gig->orders_in_queue > 0) {
             $item->gig()->decrement('orders_in_queue');
         }
 
@@ -162,9 +159,6 @@ class OrdersComponent extends Component
             'description' => __('messages.t_order_has_been_successfully_canceled'),
             'icon'        => 'success'
         ]);
-
-        // Refresh page
-        $this->dispatchBrowserEvent('refresh');
     }
 
 
@@ -268,9 +262,6 @@ class OrdersComponent extends Component
             'description' => __('messages.t_order_has_been_successfully_marked_progress'),
             'icon'        => 'success'
         ]);
-
-        // Refresh page
-        $this->dispatchBrowserEvent('refresh');
     }
 
 

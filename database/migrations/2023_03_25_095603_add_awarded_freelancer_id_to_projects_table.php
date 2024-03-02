@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             $table->unsignedBigInteger('awarded_freelancer_id')->nullable()->after('expiry_date');
-            $table->foreign('awarded_freelancer_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('awarded_freelancer_id')->references('id')->on('users');
         });
     }
 

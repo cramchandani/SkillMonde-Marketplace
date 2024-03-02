@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\HtmlString;
 
 class PasswordReset extends Notification
 {
@@ -44,12 +43,12 @@ class PasswordReset extends Notification
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_reset_ur_password');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_reset_ur_password');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_click_button_to_reset_password')))
+                    ->line(__('messages.t_notification_click_button_to_reset_password'))
                     ->action(__('messages.t_reset_password'), url('auth/password/update?token=' . $this->token->token . '&email=' . urlencode($this->token->email)));
     }
 

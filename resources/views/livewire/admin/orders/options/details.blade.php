@@ -190,38 +190,31 @@
                                 {{ __('messages.t_payment_method') }}
                             </dt>
                             <dd class="mt-1 text-xs font-bold text-gray-900 sm:mt-0">
-                                
-                                {{-- Check payment gateway --}}
-                                @if ($order->invoice->payment_method === "offline")
-                                
-                                    {{-- Check if offline payment has a name --}}
-                                    @if ( !empty(payment_gateway($order->invoice->payment_method, false, true)->name) )
-                                        
-                                        {{-- Offline method --}}
-                                        {{ payment_gateway($order->invoice->payment_method, false, true)?->name }}
-
-                                    @else
-
-                                        {{-- Not available --}}
-                                        -
-
-                                    @endif
-
-                                @elseif ( !empty(payment_gateway($order->invoice->payment_method)->name) )
-
-                                    {{-- Method name --}}
-                                    {{ payment_gateway($order->invoice->payment_method)?->name }}
-                                
-                                @elseif ($order->invoice->payment_method === "wallet")
-
-                                    @lang('messages.t_wallet')
-
-                                @else
-
-                                    -
-
-                                @endif
-                                
+                               @switch($order->invoice->payment_method)
+                                   @case('balance')
+                                       <span>{{ __('messages.t_user_credit') }}</span>
+                                       @break
+                                   @case('paypal')
+                                       <span class="text-[#3b7bbf]">{{ __('messages.t_paypal') }}</span>
+                                       @break
+                                    @case('stripe')
+                                       <span class="text-[#008cdd]">{{ __('messages.t_stripe') }}</span>
+                                       @break
+                                    @case('offline')
+                                       <span class="text-gray-500">{{ settings('offline_payment')->name }}</span>
+                                       @break
+                                    @case('paystack')
+                                       <span class="text-gray-500">{{ settings('paystack')->name }}</span>
+                                       @break
+                                    @case('cashfree')
+                                       <span class="text-gray-500">{{ settings('cashfree')->name }}</span>
+                                       @break
+                                    @case('xendit')
+                                       <span class="text-gray-500">{{ settings('xendit')->name }}</span>
+                                       @break
+                                   @default
+                                       
+                               @endswitch
                             </dd>
                         </div>
 

@@ -82,5 +82,43 @@ class ProjectComponent extends Component
     {
         return ProjectCategory::orderBy('name', 'asc')->get();
     }
+
+
+    /**
+     * Create new project
+     *
+     * @return void
+     */
+    public function create()
+    {
+        try {
+
+            // Validate form
+            CreateValidator::validate($this);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            // Validation error
+            $this->notification([
+                'title'       => __('messages.t_error'),
+                'description' => __('messages.t_toast_form_validation_error'),
+                'icon'        => 'error'
+            ]);
+
+            throw $e;
+
+        } catch (\Throwable $th) {
+
+            // Error
+            $this->notification([
+                'title'       => __('messages.t_error'),
+                'description' => __('messages.t_toast_something_went_wrong'),
+                'icon'        => 'error'
+            ]);
+
+            throw $th;
+
+        }
+    }
     
 }

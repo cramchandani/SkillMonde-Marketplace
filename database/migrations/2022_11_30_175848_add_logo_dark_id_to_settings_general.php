@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('settings_general', function (Blueprint $table) {
             $table->unsignedBigInteger('logo_dark_id')->nullable()->after('logo_id');
-            $table->foreign('logo_dark_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('logo_dark_id')->references('id')->on('file_manager');
         });
     }
 

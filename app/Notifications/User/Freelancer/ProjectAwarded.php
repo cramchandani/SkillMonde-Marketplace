@@ -3,7 +3,6 @@
 namespace App\Notifications\User\Freelancer;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -39,12 +38,12 @@ class ProjectAwarded extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_freelancer_u_awarded_a_project');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_freelancer_u_awarded_a_project');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_congts_u_awarded_a_project')))
+                    ->line(__('messages.t_notification_congts_u_awarded_a_project'))
                     ->line($this->project->title)
                     ->action(__('messages.t_view_project'), url('project/' . $this->project->pid . '/' . $this->project->slug));
     }

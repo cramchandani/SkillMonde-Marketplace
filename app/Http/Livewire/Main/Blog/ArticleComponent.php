@@ -117,6 +117,26 @@ class ArticleComponent extends Component
     {
         try {
 
+            // Check if recaptcha enabled
+            if (settings('security')->is_recaptcha) {
+                
+                // Check if recaptcha passed
+                if (!$this->recaptchaPasses()) {
+                    
+                    // Error recaptcha
+                    $this->notification([
+                        'title'       => __('messages.t_error'),
+                        'description' => __('messages.t_recaptcha_error_message'),
+                        'icon'        => 'error'
+                    ]);
+
+                    // Return
+                    return;
+
+                }
+
+            }
+
             // Validate form
             CommentValidator::validate($this);
 

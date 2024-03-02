@@ -2,8 +2,6 @@
 
 namespace App\Http\Livewire\Admin\Settings;
 
-use Config;
-use Artisan;
 use Livewire\Component;
 use WireUi\Traits\Actions;
 use App\Models\SettingsSecurity;
@@ -14,8 +12,7 @@ class SecurityComponent extends Component
 {
     use SEOToolsTrait, Actions;
     
-    public $is_social_media_accounts;
-    public $debug;
+    public $is_recaptcha;
 
     /**
      * Initialize component
@@ -29,8 +26,7 @@ class SecurityComponent extends Component
 
         // Fill default settings
         $this->fill([
-            'is_social_media_accounts' => $settings->is_social_media_accounts ? 1 : 0,
-            'debug'                    => config('app.debug') ? 1 : 0
+            'is_recaptcha' => $settings->is_recaptcha ? 1 : 0
         ]);
     }
 
@@ -62,19 +58,6 @@ class SecurityComponent extends Component
             // Validate form
             SecurityValidator::validate($this);
 
-            SettingsSecurity::first()->update([
-                'is_social_media_accounts' => $this->is_social_media_accounts ? 1 : 0
-            ]);
-
-            // Write debug mode status
-            Config::write('app.debug', $this->debug);
-
-            // Clear cache
-            settings('security', true);
-
-            // Clear config
-            Artisan::call('config:clear');
-
             // Success
             $this->notification([
                 'title'       => __('messages.t_success'),
@@ -98,9 +81,11 @@ class SecurityComponent extends Component
             // Error
             $this->notification([
                 'title'       => __('messages.t_error'),
-                'description' => $th->getMessage(),
+                'description' => __('messages.t_toast_something_went_wrong'),
                 'icon'        => 'error'
             ]);
+
+            throw $th;
 
         }
     }

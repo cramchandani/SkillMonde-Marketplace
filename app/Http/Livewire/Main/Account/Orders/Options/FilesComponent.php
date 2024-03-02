@@ -198,7 +198,7 @@ class FilesComponent extends Component
         ]);
 
         // Remove item from queue list and success sales
-        if ($item->gig->total_orders_in_queue() > 0) {
+        if ($item->gig->orders_in_queue > 0) {
             $item->gig()->decrement('orders_in_queue');
         }
         $item->gig()->increment('counter_sales');
@@ -224,9 +224,6 @@ class FilesComponent extends Component
 
         // Send notification to buyer
         $item->order->buyer->notify( (new BuyerOrderItemCompleted($item))->locale(config('app.locale')) );
-
-        // Check user's level
-        check_user_level($item->owner_id);
 
         // Redirect user to give a review
         return redirect('account/reviews/create/' . $item->uid);

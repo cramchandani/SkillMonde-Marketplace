@@ -23,9 +23,9 @@ return new class extends Migration
             $table->integer('bg_large_height')->default(570);
             $table->integer('bg_small_height')->default(250);
 
-            $table->foreign('bg_large_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('bg_medium_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('bg_small_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('bg_large_id')->references('id')->on('file_manager');
+            $table->foreign('bg_medium_id')->references('id')->on('file_manager');
+            $table->foreign('bg_small_id')->references('id')->on('file_manager');
         });
     }
 

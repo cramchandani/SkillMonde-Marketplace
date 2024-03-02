@@ -60,11 +60,7 @@ class ReviewsComponent extends Component
     public function getReviewsProperty()
     {
         // Get reviews
-        return Review::where('seller_id', auth()->id())
-                        ->whereHas('gig')
-                        ->whereHas('user')
-                        ->latest()
-                        ->paginate(42);
+        return Review::where('seller_id', auth()->id())->latest()->paginate(42);
     }
 
 

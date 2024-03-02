@@ -41,7 +41,7 @@
                     {{ strlen($user->username) > 15 ? trim(substr($user->username,0,15)).'...' : $user->username }}
 
                     {{-- Last message date --}}
-                    <span class="!text-xs font-normal !text-slate-400 contact-item-time" data-time="{{$lastMessage->created_at}}">{{ format_date($lastMessage->created_at) }}</span>
+                    <span class="!text-xs font-normal !text-slate-400 contact-item-time" data-time="{{$lastMessage->created_at}}">{{ $lastMessage->created_at->diffForHumans() }}</span>
                 
                 </p>
 

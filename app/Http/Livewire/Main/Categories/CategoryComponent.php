@@ -21,6 +21,8 @@ class CategoryComponent extends Component
     public $max_price;
     public $delivery_time;
     public $rating;
+    
+    public $categories;
 
     public $delivery_times;
 
@@ -53,6 +55,8 @@ class CategoryComponent extends Component
             ['value' => 21, 'text' => __('messages.t_3_weeks')],
             ['value' => 30, 'text' => __('messages.t_1_month')]
         ];
+        
+        $this->categories = Category::with('subcategories')->get();
     }
 
 
@@ -90,7 +94,8 @@ class CategoryComponent extends Component
         $this->seo()->jsonLd()->setType('WebSite');
 
         return view('livewire.main.categories.category', [
-            'gigs' => $this->gigs
+            'gigs' => $this->gigs,
+            'categories' => $this->categories,
         ])->extends('livewire.main.layout.app')->section('content');
     }
 

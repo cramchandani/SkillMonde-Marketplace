@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full" v-show="is_loaded">
+    <div class="w-full">
 
         <!-- Project details -->
         <div class="w-full relative">
@@ -130,25 +130,114 @@
 
                     <!-- How do you want to pay -->
                     <div class="col-span-12" id="section-budget"> 
-                        <div class="relative w-full rounded-lg h-12 bg-slate-200 dark:bg-zinc-700">
+                        <div class="relative w-full rounded-lg h-full bg-slate-200 dark:bg-zinc-700 py-2">
 
-                            <div class="relative w-full h-full flex items-center px-2">
+                            <div class="relative w-full grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 items-center px-2">
 
                                 <!-- Fixed price -->
                                 <div @click="form.salary_type = 'fixed'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
-                                    <button class="w-full h-full focus:outline-none" v-text="__('t_fixed_price')"></button>
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_fixed_price')"></button>
                                 </div>
 
                                 <!-- Hourly price -->
                                 <div @click="form.salary_type = 'hourly'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
-                                    <button class="w-full h-full focus:outline-none" v-text="__('t_hourly_price')"></button>
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_hourly_price')"></button>
+                                </div>
+
+                                <!-- Per Minute price -->
+                                <div @click="form.salary_type = 'per_minute'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_minute')"></button>
+                                </div>
+
+                                <!-- per_second price -->
+                                <div @click="form.salary_type = 'per_second'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_second')"></button>
+                                </div>
+
+                                <!-- per_word price -->
+                                <div @click="form.salary_type = 'per_word'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_word')"></button>
+                                </div>
+
+                                <!-- per_unit price -->
+                                <div @click="form.salary_type = 'per_unit'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_unit')"></button>
+                                </div>
+
+                                <!-- per_chapter price -->
+                                <div @click="form.salary_type = 'per_chapter'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_chapter')"></button>
+                                </div>
+
+                                <!-- per_book price -->
+                                <div @click="form.salary_type = 'per_book'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_book')"></button>
+                                </div>
+
+                                <!-- per_cover price -->
+                                <div @click="form.salary_type = 'per_cover'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_cover')"></button>
+                                </div>
+
+                                <!-- per_question price -->
+                                <div @click="form.salary_type = 'per_question'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_question')"></button>
+                                </div>
+
+                                <!-- per_course price -->
+                                <div @click="form.salary_type = 'per_course'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_course')"></button>
+                                </div>
+
+                                <!-- per_art_image price -->
+                                <div @click="form.salary_type = 'per_art_image'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_art_image')"></button>
+                                </div>
+
+                                <!-- per_video price -->
+                                <div @click="form.salary_type = 'per_video'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_video')"></button>
+                                </div>
+
+                                <!-- per_animation price -->
+                                <div @click="form.salary_type = 'per_animation'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_animation')"></button>
+                                </div>
+
+                                <!-- per_page price -->
+                                <div @click="form.salary_type = 'per_page'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_page')"></button>
+                                </div>
+
+                                <!-- per_others price -->
+                                <div @click="form.salary_type = 'per_others'" class="w-full h-full flex justify-center text-slate-600 dark:text-zinc-300 cursor-pointer text-[13px] font-medium tracking-wide">
+                                    <button class="w-full h-full border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 py-1" v-text="__('t_per_others')"></button>
                                 </div>
 
                             </div>
                 
-                            <span :class="{ 'ltr:left-1/2 rtl:right-1/2 ltr:-ml-1 rtl:-mr-1': form.salary_type === 'hourly', 'ltr:left-1 rtl:right-1':form.salary_type === 'fixed' }"
-                                v-text="form.salary_type === 'fixed' ? __('t_fixed_price') : __('t_hourly_price')"
-                            class="bg-white shadow text-[13px] font-semibold flex items-center justify-center w-1/2 rounded transition-all duration-150 ease-linear absolute h-10 top-1 text-gray-600 pt-px dark:bg-zinc-900 dark:text-zinc-200"></span>
+                            
+                            <span v-text="
+  form.salary_type === 'fixed' ? __('t_fixed_price') :
+  form.salary_type === 'hourly' ? __('t_hourly_price') :
+  form.salary_type === 'per_minute' ? __('t_per_minute_price') :
+  form.salary_type === 'per_second' ? __('t_per_second_price') :
+  form.salary_type === 'per_word' ? __('t_per_word_price') :
+  form.salary_type === 'per_unit' ? __('t_per_unit_price') :
+  form.salary_type === 'per_chapter' ? __('t_per_chapter_price') :
+  form.salary_type === 'per_book' ? __('t_per_book_price') :
+  form.salary_type === 'per_cover' ? __('t_per_cover_price') :
+  form.salary_type === 'per_question' ? __('t_per_question_price') :
+  form.salary_type === 'per_course' ? __('t_per_course_price') :
+  form.salary_type === 'per_art_image' ? __('t_per_art_image_price') :
+  form.salary_type === 'per_video' ? __('t_per_video_price') :
+  form.salary_type === 'per_animation' ? __('t_per_animation_price') :
+  form.salary_type === 'per_page' ? __('t_per_page_price') :
+  form.salary_type === 'per_others' ? __('t_per_others_price') :
+  ''
+  "
+  class="w-full bg-primary-600 text-white shadow text-[13px] font-semibold flex items-center justify-center w-1/2 rounded transition-all duration-150 ease-linear absolute h-10 top-1 text-gray-600 pt-px dark:bg-zinc-900 dark:text-zinc-200 relative z-50"
+></span>
 
                         </div>
                     </div>
@@ -280,7 +369,7 @@
             <!-- Total -->
             <div class="flex items-center space-x-3 rtl:space-x-reverse bg-gray-100 hover:bg-gray-200 hover:bg-opacity-50 p-4 rounded-xl mb-8 dark:bg-transparent dark:border dark:border-zinc-700/40" v-if="settings.is_premium">
                 <div class="grow">
-                    <p class="text-sm text-gray-600 dark:text-zinc-400 font-medium" v-text="__('t_total')"></p>
+                    <p class="text-sm text-gray-600 dark:text-zinc-400 font-medium" v-text="__('t_addon_total')"></p>
                 </div>
                 <div class="flex-none ltr:text-right rtl:text-left text-zinc-900 font-black text-base dark:text-white" v-text="$money(total, currency)"></div>
             </div>
@@ -356,9 +445,8 @@
                     skills       : false,
                     button_update: false,
                 },
-                skills   : [],
-                errors   : [],
-                is_loaded: false
+                skills : [],
+                errors : [],
             }
         },
 
@@ -425,6 +513,38 @@
             project() {
                 return JSON.parse(this._project);
             }
+
+        },
+
+        async created() {
+
+            // Set selected category
+            this.form.category = this.project.category_id;
+            
+            // Fetch skills
+            await this.fetchSkills();
+
+            // Set empty array
+            const skills = [];
+
+            // Loop through skills
+            for (let index = 0; index < this.project.skills.length; index++) {
+
+                // Get skill
+                const skill = this.project.skills[index];
+
+                // Push it
+                skills.push(skill.skill_id);
+                
+            }
+
+            // Fill form
+            this.form.title                 = this.project.title;
+            this.form.description           = this.project.description;
+            this.form.salary_type           = this.project.budget_type;
+            this.form.price_min             = this.project.budget_min;
+            this.form.price_max             = this.project.budget_max;
+            this.form.skills                = skills;
 
         },
 
@@ -517,6 +637,18 @@
                         status : 'failed',
                         message: this.__('t_toast_something_went_wrong'),
                         id     : '#section-budget'
+                    }
+
+                }
+
+                // Check skills
+                if (this.form.skills.length < 1) {
+                            
+                    // Error
+                    return {
+                        status : 'failed',
+                        message: this.__('t_toast_select_at_least_5_skills'),
+                        id     : '#section-main-details'
                     }
 
                 }
@@ -752,54 +884,14 @@
 
             // Initialize select2
             select2() {
-
-                // Access
-                const _this            = this;
-                
-                // Set empty arrays
-                var skills_data        = [];
-                var skills_values      = [];
-
-                // Get preselected skills
-                let preselected_skills = _this.project.skills;
-
-                // Loop through skills
-                for (let index = 0; index < _this.skills.length; index++) {
-
-                    // Check if skill exists
-                    if (_this.skills[index].id) {
-                    
-                        // Get skill
-                        const skill_value = _this.skills[index];
-
-                        // Push it
-                        skills_data.push({
-                            id  : skill_value.id,
-                            text: skill_value.name
-                        });
-
-                    }
-                    
-                }
-
-                // Loop through selected skills
-                if (_this.project.skills) {
-
-                    for (let j = 0; j < _this.project.skills.length; j++) {
-
-                        // Push it
-                        skills_values.push(_this.project.skills[j].skill_id);
-                        
-                    }
-
-                }
+                const _this = this;
 
                 // Enable select2 for categories
                 $('#select2-categories').select2({
                     minimumResultsForSearch: -1,
                     dropdownCssClass       : 'select2-form-wrapper-dropdown shadow-lg !rounded-md !border-none mt-1',
-                    placeholder            : _this.__('t_choose_category'),
-                    selectionCssClass      : `block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:pr-4 placeholder:font-normal placeholder:text-[13px] text-sm font-medium text-zinc-800 !rounded-md dark:!bg-zinc-700/40 dark:!border-zinc-700 ${ _this.hasError('category') ? 'focus:!ring-red-600 focus:!border-red-600 !border-red-500' : 'focus:!ring-primary-600 focus:!border-primary-600 !border-gray-300' }`,
+                    placeholder            : this.__('t_choose_category'),
+                    selectionCssClass      : `block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:pr-4 placeholder:font-normal placeholder:text-[13px] text-sm font-medium text-zinc-800 !rounded-md dark:!bg-zinc-700/40 dark:!border-zinc-700 ${ this.hasError('category') ? 'focus:!ring-red-600 focus:!border-red-600 !border-red-500' : 'focus:!ring-primary-600 focus:!border-primary-600 !border-gray-300' }`,
                     width                  : '100%',
                     language               : __var_app_locale,
                     dir                    : __var_rtl ? 'rtl' : 'ltr',
@@ -810,34 +902,26 @@
                     }
                 });
 
-                // Get skills element
-                var select2_skills = $('#select2-skills');
-
                 // Enable select2 for skills
-                select2_skills.select2({
+                $('#select2-skills').select2({
                     minimumResultsForSearch: -1,
                     dropdownCssClass       : 'select2-form-wrapper-dropdown shadow-lg !rounded-md !border-none mt-1',
-                    placeholder            : _this.__('t_what_skills_are_required'),
-                    selectionCssClass      : `select2-skills block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 placeholder:font-normal placeholder:text-[13px] text-sm font-medium text-zinc-800 !rounded-md dark:!bg-zinc-700/40 dark:!border-zinc-700 ${ _this.hasError('skills') ? 'focus:!ring-red-600 focus:!border-red-600 !border-red-500' : 'focus:!ring-primary-600 focus:!border-primary-600 !border-gray-300' }`,
+                    placeholder            : this.__('t_what_skills_are_required'),
+                    selectionCssClass      : `select2-skills block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 placeholder:font-normal placeholder:text-[13px] text-sm font-medium text-zinc-800 !rounded-md dark:!bg-zinc-700/40 dark:!border-zinc-700 ${ this.hasError('skills') ? 'focus:!ring-red-600 focus:!border-red-600 !border-red-500' : 'focus:!ring-primary-600 focus:!border-primary-600 !border-gray-300' }`,
                     width                  : '100%',
                     closeOnSelect          : false,
                     multiple               : true,
-                    maximumSelectionLength : _this.settings.max_skills,
+                    maximumSelectionLength : 5,
                     dir                    : __var_rtl ? 'rtl' : 'ltr',
                     language               : {
                         noResults: function(){
                             return _this.__('t_no_results_found');
                         },
                         maximumSelected: function(n){
-                            return _this.__('t_max_allowed_skills_reached');
+                            return _this.__('t_max_5_skills_allowed');
                         }
-                    },
-                    data: skills_data,
+                    }
                 });
-
-                // Update values
-                select2_skills.val(skills_values);
-                select2_skills.trigger("change");
 
                 // Listen when category changes
                 $('#select2-categories').on('select2:select', function (e) {
@@ -848,38 +932,13 @@
                     // Fetch skills now
                     _this.fetchSkills();
 
-                    // Clear old selection
-                    $("#select2-skills").val("");
-                    _this.form.skills   = [];
-
-                    // Re-render select2
-                    $('#select2-skills').select2({
-                        minimumResultsForSearch: -1,
-                        dropdownCssClass       : 'select2-form-wrapper-dropdown shadow-lg !rounded-md !border-none mt-1',
-                        placeholder            : _this.__('t_what_skills_are_required'),
-                        selectionCssClass      : `select2-skills block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 placeholder:font-normal placeholder:text-[13px] text-sm font-medium text-zinc-800 !rounded-md dark:!bg-zinc-700/40 dark:!border-zinc-700 ${ _this.hasError('skills') ? 'focus:!ring-red-600 focus:!border-red-600 !border-red-500' : 'focus:!ring-primary-600 focus:!border-primary-600 !border-gray-300' }`,
-                        width                  : '100%',
-                        closeOnSelect          : false,
-                        multiple               : true,
-                        maximumSelectionLength : _this.settings.max_skills,
-                        dir                    : __var_rtl ? 'rtl' : 'ltr',
-                        language               : {
-                            noResults: function(){
-                                return _this.__('t_no_results_found');
-                            },
-                            maximumSelected: function(n){
-                                return _this.__('t_max_allowed_skills_reached');
-                            }
-                        }
-                    });
-
                 });
 
                 // Listen when skills changed
                 $('#select2-skills').on('change', function (e) {
                     _this.form.skills = $('#select2-skills').val();
                 });
-            },
+            }, 
 
             // Reset form
             reset() {
@@ -900,41 +959,21 @@
         },
 
         // Mounted
-        async mounted() {
-
-            // Set selected category
-            this.form.category = this.project.category_id;
-            
-            // Fetch skills
-            await this.fetchSkills();
-
-            // Set empty array
-            const skills = [];
-
-            // Loop through skills
-            for (let index = 0; index < this.project.skills.length; index++) {
-
-                // Get skill
-                const skill = this.project.skills[index];
-
-                // Push it
-                skills.push(skill.skill_id);
-                
-            }
-
-            // Fill form
-            this.form.title                 = this.project.title;
-            this.form.description           = this.project.description;
-            this.form.salary_type           = this.project.budget_type;
-            this.form.price_min             = this.project.budget_min;
-            this.form.price_max             = this.project.budget_max;
-            this.form.skills                = skills;
+        mounted() {
 
             // Init select2
             this.select2();
-            
-            // Show page
-            this.is_loaded = true;
+            // Get the _project data prop passed from Laravel
+            const projectData = JSON.parse(this._project);
+        
+            // Extract the skills array from the project data and map it to match the expected format
+            this.skills = projectData.skills.map(skill => ({ id: skill.skill_id, name: skill.skill.name }));
+        
+            // Set the initial value for the skills in the form
+            this.form.skills = this.skills[0].id; // You can set the desired default value here
+            // Use this to re-render select2
+           // this.fetchSkills(this.form.category + 1);
+           // this.fetchSkills(this.form.category - 1);
 
         }
     };

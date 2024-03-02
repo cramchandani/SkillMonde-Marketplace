@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('name', 100)->nullable();
             $table->string('size', 20);
 
-            $table->foreign('gig_id')->references('id')->on('gigs')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('gig_id')->references('id')->on('gigs');
         });
     }
 

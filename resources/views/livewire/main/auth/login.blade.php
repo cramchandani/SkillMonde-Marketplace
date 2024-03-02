@@ -3,7 +3,7 @@
 	{{-- Welcome back message --}}
 	<div class="text-center">
 		<div class="mt-4">
-			<h2 class="text-xl font-bold text-zinc-700 dark:text-white">
+			<h2 class="text-xl font-bold text-zinc-700 dark:text-navy-100">
 				@lang('messages.t_welcome_back')
 			</h2>
 			<p class="text-zinc-400 dark:text-gray-300">
@@ -117,13 +117,13 @@
 					{{-- reCaptcha --}}
 					@if (settings('security')->is_recaptcha)
 						<div class="col-span-12" wire:ignore>
-							<div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}" data-theme="{{ current_theme() }}"></div>
+							<div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
 						</div>
 					@endif
 
 					{{-- Login --}}
 					<div class="col-span-12">
-						<button type="submit" wire:loading.attr="disabled" wire:target="login" :disabled="!form.email || !form.password" class="w-full bg-primary-600 enabled:hover:bg-primary-700 text-white py-4.5 px-4 rounded-md text-[13px] font-semibold tracking-wide disabled:bg-zinc-200 disabled:text-zinc-500 dark:disabled:bg-zinc-500 dark:disabled:text-zinc-300 disabled:cursor-not-allowed">
+						<button type="submit" wire:loading.attr="disabled" wire:target="login" :disabled="!form.email || !form.password" class="w-full bg-primary-600 enabled:hover:bg-primary-700 text-white py-4.5 px-4 rounded-md text-[13px] font-semibold tracking-wide disabled:bg-zinc-200 disabled:text-zinc-500">
 							
 							{{-- Loading indicator --}}
 							<div wire:loading wire:target="login">
@@ -210,25 +210,25 @@
 
 			{{-- Action links --}}
 			<div class="mt-6">
-				<ul class="list-disc list-inside text-slate-500 text-[13px] space-y-2 dark:text-gray-300">
+				<ul class="list-disc list-inside text-slate-500 text-[13px] space-y-2">
 
 					{{-- Create new account --}}
 					<li>
-						<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('auth/register') }}">
+						<a class="hover:text-slate-600 hover:underline" href="{{ url('auth/register') }}">
 							@lang('messages.t_create_account')	
 						</a>
 					</li>
 
 					{{-- Forgot password --}}
 					<li>
-						<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('auth/password/reset') }}">
+						<a class="hover:text-slate-600 hover:underline" href="{{ url('auth/password/reset') }}">
 							@lang('messages.t_forgot_password')	
 						</a>
 					</li>
 
 					{{-- Resend activation url --}}
 					<li>
-						<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('auth/request') }}">
+						<a class="hover:text-slate-600 hover:underline" href="{{ url('auth/request') }}">
 							@lang('messages.t_resend_verification_email')	
 						</a>
 					</li>
@@ -238,12 +238,12 @@
 
 						{{-- Privacy --}}
 						<li>
-							<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('page', settings('footer')->privacy->slug) }}">{{ settings('footer')->privacy->title }}</a>
+							<a class="hover:text-slate-600 hover:underline" href="{{ url('page', settings('footer')->privacy->slug) }}">{{ settings('footer')->privacy->title }}</a>
 						</li>
 
 						{{-- Terms --}}
 						<li>
-							<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('page', settings('footer')->terms->slug) }}">{{ settings('footer')->terms->title }}</a>
+							<a class="hover:text-slate-600 hover:underline" href="{{ url('page', settings('footer')->terms->slug) }}">{{ settings('footer')->terms->title }}</a>
 						</li>
 					@endif
 
@@ -284,7 +284,7 @@
 					var _this = this;
 
 					// Is recapctah enabled
-					if (_this.recaptcha && document.getElementById('g-recaptcha-response')) {
+					if (_this.recaptcha) {
 
 						// Get recaptcha response
 						var recaptcha_token = document.getElementById('g-recaptcha-response').value;
@@ -337,4 +337,11 @@
 		}
 		window.zyKtAkZuKbBmbfC = zyKtAkZuKbBmbfC();
 	</script>
+<script type="text/javascript" src="https://affiliate.skillmonde.com/integration/general_integration"></script>
+<script type="text/javascript">
+ AffTracker.setWebsiteUrl( "https://skillmonde.com/auth/register" );
+ //set custom value
+ AffTracker.setData("rreferrer","affiliate");
+ AffTracker.createAction( "YfRL4ejKTH" )
+</script>
 @endpush

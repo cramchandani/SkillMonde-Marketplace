@@ -13,6 +13,9 @@ use App\Models\NewsletterVerification;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
 use App\Mail\User\Everyone\NewsletterVerification as EveryoneNewsletterVerification;
 use App\Models\Project;
+use App\Models\Slider;
+use Illuminate\Http\Request;
+use PDO;
 
 class HomeComponent extends Component
 {
@@ -113,7 +116,7 @@ class HomeComponent extends Component
             // Get top sellers randomly
             return User::where('account_type', 'seller')
                         ->whereHas('sales')
-                        ->whereIn('status', ['active', 'verified'])
+                        ->whereIn('status', ['status', 'verified'])
                         ->withCount('sales')
                         ->orderBy('sales_count', 'desc')
                         ->take(12)

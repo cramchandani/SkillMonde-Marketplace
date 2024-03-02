@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PasswordChanged extends Notification implements ShouldQueue
 {
@@ -42,12 +41,12 @@ class PasswordChanged extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_password_changed');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_password_changed');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_ur_password_updated')))
+                    ->line(__('messages.t_notification_ur_password_updated'))
                     ->action(__('messages.t_account_settings'), url('account/settings'));
     }
 

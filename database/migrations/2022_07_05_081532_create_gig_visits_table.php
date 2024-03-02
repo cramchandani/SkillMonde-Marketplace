@@ -65,7 +65,7 @@ return new class extends Migration
             $table->timestamp('first_visit');
             $table->timestamp('last_visit');
 
-            $table->foreign('gig_id')->references('id')->on('gigs')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('gig_id')->references('id')->on('gigs');
         });
     }
 

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('is_finished')->default(false);
             $table->timestamp('placed_at');
 
-            $table->foreign('buyer_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('buyer_id')->references('id')->on('users');
         });
     }
 

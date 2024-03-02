@@ -26,7 +26,6 @@ class Review extends Model
         'user_id',
         'seller_id',
         'gig_id',
-        'order_item_id',
         'rating',
         'message',
         'status'

@@ -104,7 +104,7 @@ class RequirementsComponent extends Component
         $item->save();
 
         // Decrement orders in queue
-        if ($item->gig->total_orders_in_queue() > 0) {
+        if ($item->gig->orders_in_queue > 0) {
             $item->gig()->decrement('orders_in_queue');
         }
 

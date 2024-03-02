@@ -13,6 +13,11 @@ use App\Notifications\User\Everyone\Welcome;
 use App\Notifications\User\Everyone\VerifyEmail;
 use App\Http\Validators\Main\Auth\RegisterValidator;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
+use Illuminate\Support\Str;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log; // Import the Log facade
+
 
 class RegisterComponent extends Component
 {
@@ -25,6 +30,10 @@ class RegisterComponent extends Component
     public $recaptcha_token;
 
     public $social_grid;
+    public $account_type;
+    public $agreeToTerms = true;
+    
+    public $referrerUsername;
 
     /**
      * Initialize component
@@ -66,6 +75,12 @@ class RegisterComponent extends Component
 
         // Set grid
         $this->social_grid = $social_grid_counter;
+        
+        // Get referrer code from the URL
+        $referrerCode = $this->getReferrerCodeFromUrl();
+    
+        // Set the referrerUsername property
+        $this->referrerUsername = $referrerCode;
 
     }
 
@@ -106,6 +121,13 @@ class RegisterComponent extends Component
         return view('livewire.main.auth.register')->extends('livewire.main.auth.layout.auth')->section('content');
     }
 
+    protected function getReferrerCodeFromUrl()
+    {
+        $referrerCode = request('ref');
+        return $referrerCode;
+       // dd($referrerCode);
+      //  return $referrerCode;
+    }
 
     /**
      * Create new account
@@ -118,7 +140,8 @@ class RegisterComponent extends Component
         try {
             
             // Verify form first
-            if (!is_array($form) || !isset($form['email']) || !isset($form['password']) || !isset($form['fullname']) || !isset($form['username'])) {
+           // if (!is_array($form) || !isset($form['email']) || !isset($form['password']) || !isset($form['fullname']) || !isset($form['username'])) {
+           if (!is_array($form) || !isset($form['email']) || !isset($form['password']) || !isset($form['fullname'])) {
                 return;
             }
 
@@ -126,7 +149,9 @@ class RegisterComponent extends Component
             $this->email           = $form['email'];
             $this->password        = $form['password'];
             $this->fullname        = $form['fullname'];
-            $this->username        = $form['username'];
+          //  $this->username        = $form['username'];
+            $this->account_type    = $form['account_type'] ?? '';
+            $this->referrer        = $form['referrerUsername'] ?? '';
             $this->recaptcha_token = $form['recaptcha_token'];
 
             // Verify recapctah first
@@ -178,17 +203,56 @@ class RegisterComponent extends Component
 
             // Get auth settings
             $settings       = settings('auth');
+            
+            // Generate a unique username based on the user's name
+            //$username = Str::slug($this->fullname);
+            $username = Str::slug(str_replace(' ', '_', $this->fullname));
+        
+            // Check if the generated username already exists in the database
+            $counter = 1;
+            $originalUsername = $username;
+            while (User::where('username', '=', $username)->exists()) {
+                $username = $originalUsername . '_' . $counter++;
+            }
 
             // Create new user
             $user           = new User();
             $user->uid      = uid();
             $user->fullname = clean($this->fullname);
             $user->email    = clean($this->email);
-            $user->username = clean($this->username);
+            
+           // $user->username = clean($this->username);
+            $user->username = clean($username);
+            
             $user->password = Hash::make($this->password);
             $user->status   = $settings->verification_required ? 'pending' : 'active';
             $user->level_id = 1;
+            $user->account_type = clean($this->account_type);
+            $user->referrer = clean($this->referrer);
             $user->save();
+            
+            // Insert the same user into the 'affiliate' database's 'users' table
+            $affiliateUser = [
+                'plan_id' => 1, // Adjust the plan ID as needed
+                'refid' => '0', // You may set a ref ID if required
+                'level_id' => 0, // Adjust the level ID as needed
+                'type' => 'user', // Adjust the user type as needed
+                'firstname' => clean($this->fullname),
+                'lastname' => '',
+                'email' => clean($this->email),
+                'username' => clean($username), // Use the generated username
+                'password' => sha1($this->password), // Use SHA1 hash for the password
+                'status' => '1', // Adjust the status as needed
+                'reg_approved' => 1, // Set registration as approved
+                'is_vendor' => 0, // Set as non-vendor
+                // Add any additional fields you need to insert
+                // ...
+            ];
+    
+            // Use the DB facade to insert the user into the 'affiliate' database
+            DB::connection('affiliate')->table('users')->insert($affiliateUser);
+            
+            Log::info('After postToAffiliateRegistration');
 
             // Check if user requires verification
             if ($settings->verification_required) {
@@ -234,14 +298,9 @@ class RegisterComponent extends Component
             return redirect('/');
 
         } catch (\Throwable $th) {
-            
-            // Something went wrong
-            $this->notification([
-                'title'       => __('messages.t_error'),
-                'description' => __('messages.t_toast_something_went_wrong'),
-                'icon'        => 'error'
-            ]);
-
+            throw $th;
         }
     }
+    
+    
 }

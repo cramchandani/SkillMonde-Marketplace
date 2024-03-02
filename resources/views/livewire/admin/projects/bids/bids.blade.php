@@ -170,21 +170,21 @@
 
                             {{-- Freelancer --}}
                             <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md w-48">
-                                <a href="{{ url('profile', $bid->user->username) }}" target="_blank" class="flex items-center">
+                                <a href="{{ url('profile', $bid->user->username ?? '') }}" target="_blank" class="flex items-center">
                                     <div class="w-8 h-8">
-                                        <img class="w-full h-full rounded object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src($bid->user->avatar) }}" alt="{{ $bid->user->username }}" />
+                                        <img class="w-full h-full rounded object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src($bid->user->avatar ?? '') }}" alt="{{ $bid->user->username ?? ''}}" />
                                     </div>
                                     <div class="ltr:pl-4 rtl:pr-4">
                                         <p class="font-medium text-sm flex items-center">
-                                            <span class="text-zinc-600 hover:text-primary-600">{{ $bid->user->username }}</span>
-                                            @if ($bid->user->status === 'verified')
+                                            <span class="text-zinc-600 hover:text-primary-600">{{ $bid->user->username ?? ''}}</span>
+                                            @if ($bid->user->status ?? '' === 'verified')
                                                 <img data-tooltip-target="tooltip-account-verified-{{ $bid->user->id }}" class="ltr:ml-0.5 rtl:mr-0.5 h-3.5 w-3.5 -mt-0.5" src="{{ url('public/img/auth/verified-badge.svg') }}" alt="{{ __('messages.t_account_verified') }}">
                                                 <div id="tooltip-account-verified-{{ $bid->user->id }}" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-sm shadow-sm opacity-0 tooltip dark:bg-gray-700">
                                                     {{ __('messages.t_account_verified') }}
                                                 </div>
                                             @endif
                                         </p>
-                                        <p class="text-xs leading-3 text-gray-600 pt-2">{{ $bid->user->email }}</p>
+                                        <p class="text-xs leading-3 text-gray-600 pt-2">{{ $bid->user->email ?? ''}}</p>
                                     </div>
                                 </a>
                             </td>
@@ -330,8 +330,8 @@
                                             <div class="flex items-center space-x-4 rtl:space-x-reverse">
                                     
                                                 {{-- Avatar --}}
-                                                  <a href="{{ url('profile', $bid->user->username) }}" class="block">
-                                                    <img class="rounded-full h-12 w-12 object-cover object-center lazy" src="{{ placeholder_img() }}" data-src="{{ src($bid->user->avatar) }}" alt="{{ $bid->user->username }}">
+                                                  <a href="{{ url('profile', $bid->user->username ?? '') }}" class="block">
+                                                    <img class="rounded-full h-12 w-12 object-cover object-center lazy" src="{{ placeholder_img() }}" data-src="{{ src($bid->user->avatar ?? '') }}" alt="{{ $bid->user->username ?? ''}}">
                                                 </a>
                                     
                                                 {{-- User info --}}
@@ -340,16 +340,16 @@
                                                     <div class="flex items-center">
                                     
                                                         {{-- User fullname --}}
-                                                        @if ($bid->user->fullname)
+                                                        @if ($bid->user->fullname ?? '')
                                                             <span class="font-medium text-zinc-900 text-sm hover:text-black ltr:pr-1 rtl:pl-1">
-                                                                {{ $bid->user->fullname }}
+                                                                {{ $bid->user->fullname ?? ''}}
                                                             </span>
                                                         @endif
                                     
                                                         {{-- Username --}}
-                                                        <a href="{{ url('profile', $bid->user->username) }}" class="font-medium text-gray-500 text-[13px] hover:text-primary-600 focus:text-primary-600 inline-flex items-center">
+                                                        <a href="{{ url('profile', $bid->user->username ?? '') }}" class="font-medium text-gray-500 text-[13px] hover:text-primary-600 focus:text-primary-600 inline-flex items-center">
                                                             <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10c1.466 0 2.961-.371 4.442-1.104l-.885-1.793C14.353 19.698 13.156 20 12 20c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8v1c0 .692-.313 2-1.5 2-1.396 0-1.494-1.819-1.5-2V8h-2v.025A4.954 4.954 0 0 0 12 7c-2.757 0-5 2.243-5 5s2.243 5 5 5c1.45 0 2.748-.631 3.662-1.621.524.89 1.408 1.621 2.838 1.621 2.273 0 3.5-2.061 3.5-4v-1c0-5.514-4.486-10-10-10zm0 13c-1.654 0-3-1.346-3-3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3z"></path></svg>
-                                                            <span>{{ $bid->user->username }}</span>
+                                                            <span>{{ $bid->user->username ?? ''}}</span>
                                                         </a>
                                     
                                                     </div>
@@ -358,25 +358,33 @@
                                                     <div class="flex items-center space-x-3 rtl:space-x-reverse text-[13px]">
                                     
                                                         {{-- Country --}}
-                                                        @if ($bid->user->country)
+                                                        @if ($bid->user->country ?? '')
                                                             <p class="flex items-center space-x-1 rtl:space-x-reverse">
-                                                                <img class="h-4 ltr:pr-0.5 rtl:pl-0.5 -mt-0.5 lazy" src="{{ placeholder_img() }}" data-src="{{ countryFlag($bid->user->country->code) }}" alt="{{ $bid->user->country->name }}">
-                                                                <span>{{ $bid->user->country->name }}</span>
+                                                                <img class="h-4 ltr:pr-0.5 rtl:pl-0.5 -mt-0.5 lazy" src="{{ placeholder_img() }}" data-src="{{ countryFlag($bid->user->country->code ?? '') }}" alt="{{ $bid->user->country->name ?? ''}}">
+                                                                <span>{{ $bid->user->country->name ?? ''}}</span>
                                                             </p>
                                     
                                                             <div class="mx-2 my-0.5 text-gray-300">|</div>
                                                         @endif
                                     
+                                                       
                                                         {{-- Rating --}}
                                                         <p class="flex shrink-0 items-center space-x-1 rtl:space-x-reverse">
-                                                            <svg aria-hidden="true" class="w-4 h-4 {{ $bid->user->rating() == 0 ? 'text-gray-400' : 'text-amber-500' }} -mt-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                                            <span>
-                                                                {{ $bid->user->rating() }}
-                                                            </span>
+                                                            @if ($bid->user)
+                                                                <svg aria-hidden="true" class="w-4 h-4 {{ $bid->user->rating() == 0 ? 'text-gray-400' : 'text-amber-500' }} -mt-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                                </svg>
+                                                                <span>
+                                                                    {{ $bid->user->rating() }}
+                                                                </span>
+                                                            @else
+                                                                <span class="text-gray-400">N/A</span>
+                                                            @endif
                                                         </p>
+
                                     
                                                         {{-- Verified account --}}
-                                                        @if ($bid->user->status === 'verified')
+                                                        @if ($bid->user->status ?? '' === 'verified')
                                                             <div class="mx-2 my-0.5 text-gray-300">|</div>
                                                             <div class="flex shrink-0 items-center space-x-1 rtl:space-x-reverse">
                                                                 <svg class="w-4 h-4 text-blue-500 -mt-0.5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>

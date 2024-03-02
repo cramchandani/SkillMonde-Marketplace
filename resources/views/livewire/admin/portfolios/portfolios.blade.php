@@ -27,7 +27,7 @@
 
                         {{-- Portfolio --}}
                         <td class="ltr:pl-4 rtl:pr-4">
-                            <a href="{{ url('profile/' . $p->user->username . '/portfolio/' . $p->slug) }}" target="_blank" class="flex items-center">
+                            <a href="{{ url('projects', $p->slug) }}" target="_blank" class="flex items-center">
                                 <div class="w-8 h-8">
                                     <img class="w-full h-full rounded object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src($p->thumbnail) }}" alt="{{ $p->title }}" />
                                 </div>

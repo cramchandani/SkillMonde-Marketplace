@@ -75,6 +75,17 @@ Route::middleware(['web', 'auth:admin'])->group(function() {
             Route::get('/', TrashComponent::class);
 
         });
+        
+        // Trashed users
+        Route::namespace('Export')->prefix('export')->group(function() {
+
+            // Get trashed users
+            Route::get('/', ExportComponent::class);
+
+        });
+        // Export users
+       //Route::get('/export', ExportComponent::class)->name('export');
+
 
     });
 
@@ -271,14 +282,6 @@ Route::middleware(['web', 'auth:admin'])->group(function() {
         });
 
     });
-
-    // Offers
-    Route::namespace('Offers')->prefix('offers')->group(function() {
-
-        // All
-        Route::get('/', OffersComponent::class);
-
-    });
     
     // Categories
     Route::namespace('Categories')->prefix('categories')->group(function() {
@@ -348,6 +351,9 @@ Route::middleware(['web', 'auth:admin'])->group(function() {
 
         // Conversations
         Route::get('/', ConversationsComponent::class);
+
+        // Messages
+        Route::get('messages/{id}', MessagesComponent::class);
 
     });
 
@@ -440,106 +446,6 @@ Route::middleware(['web', 'auth:admin'])->group(function() {
 
     // Services
     Route::namespace('Services')->prefix('services')->group(function() {
-
-        // Payment gateways
-        Route::namespace('Payment')->prefix('payment')->group(function() {
-
-            // All
-            Route::get('/', PaymentComponent::class);
-
-            // Gateways
-            Route::namespace('Gateways')->group(function() {
-
-                // Iyzico
-                Route::get('edit/iyzico', IyzicoComponent::class);
-
-                // Duitku
-                Route::get('edit/duitku', DuitkuComponent::class);
-
-                // Genie Business
-                Route::get('edit/genie-business', GenieComponent::class);
-
-                // Asaas
-                Route::get('edit/asaas', AsaasComponent::class);
-
-                // Ecpay
-                Route::get('edit/ecpay', EcpayComponent::class);
-
-                // Fastpay
-                Route::get('edit/fastpay', FastpayComponent::class);
-
-                // Freekassa
-                Route::get('edit/freekassa', FreekassaComponent::class);
-
-                // Paymob Pakistan
-                Route::get('edit/paymob-pk', PaymobPkComponent::class);
-
-                // cPay
-                Route::get('edit/cpay', CpayComponent::class);
-
-                // Nowpayments
-                Route::get('edit/nowpayments', NowpaymentsComponent::class);
-
-                // PayPal
-                Route::get('edit/paypal', PaypalComponent::class);
-
-                // Stripe
-                Route::get('edit/stripe', StripeComponent::class);
-
-                // Paystack
-                Route::get('edit/paystack', PaystackComponent::class);
-
-                // Cashfree
-                Route::get('edit/cashfree', CashfreeComponent::class);
-
-                // Xendit
-                Route::get('edit/xendit', XenditComponent::class);
-
-                // Flutterwave
-                Route::get('edit/flutterwave', FlutterwaveComponent::class);
-
-                // Vnpay
-                Route::get('edit/vnpay', VnpayComponent::class);
-
-                // Paymob
-                Route::get('edit/paymob', PaymobComponent::class);
-
-                // Mercadopago
-                Route::get('edit/mercadopago', MercadopagoComponent::class);
-
-                // Paytabs
-                Route::get('edit/paytabs', PaytabsComponent::class);
-
-                // Razorpay
-                Route::get('edit/razorpay', RazorpayComponent::class);
-
-                // Mollie
-                Route::get('edit/mollie', MollieComponent::class);
-
-                // Paytr
-                Route::get('edit/paytr', PaytrComponent::class);
-
-                // Jazzcash
-                Route::get('edit/jazzcash', JazzcashComponent::class);
-
-                // Youcanpay
-                Route::get('edit/youcanpay', YoucanpayComponent::class);
-
-                // Epoint
-                Route::get('edit/epoint', EpointComponent::class);
-
-                // Campay
-                Route::get('edit/campay', CampayComponent::class);
-
-                // Robokassa
-                Route::get('edit/robokassa', RobokassaComponent::class);
-
-                // Offline
-                Route::get('edit/offline', OfflineComponent::class);
-
-            });
-
-        });
 
         // PayPal
         Route::get('paypal', PaypalComponent::class);

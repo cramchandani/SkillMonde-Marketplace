@@ -18,8 +18,8 @@ class CreateMessagesTable extends Migration
             $table->string('type');
             $table->bigInteger('from_id');
             $table->bigInteger('to_id');
-            $table->text('body')->nullable();
-            $table->text('attachment')->nullable();
+            $table->string('body',5000)->nullable();
+            $table->string('attachment')->nullable();
             $table->boolean('is_audio')->default(false);
             $table->boolean('seen')->default(false);
             $table->timestamps();

@@ -26,10 +26,10 @@ return new class extends Migration
             $table->timestamp('declined_at')->nullable();
             $table->timestamp('created_at');
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('file_front_side')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('file_back_side')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('file_selfie')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('file_front_side')->references('id')->on('file_manager');
+            $table->foreign('file_back_side')->references('id')->on('file_manager');
+            $table->foreign('file_selfie')->references('id')->on('file_manager');
         });
     }
 

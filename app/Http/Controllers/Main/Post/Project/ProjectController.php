@@ -15,6 +15,7 @@ use App\Models\ProjectRequiredSkill;
 use Illuminate\Support\Facades\View;
 use App\Http\Requests\Main\Post\ProjectRequest;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -185,8 +186,25 @@ class ProjectController extends Controller
                 $project->description    = clean($request->get('description'));
                 $project->slug           = $slug;
                 $project->category_id    = $request->get('category');
-                $project->budget_min     = $request->get('price_min');
-                $project->budget_max     = $request->get('price_max');
+                
+            // $project->budget_min     = $request->get('price_min');
+            // $project->budget_max     = $request->get('price_max');
+            
+            // Calculate and set finalMinPrice and finalMaxPrice based on salary type
+                if ($request->get('salary_type') === 'fixed' || $request->get('salary_type') === 'per_others') {
+                    $project->budget_min = $request->get('price_min');
+                    $project->budget_max = $request->get('price_max');
+                } else {
+                    $project->budget_min = $request->get('price_min') * $request->get('number_of_items');
+                    $project->budget_max = $request->get('price_max') * $request->get('number_of_items');
+                }
+                
+                if ($request->get('salary_type') === 'fixed' || $request->get('salary_type') === 'per_others') {
+                    $project->total_numbers  = '0';
+                } else {
+                    $project->total_numbers  = $request->get('number_of_items');
+                }
+                
                 $project->budget_type    = $request->get('salary_type');
                 $project->is_featured    = $premium['is_featured'];
                 $project->is_urgent      = $premium['is_urgent'];
@@ -340,8 +358,7 @@ class ProjectController extends Controller
             'is_free_posting as is_free',
             'is_premium_posting as is_premium',
             'commission_type',
-            'commission_from_publisher as commission_value',
-            'max_skills'
+            'commission_from_publisher as commission_value'
         )->first();
     }
 

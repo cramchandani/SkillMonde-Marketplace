@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('is_required')->default(false);
             $table->boolean('is_multiple')->default(false);
 
-            $table->foreign('gig_id')->references('id')->on('gigs')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('gig_id')->references('id')->on('gigs');
         });
     }
 

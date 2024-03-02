@@ -1,677 +1,1628 @@
-<div class="w-full" x-data="window.LjqGJmYrwJSjIHT">
+<div class="relative max-w-3xl mx-auto" x-data="window.LjqGJmYrwJSjIHT">
 
     {{-- Loading --}}
-    <x-forms.loading />
-    
-    {{-- Empty state --}}
-    <div class="max-w-4xl mx-auto mb-16">
-        <div class="text-center">
-
-            {{-- Icon --}}
-            <div class="h-28 w-28 bg-slate-200 dark:bg-zinc-700 rounded-full flex items-center justify-center mx-auto">
-                <svg class="mx-auto h-12 w-12 dark:text-zinc-400" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M216,64l-12.16,66.86A16,16,0,0,1,188.1,144H62.55L48,64Z" opacity="0.2"></path><path d="M222.14,58.87A8,8,0,0,0,216,56H54.68L49.79,29.14A16,16,0,0,0,34.05,16H16a8,8,0,0,0,0,16h18L59.56,172.29a24,24,0,0,0,5.33,11.27,28,28,0,1,0,44.4,8.44h45.42A27.75,27.75,0,0,0,152,204a28,28,0,1,0,28-28H83.17a8,8,0,0,1-7.87-6.57L72.13,152h116a24,24,0,0,0,23.61-19.71l12.16-66.86A8,8,0,0,0,222.14,58.87ZM96,204a12,12,0,1,1-12-12A12,12,0,0,1,96,204Zm96,0a12,12,0,1,1-12-12A12,12,0,0,1,192,204Zm4-74.57A8,8,0,0,1,188.1,136H69.22L57.59,72H206.41Z"></path></svg>
+    <div class="fixed top-0 left-0 z-50 bg-black w-full h-full opacity-80" wire:loading>
+        <div class="w-full h-full flex items-center justify-center">
+            <div role="status">
+                <svg aria-hidden="true" class="mx-auto w-12 h-12 text-gray-500 animate-spin dark:text-gray-600 fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                </svg>
+                <span class="text-xs font-medium tracking-wider text-white mt-4 block">{{ __('messages.t_please_wait_dots') }}</span>
             </div>
-
-            {{-- Texts --}}
-            <h2 class="mt-4 text-base font-bold text-gray-700 dark:text-gray-100">{{ __('messages.t_checkout') }}</h2>
-
-            {{-- TGo back to shopping cart --}}
-            <a rel="nofollow" class="text-[13px] font-medium mt-4 text-primary-600 hover:underline dark:text-primary-500" href="{{ url('cart') }}">
-                @lang('messages.t_my_shopping_cart')
-            </a>
-
         </div>
     </div>
 
-    {{-- Form --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 max-w-4xl mx-auto lg:divide-x lg:divide-gray-200 lg:dark:divide-zinc-700 rtl:divide-x-reverse space-y-10 lg:space-y-0" x-data="{ selected_method: '' }">
-
-        {{-- Available payment methods --}}
-        <fieldset class="lg:ltr:pr-10 lg:rtl:pl-10">
-
-            {{-- Step title --}}
-            <div class="flex items-center lg:justify-center rtl:space-x-reverse space-x-2 mb-10">
-                <svg class="h-6 w-6 -mt-px dark:text-gray-200" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><path d="M216,48V208a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V48a8,8,0,0,1,8-8H208A8,8,0,0,1,216,48Z" opacity="0.2"></path><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208ZM140,80v96a8,8,0,0,1-16,0V95l-11.56,7.71a8,8,0,1,1-8.88-13.32l24-16A8,8,0,0,1,140,80Z"></path></svg>
-                <span class="text-base font-bold text-slate-500 tracking-wide dark:text-zinc-300">
-                    @lang('messages.t_choose_ur_prefered_payment_method')
-                </span>
-            </div>
-
-            {{-- Automatic methods --}}
-            <legend class="sr-only"> @lang('messages.t_select_payment_method') </legend>
-            <div class="relative -space-y-px rounded-md bg-white border border-gray-200 divide-y divide-gray-100 shadow-sm dark:bg-zinc-800 dark:border-zinc-700 dark:divide-zinc-700 mb-4">
-
-                @foreach ($payment_methods as $p)
-                    <label wire:key="payment-method-{{ $p->uid }}" class="{{ $loop->first ? 'rounded-tl-md rounded-tr-md' : '' }} {{ $loop->last ? 'rounded-bl-md rounded-br-md' : '' }} relative p-4 flex flex-col cursor-pointer md:ltr:pl-4 md:rtl:pr-4 md:ltr:pr-6 md:rtl:pl-6 md:grid md:grid-cols-2 focus:outline-none" :class="selected_method == '{{ $p->slug }}' ? 'bg-primary-50 border-primary-200 z-10 dark:bg-zinc-700 dark:border-zinc-700' : 'border-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-600'">
-
-                        {{-- Title --}}
-                        <span class="flex items-center text-sm">
-                            <input type="radio" x-model="selected_method" wire:model="selected_method" name="selected_method" value="{{ $p->slug }}" class="h-5 w-5 text-primary-600 border-gray-300 focus:ring-0 focus:outline-none focus:ring-transparent focus:ring-offset-0 dark:bg-zinc-700 dark:border-zinc-700" />
-                            <span class="ltr:ml-3 rtl:mr-3 font-medium whitespace-nowrap" :class="selected_method == '{{ $p->slug }}' ? 'text-primary-600 dark:text-white' : 'text-zinc-800 dark:text-zinc-200'">
-                                {{ $p->name }}
-                            </span>
-                        </span>
-                        
-                        {{-- Logo --}}
-                        @if ($p->logo)
-                            <span class="flex items-center">
-                                <img class="w-auto h-6 ltr:ml-auto rtl:mr-auto rounded" src="{{ src($p->logo) }}" alt="{{ $p->name }}">
-                            </span>
-                        @endif
-
-                        
-                    </label>
-                @endforeach
-              
-            </div>
-
-            {{-- Offline method --}}
-            @php
-                $offline_method = payment_gateway('offline', false, true);
-            @endphp
-            @if ($offline_method?->is_active)
-                <div class="relative -space-y-px rounded-md bg-white border border-gray-200 divide-y divide-gray-100 shadow-sm dark:bg-zinc-800 dark:border-zinc-700 dark:divide-zinc-700">
-                        <label wire:key="payment-method-offline" class="rounded-md relative p-4 flex flex-col cursor-pointer md:ltr:pl-4 md:rtl:pr-4 md:ltr:pr-6 md:rtl:pl-6 md:grid md:grid-cols-2 focus:outline-none" :class="selected_method == 'offline' ? 'bg-primary-50 border-primary-200 z-10 dark:bg-zinc-700 dark:border-zinc-700' : 'border-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-600'">
-
-                            {{-- Title --}}
-                            <span class="flex items-center text-sm">
-                                <input type="radio" x-model="selected_method" wire:model="selected_method" name="selected_method" value="offline" class="h-5 w-5 text-primary-600 border-gray-300 focus:ring-0 focus:outline-none focus:ring-transparent focus:ring-offset-0 dark:bg-zinc-700 dark:border-zinc-700" />
-                                <span class="ltr:ml-3 rtl:mr-3 font-medium whitespace-nowrap" :class="selected_method == 'offline' ? 'text-primary-600 dark:text-white' : 'text-zinc-800 dark:text-zinc-200'">
-                                    {{ $offline_method->name }}
-                                </span>
-                            </span>
-                            
-                            {{-- Logo --}}
-                            @if ($offline_method->logo)
-                                <span class="flex items-center">
-                                    <img class="w-auto h-6 ltr:ml-auto rtl:mr-auto rounded" src="{{ src($offline_method->logo) }}" alt="{{ $offline_method->name }}">
-                                </span>
-                            @endif
-
-                            
-                        </label>              
-                </div>
-            @endif
-
-            {{-- wallet --}}
-            @php
-                $wallet = convertToNumber(auth()->user()->balance_available);
-            @endphp
-            @if ($wallet >= $total)
-                <div class="mt-4 relative -space-y-px rounded-md bg-white border border-gray-200 divide-y divide-gray-100 shadow-sm dark:bg-zinc-800 dark:border-zinc-700 dark:divide-zinc-700">
-                    <label wire:key="payment-method-wallet" class="items-center rounded-md relative p-4 flex flex-col cursor-pointer md:ltr:pl-4 md:rtl:pr-4 md:ltr:pr-6 md:rtl:pl-6 md:grid md:grid-cols-2 focus:outline-none" :class="selected_method == 'wallet' ? 'bg-primary-50 border-primary-200 z-10 dark:bg-zinc-700 dark:border-zinc-700' : 'border-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-600'">
-
-                        {{-- Title --}}
-                        <span class="flex items-center text-sm">
-                            <input type="radio" x-model="selected_method" wire:model="selected_method" name="selected_method" value="wallet" class="h-5 w-5 text-primary-600 border-gray-300 focus:ring-0 focus:outline-none focus:ring-transparent focus:ring-offset-0 dark:bg-zinc-700 dark:border-zinc-700" />
-                            <span class="ltr:ml-3 rtl:mr-3 font-medium whitespace-nowrap" :class="selected_method == 'wallet' ? 'text-primary-600 dark:text-white' : 'text-zinc-800 dark:text-zinc-200'">
-                                @lang('messages.t_wallet')
-                            </span>
-                        </span>
-                        
-                        {{-- Available amount --}}
-                        <span class="text-right text-xs font-semibold text-black tracking-wide">
-                            @money($wallet, settings('currency')->code, true)
-                        </span>
-                        
-                    </label>              
-                </div>
-            @endif
-
-        </fieldset>
-
-        {{-- Order summary --}}
-        <div class="lg:ltr:pl-10 lg:rtl:pr-10">
-
-            {{-- Step title --}}
-            <div class="flex items-center lg:justify-center rtl:space-x-reverse space-x-2 mb-10">
-                <svg class="h-6 w-6 -mt-px dark:text-gray-200" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><path d="M216,48V208a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V48a8,8,0,0,1,8-8H208A8,8,0,0,1,216,48Z" opacity="0.2"></path><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Zm-48-32a8,8,0,0,1-8,8H104a8,8,0,0,1-6.4-12.8l43.17-57.56a16,16,0,1,0-27.86-15,8,8,0,0,1-15.09-5.34,32.43,32.43,0,0,1,4.62-8.59,32,32,0,1,1,51.11,38.52L120,168h32A8,8,0,0,1,160,176Z"></path></svg>
-                <span class="text-base font-bold text-slate-500 tracking-wide dark:text-zinc-300">
-                    @lang('messages.t_order_summary')
-                </span>
-            </div>
-
-            {{-- Order details --}}
-            <div class="w-full mb-8">
-
-                {{-- Order summary --}}
-                <div class="bg-gray-100 hover:bg-gray-200 hover:bg-opacity-50 py-6 px-5 rounded-xl space-y-6 dark:bg-zinc-800">
-
-                    {{-- Get payment method --}}
-                    @php
-
-                        // Get payment gateway details
-                        if ($selected_method === "offline") {
-                            $payment_gateway  = payment_gateway($selected_method, false, true);
-                        } else {
-                            $payment_gateway = payment_gateway($selected_method);
-                        }
-                        
-                        // Get currency
-                        $payment_currency = !empty($payment_gateway->currency) ? $payment_gateway->currency : null;
-
-                    @endphp
-
-                    {{-- Subtotal --}}
-                    <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                        <div class="grow">
-                            <p class="text-sm text-gray-500 dark:text-zinc-400 font-light">
-                                @lang('messages.t_subtotal')
-                            </p>
-                        </div>
-                        <div class="flex-none text-sm ltr:text-right rtl:text-left font-semibold text-zinc-700 dark:text-zinc-200">
-                            @money($subtotal, settings('currency')->code, true)
-                        </div>
+    {{-- Error message --}}
+    @if (session()->has('error'))
+        <div class="w-full mb-10">
+            <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/> </svg>
                     </div>
-
-                    {{-- Tax --}}
-                    @if ($tax)
-                        <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                            <div class="grow">
-                                <p class="text-sm text-gray-500 dark:text-zinc-400 font-light">
-                                    @lang('messages.t_tax_estimate')
-                                </p>
-                            </div>
-                            <div class="flex-none text-sm ltr:text-right rtl:text-left font-semibold text-zinc-700 dark:text-zinc-200">
-                                @money($tax, settings('currency')->code, true)
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- Fee --}}
-                    <div class="flex items-center space-x-3 rtl:space-x-reverse">
-                        <div class="grow">
-                            <p class="text-sm text-gray-500 dark:text-zinc-400 font-light">
-                                @lang('messages.t_fee')
-                            </p>
-                        </div>
-                        <div class="flex-none text-sm ltr:text-right rtl:text-left font-semibold text-zinc-700 dark:text-zinc-200">
-                            @if ($fee_value)
-                                {{ $fee_text }}
-                            @else
-                                -
-                            @endif
-                        </div>
-                    </div>
-                    
-                </div>
-
-                {{-- Order total --}}
-                <div class="flex items-center space-x-3 rtl:space-x-reverse bg-gray-100 hover:bg-gray-200 hover:bg-opacity-50 py-4 px-5 rounded-xl dark:bg-zinc-800 mt-4">
-                    <div class="grow">
-                        <p class="text-sm text-gray-500 dark:text-zinc-400 font-light">
-                            @lang('messages.t_total')
-                        </p>
-                    </div>
-                    <div class="flex-none text-sm ltr:text-right rtl:text-left font-semibold text-zinc-700 dark:text-zinc-200">
-                        @money($total, settings('currency')->code, true)
+                    <div class="ltr:ml-3 rtl:mr-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                            {{ session()->get('error') }}
+                        </h3>
                     </div>
                 </div>
-
-                {{-- Exchange rate --}}
-                @if ( $payment_currency && is_array( config('money.' . $payment_currency) ) && !empty( $payment_gateway->exchange_rate ) && $payment_gateway->exchange_rate != settings('currency')->exchange_rate )
-                    <div class="flex items-center space-x-3 rtl:space-x-reverse bg-gray-100 hover:bg-gray-200 hover:bg-opacity-50 py-4 px-5 rounded-xl dark:bg-zinc-800 mt-4">
-                        <div class="grow">
-                            <p class="text-sm text-gray-500 dark:text-zinc-400 font-light">
-                                @lang('messages.t_exchange_rate')
-                            </p>
-                        </div>
-                        <div class="flex-none text-sm ltr:text-right rtl:text-left font-semibold text-zinc-700 dark:text-zinc-200">
-                            @money( $total * $payment_gateway->exchange_rate / settings('currency')->exchange_rate, $payment_currency, true )
-                        </div>
-                    </div>
-                @endif
-
             </div>
+        </div>
+    @endif
 
-            {{-- Check if no thrid step is set --}}
-            @if (!$is_third_step)
+    {{-- Error --}}
+    @if ($has_error)
+        <div class="w-full mb-10">
+            <div class="rounded-md bg-red-50 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/> </svg>
+                    </div>
+                    <div class="ltr:ml-3 rtl:mr-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                            {{ $error_message }}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
-                {{-- Confirm --}}
-                <button wire:click="confirm" wire:loading.class.remove="bg-primary-600 hover:bg-primary-700 text-white cursor-pointer" wire:loading.attr="disabled" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400" {{ !$selected_method ? "disabled" : "" }}>
-                    {{ __('messages.t_confirm') }}
-                </button>
+    <div class="bg-white dark:bg-zinc-800 dark:border-zinc-700 rounded-lg shadow-sm border border-gray-200">
+
+        {{-- Checkout form --}}
+        <section class="flex-auto overflow-y-auto px-4 pt-12 pb-16 sm:px-6 sm:pt-16 lg:px-8 lg:pt-0 lg:pb-24">
+            <div class="max-w-lg mx-auto lg:pt-16">
+
+                {{-- Select a payment gateway --}}
+                <fieldset>
+
+                    {{-- Empty state --}}
+                    <div class="text-center mb-12">
+
+                        {{-- Icon --}}
+                        <div class="h-28 w-28 border-2 border-gray-100 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-700 rounded-full flex items-center justify-center mx-auto">
+                            <svg class="mx-auto h-9 w-9 text-gray-400 dark:text-gray-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"></path><path d="M6.5 2h11a1 1 0 0 1 .8.4L21 6v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6l2.7-3.6a1 1 0 0 1 .8-.4zm12 4L17 4H7L5.5 6h13zM9 10H7v2a5 5 0 0 0 10 0v-2h-2v2a3 3 0 0 1-6 0v-2z"></path></g></svg>
+                        </div>
+
+                        {{-- Texts --}}
+                        <h2 class="mt-4 text-base font-bold text-gray-700 dark:text-gray-100">{{ __('messages.t_checkout') }}</h2>
+                        <div class="flex items-center justify-center text-green-400 hover:text-green-500 mt-1">
+                            <svg class="h-5 w-5 ltr:mr-1 rtl:ml-1" stroke="currentColor" fill="currentColor" stroke-width="0" version="1.2" baseProfile="tiny" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 10h-1v-2c0-2.205-1.794-4-4-4s-4 1.795-4 4v2h-1c-1.103 0-2 .896-2 2v7c0 1.104.897 2 2 2h10c1.103 0 2-.896 2-2v-7c0-1.104-.897-2-2-2zm-5 8.299c-.719 0-1.3-.58-1.3-1.299s.581-1.301 1.3-1.301 1.3.582 1.3 1.301-.581 1.299-1.3 1.299zm2-7.299h-4v-3c0-1.104.897-2 2-2s2 .896 2 2v3z"></path></svg>
+                            <p class="text-sm">{{ __('messages.t_ur_transaction_is_secure') }}</p>
+                        </div>
+
+                    </div>
                 
-            @endif
+                    {{-- Available payment methods --}}
+                    @if (is_null($payment_method))
+                        <div class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
 
-            {{-- Third step --}}
-            @if ($is_third_step)
-                <div class="w-full">
+                            {{-- Stripe --}}
+                            @if (settings('stripe')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'stripe')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'stripe' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
 
-                    {{-- PayPal --}}
-                    @if ($selected_method === 'paypal' && isset($payment_gateway_params['paypal']))
-                        <div class="w-full">
-                            
-                            {{-- Paypal button --}}
-                            <div id="paypal-button-container" wire:ignore></div>
+                                    {{-- Logo --}}
+                                    @if (settings('stripe')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('stripe')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
 
-                            <script>
-                                // Render the PayPal button into #paypal-button-container
-                                paypal.Buttons({
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('stripe')->name }}</span>
 
-                                    // Set up the transaction
-                                    createOrder: function(data, actions) {
-                                        return actions.order.create({
-                                            purchase_units: [{
-                                                invoice_id: "{{ $payment_gateway_params['paypal']['order_id'] }}",
-                                                amount    : {
-                                                    value: "{{ convertToNumber( number_format( $total * payment_gateway('paypal')?->exchange_rate / settings('currency')->exchange_rate, 2, '.', '' ) ) }}"
-                                                }
-                                            }]
-                                        });
-                                    },
+                                </div>
+                            @endif
 
-                                    // Finalize the transaction
-                                    onApprove: function(data, actions) {
-                                        
-                                        // Redirecting
-                                        location.href = "{{ url('callback/paypal?order=') }}" + data.orderID;
+                            {{-- Paypal --}}
+                            @if (settings('paypal')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'paypal')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'paypal' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
 
-                                    }
+                                    {{-- Logo --}}
+                                    @if (settings('paypal')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('paypal')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
 
-                                    }).render('#paypal-button-container');
-                            </script>
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('paypal')->name }}</span>
 
-                        </div> 
-                    @endif
+                                </div>
+                            @endif
 
-                    {{-- cPay --}}
-                    @if ($selected_method === 'cpay' && isset($payment_gateway_params['cpay']))
-                        <div class="w-full">
-                            <form method="post" action="https://www.cpay.com.mk/client/Page/default.aspx?xml_id=/mk-MK/.loginToPay/.simple/">
+                            {{-- Wallet --}}
+                            @if (auth()->user()->balance_available >= $this->total() + $this->taxes())
+                                <div 
+                                    wire:click="$set('payment_method', 'wallet')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'wallet' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
 
-                                <input id="AmountToPay" name="AmountToPay" value="{{ $payment_gateway_params['cpay']['AmountToPay'] }}" type="hidden" />
-                                <input id="PayToMerchant" name="PayToMerchant" value="{{ $payment_gateway_params['cpay']['PayToMerchant'] }}" type="hidden" />
-                                <input id="MerchantName" name="MerchantName" value="{{ $payment_gateway_params['cpay']['MerchantName'] }}" type="hidden" />
-                                <input id="AmountCurrency" name="AmountCurrency" value="{{ $payment_gateway_params['cpay']['AmountCurrency'] }}" type="hidden" />
-                                <input id="Details1" name="Details1" value="{{ $payment_gateway_params['cpay']['Details1'] }}" type="hidden" />
-                                <input id="Details2" name="Details2" value="{{ $payment_gateway_params['cpay']['Details2'] }}" type="hidden" />
-                                <input id="PaymentOKURL" name="PaymentOKURL" value="{{ $payment_gateway_params['cpay']['PaymentOKURL'] }}" type="hidden" />
-                                <input id="PaymentFailURL" name="PaymentFailURL" value="{{ $payment_gateway_params['cpay']['PaymentFailURL'] }}" type="hidden" />
-                                <input id="CheckSumHeader" name="CheckSumHeader" value="{{ $payment_gateway_params['cpay']['CheckSumHeader'] }}" type="hidden" />
-                                <input id="CheckSum" name="CheckSum" value="{{ $payment_gateway_params['cpay']['CheckSum'] }}" type="hidden" />
-                                <input id="FirstName" name="FirstName" value="{{ $payment_gateway_params['cpay']['FirstName'] }}" type="hidden" />
-                                <input id="LastName" name="LastName" value="{{ $payment_gateway_params['cpay']['LastName'] }}" type="hidden" />
-                                <input id="Address" name="Address" value="{{ $payment_gateway_params['cpay']['Address'] }}" type="hidden" />
-                                <input id="City" name="City" value="{{ $payment_gateway_params['cpay']['City'] }}" type="hidden" />
-                                <input id="Zip" name="Zip" value="{{ $payment_gateway_params['cpay']['Zip'] }}" type="hidden" />
-                                <input id="Telephone" name="Telephone" value="{{ $payment_gateway_params['cpay']['Telephone'] }}" type="hidden" />
-                                <input id="Email" name="Email" value="{{ $payment_gateway_params['cpay']['Email'] }}" type="hidden" />
-                                <input id="OriginalAmount" name="OriginalAmount" value="{{ $payment_gateway_params['cpay']['OriginalAmount'] }}" type="hidden" />
+                                    {{-- Logo --}}
+                                    <div class="flex items-center justify-center max-h-[35px] mb-2 mx-auto p-1 mt-2 dark:text-gray-300">
+                                        <svg class="w-5 h-5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 12h2v4h-2z"></path><path d="M20 7V5c0-1.103-.897-2-2-2H5C3.346 3 2 4.346 2 6v12c0 2.201 1.794 3 3 3h15c1.103 0 2-.897 2-2V9c0-1.103-.897-2-2-2zM5 5h13v2H5a1.001 1.001 0 0 1 0-2zm15 14H5.012C4.55 18.988 4 18.805 4 18V8.815c.314.113.647.185 1 .185h15v10z"></path></svg>
+                                        <h1 class="text-sm font-semibold ltr:ml-1 rtl:mr-1">{{ __('messages.t_wallet') }}</h1>
+                                    </div>
 
-                                <button type="submit" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                    {{ __('messages.t_checkout') }}
-                                </button>
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">
+                                        @money(auth()->user()->balance_available, settings('currency')->code, true)    
+                                    </span>
 
-                            </form>
+                                </div>
+                            @endif
+
+                            {{-- Offline payment --}}
+                            @if (settings('offline_payment')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'offline')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'offline' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('offline_payment')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('offline_payment')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('offline_payment')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Flutterwave --}}
+                            @if (settings('flutterwave')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'flutterwave')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'flutterwave' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('flutterwave')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('flutterwave')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('flutterwave')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Paystack --}}
+                            @if (settings('paystack')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'paystack')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'paystack' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('paystack')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('paystack')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('paystack')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Cashfree --}}
+                            @if (settings('cashfree')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'cashfree')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'cashfree' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('cashfree')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('cashfree')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('cashfree')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Mollie --}}
+                            @if (settings('mollie')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'mollie')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'mollie' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('mollie')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('mollie')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('mollie')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Xendit --}}
+                            @if (settings('xendit')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'xendit')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'xendit' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('xendit')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('xendit')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('xendit')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Mercadopago --}}
+                            @if (settings('mercadopago')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'mercadopago')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'mercadopago' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('mercadopago')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('mercadopago')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('mercadopago')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Vnpay --}}
+                            @if (settings('vnpay')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'vnpay')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'vnpay' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('vnpay')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('vnpay')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('vnpay')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Paymob --}}
+                            @if (settings('paymob')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'paymob')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'paymob' ? 'ring-primary-600 border border-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('paymob')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('paymob')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('paymob')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Paytabs --}}
+                            @if (settings('paytabs')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'paytabs')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'paytabs' ? 'ring-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('paytabs')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('paytabs')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('paytabs')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Paytr --}}
+                            @if (settings('paytr')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'paytr')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'paytr' ? 'ring-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('paytr')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('paytr')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('paytr')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Razorpay --}}
+                            @if (settings('razorpay')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'razorpay')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'razorpay' ? 'ring-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('razorpay')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('razorpay')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('razorpay')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Jazzcash --}}
+                            @if (settings('jazzcash')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'jazzcash')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'jazzcash' ? 'ring-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('jazzcash')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('jazzcash')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('jazzcash')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Youcanpay --}}
+                            @if (settings('youcanpay')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'youcanpay')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'youcanpay' ? 'ring-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('youcanpay')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('youcanpay')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('youcanpay')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Nowpayments --}}
+                            @if (settings('nowpayments')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'nowpayments')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'nowpayments' ? 'ring-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('nowpayments')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('nowpayments')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('nowpayments')->name }}</span>
+
+                                </div>
+                            @endif
+
+                            {{-- Epoint --}}
+                            @if (settings('epoint')->is_enabled)
+                                <div 
+                                    wire:click="$set('payment_method', 'epoint')" 
+                                    class="py-4 px-1 bg-white dark:bg-zinc-700 rounded-lg ring-2 cursor-pointer grid items-center justify-center text-center transition-all duration-200 {{ $payment_method === 'epoint' ? 'ring-primary-600' : 'ring-transparent hover:ring-primary-600 border border-gray-200 dark:border-zinc-600 shadow-sm' }}">
+
+                                    {{-- Logo --}}
+                                    @if (settings('epoint')->logo)
+                                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('epoint')->logo) }}" class="lazy max-h-[35px] max-w-[75%] mb-2 mx-auto p-1 mt-2">
+                                    @endif
+                                    
+                                    {{-- Name --}}
+                                    <span class="text-[13px] text-gray-500 dark:text-gray-100 font-bold mb-2">{{ settings('epoint')->name }}</span>
+
+                                </div>
+                            @endif
+                        
                         </div>
                     @endif
 
-                    {{-- Ecpay --}}
-                    @if ($selected_method === 'ecpay' && isset($payment_gateway_params['ecpay']))
-                        <div class="w-full">
-                            <form method="post" action="{{ $payment_gateway_params['ecpay']['link'] }}">
+                    {{-- Order summary --}}
+                    @if (in_array($payment_method, ['cashfree', 'flutterwave', 'mercadopago', 'mollie', 'offline', 'paymob', 'paypal', 'paystack', 'paytabs', 'paytr', 'razorpay', 'stripe', 'vnpay', 'xendit', 'jazzcash', 'wallet', 'youcanpay', 'nowpayments']))
+                        <div class="w-full mt-14" wire:key="checkout-key-summary">
 
-                                @foreach ($payment_gateway_params['ecpay'] as $key => $value)
-                                    <input id="{{ $key }}" name="{{ $key }}" value="{{ $value }}" type="hidden" />
-                                @endforeach
+                            {{-- Calculate amount depends on exchange rate --}}
+                            @php
 
-                                <button type="submit" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                    {{ __('messages.t_checkout') }}
-                                </button>
+                                // Get default exchange rate
+                                $default_exchange_rate = (float)settings('currency')->exchange_rate;
 
-                            </form>
-                        </div>
-                    @endif
+                                // Get total amount
+                                $total_amount          = (float)$this->total() + (float)$this->taxes();
 
-                    {{-- Flutterwave --}}
-                    @if ($selected_method === 'flutterwave' && isset($payment_gateway_params['flutterwave']))
-                        <div class="w-full">
+                                // Check selected payment method
+                                switch ($payment_method) {
 
-                            {{-- Flutterwave Js --}}
-                            <script>
-                                window.makeFlutterwavePayment = function() {
-                                    FlutterwaveCheckout({
-                                        public_key     : "{{ payment_gateway('flutterwave')?->settings['public_key'] }}",
-                                        tx_ref         : "{{ $payment_gateway_params['flutterwave']['order_id'] }}",
-                                        amount         : Number("{{ convertToNumber( number_format( $total * payment_gateway('flutterwave')?->exchange_rate / settings('currency')->exchange_rate, 2, '.', '' ) ) }}"),
-                                        currency       : "{{ payment_gateway('flutterwave')?->currency }}",
-                                        payment_options: "card, banktransfer, ussd, account, mpesa, mobilemoneyghana, mobilemoneyfranco, mobilemoneyuganda, mobilemoneyrwanda, mobilemoneyzambia, barter, nqr, credit",
-                                        redirect_url   : "{{ url('callback/flutterwave') }}",
-                                        customer       : {
-                                            email       : "{{ auth()->user()->email }}",
-                                            name        : "{{ auth()->user()->fullname ?? auth()->user()->username }}",
-                                        },
-                                        customizations: {
-                                            title      : "{{ __('messages.t_add_funds') }}",
-                                            logo       : "{{ src(auth()->user()->avatar) }}",
-                                        },
-                                    });
+                                    // Paypal
+                                    case 'paypal':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = config('paypal.currency');
+                                        $gateway_exchange_rate = (float)settings('paypal')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Stripe
+                                    case 'stripe':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('stripe')->currency;
+                                        $gateway_exchange_rate = (float)settings('stripe')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Wallet
+                                    case 'wallet':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('currency')->code;
+                                        $gateway_exchange_rate = (float)settings('currency')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount();
+
+                                        break;
+                                    
+                                    // Offline payment
+                                    case 'offline':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('currency')->code;
+                                        $gateway_exchange_rate = (float)settings('currency')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount();
+
+                                        break;
+
+                                    // Flutterwave
+                                    case 'flutterwave':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('flutterwave')->currency;
+                                        $gateway_exchange_rate = (float)settings('flutterwave')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Paystack
+                                    case 'paystack':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('paystack')->currency;
+                                        $gateway_exchange_rate = (float)settings('paystack')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Cashfree
+                                    case 'cashfree':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('cashfree')->currency;
+                                        $gateway_exchange_rate = (float)settings('cashfree')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Mollie
+                                    case 'mollie':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('mollie')->currency;
+                                        $gateway_exchange_rate = (float)settings('mollie')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Xendit
+                                    case 'xendit':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('xendit')->currency;
+                                        $gateway_exchange_rate = (float)settings('xendit')->exchange_rate;
+                                        $exchange_total_amount = ceil($this->calculateExchangeAmount($gateway_exchange_rate));
+
+                                        break;
+
+                                    // Mercadopago
+                                    case 'mercadopago':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('mercadopago')->currency;
+                                        $gateway_exchange_rate = (float)settings('mercadopago')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Vnpay
+                                    case 'vnpay':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('vnpay')->currency;
+                                        $gateway_exchange_rate = (float)settings('vnpay')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Paymob
+                                    case 'paymob':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('paymob')->currency;
+                                        $gateway_exchange_rate = (float)settings('paymob')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Paytabs
+                                    case 'paytabs':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = config('paytabs.currency');
+                                        $gateway_exchange_rate = (float)settings('paytabs')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Razorpay
+                                    case 'razorpay':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('razorpay')->currency;
+                                        $gateway_exchange_rate = (float)settings('razorpay')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Paytr
+                                    case 'paytr':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('paytr')->currency;
+                                        $gateway_exchange_rate = (float)settings('paytr')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Jazzcash
+                                    case 'jazzcash':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('jazzcash')->currency;
+                                        $gateway_exchange_rate = (float)settings('jazzcash')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Youcanpay
+                                    case 'youcanpay':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('youcanpay')->currency;
+                                        $gateway_exchange_rate = (float)settings('youcanpay')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Nowpayments
+                                    case 'nowpayments':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('nowpayments')->currency;
+                                        $gateway_exchange_rate = (float)settings('nowpayments')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    // Epoint
+                                    case 'epoint':
+
+                                        // Get payment gateway currency
+                                        $gateway_currency      = settings('epoint')->currency;
+                                        $gateway_exchange_rate = (float)settings('epoint')->exchange_rate;
+                                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+
+                                        break;
+
+                                    default:
+                                        break;
                                 }
-                            </script>
+                            @endphp
 
-                            {{-- Pay --}}
-                            <button @click="window.makeFlutterwavePayment" type="button" id="flutterwave-payment-button" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                {{ __('messages.t_checkout') }}
-                            </button>
+                            {{-- Summary --}}
+                            <div class="w-full mb-8">
+                                <div class="bg-gray-50 dark:bg-zinc-700 rounded-lg px-4 py-6 sm:p-6 lg:p-8">
+                                    <div class="flow-root w-full">
+                                        <dl class="-my-4 text-sm divide-y divide-gray-200 dark:divide-zinc-600">
 
-                        </div>
-                    @endif
+                                            {{-- Selected payment method --}}
+                                            <div class="py-4 flex items-center justify-between">
+                                                <dt class="text-gray-600 dark:text-gray-300">
+                                                    @lang('messages.t_payment_method')
+                                                </dt>
+                                                <dd class="font-medium text-gray-900 dark:text-gray-200">
+                                                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-300">
+                                                        @if ($payment_method === 'wallet')
+                                                            <span class="ltr:pl-3 rtl:pr-3 font-bold">
+                                                                @lang('messages.t_wallet')
+                                                            </span>
+                                                        @elseif ($payment_method === 'offline')
+                                                            @if (settings('offline_payment')->logo)
+                                                                <img src="{{ placeholder_img() }}" data-src="{{ src(settings('offline_payment')->logo) }}" class="lazy max-w-[50px]">
+                                                            @endif
+                                                            <span class="ltr:pl-3 rtl:pr-3 font-bold">{{ settings('offline_payment')->name }}</span>
+                                                        @else
+                                                            @if (settings($payment_method)->logo)
+                                                                <img src="{{ placeholder_img() }}" data-src="{{ src(settings($payment_method)->logo) }}" class="lazy max-w-[50px]">
+                                                            @endif
+                                                            <span class="ltr:pl-3 rtl:pr-3 font-bold">{{ settings($payment_method)->name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </dd>
+                                            </div>
 
-                    {{-- Jazzcash --}}
-                    @if ($selected_method === 'jazzcash' && isset($payment_gateway_params['jazzcash']))
-                        <div class="w-full">
-                            <form method="post" action="{{ $payment_gateway_params['jazzcash']['link'] }}">
+                                            {{-- Total --}}
+                                            <div class="py-4 flex items-center justify-between">
+                                                <dt class="text-gray-600 dark:text-gray-300">
+                                                    @lang('messages.t_total')
+                                                </dt>
+                                                @if (!in_array($payment_method, ['offline', 'wallet']) && $gateway_exchange_rate != $default_exchange_rate)
+                                                    <dd class="font-medium text-gray-500 dark:text-gray-300">
+                                                        @money($total_amount, settings('currency')->code, true) 
+                                                        <span class="text-lg mx-2">≈</span> 
+                                                        @money($exchange_total_amount, $gateway_currency, true) 
+                                                        <span class="text-[10px] tracking-widest">({{ $gateway_currency }})</span>
+                                                    </dd>
+                                                @else
+                                                    <dd class="font-medium text-gray-500 dark:text-gray-300">
+                                                        @if ($payment_method == 'nowpayments')
+                                                            {{ $nowpayments_pay_amount }} {{ settings('nowpayments')->crypto_currency }}
+                                                        @else
+                                                            @money($total_amount, settings('currency')->code, true) 
+                                                        @endif
+                                                    </dd>
+                                                @endif
+                                            </div>
+                                            
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
 
-                                @foreach ($payment_gateway_params['jazzcash'] as $key => $value)
-                                    <input id="{{ $key }}" name="{{ $key }}" value="{{ $value }}" type="hidden" />
-                                @endforeach
+                            {{-- PayPal --}}
+                            @if ($payment_method === 'paypal' && settings('paypal')->is_enabled)
+                                <div class="w-full">
 
-                                <button type="submit" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                    {{ __('messages.t_checkout') }}
-                                </button>
+                                    {{-- Paypal button --}}
+                                    <div id="paypal-button-container" wire:ignore></div>
 
-                            </form>
-                        </div>
-                    @endif
+                                    <script>
+                                        // Render the PayPal button into #paypal-button-container
+                                        paypal.Buttons({
 
-                    {{-- Mercadopago --}}
-                    @if ($selected_method === 'mercadopago' && isset($payment_gateway_params['mercadopago']))
-                        <div class="w-full">
+                                            // Set up the transaction
+                                            createOrder: function(data, actions) {
+                                                return actions.order.create({
+                                                    purchase_units: [{
+                                                        amount: {
+                                                            value: '{{ $exchange_total_amount }}'
+                                                        }
+                                                    }]
+                                                });
+                                            },
 
-                            {{-- Form --}}
-                            <div class="w-full relative">
+                                            // Finalize the transaction
+                                            onApprove: function(data, actions) {
 
-                                {{-- Loading --}}
-                                <div class="bg-gray-50 dark:bg-zinc-700 absolute w-full p-6 rounded-xl flex items-center justify-center" id="mercadopago-waiting">
-                                    <div role="status">
-                                        <svg aria-hidden="true" class="mb-1 w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary-600 mx-auto" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                                        </svg>
-                                        <span class="text-xs font-bold tracking-widest text-gray-500 dark:text-gray-200">{{ __('messages.t_please_wait_dots') }}</span>
+                                                @this.checkout(data.orderID);
+
+                                            }
+
+                                            }).render('#paypal-button-container');
+                                    </script>
+
+                                </div>
+                            @endif
+
+                            {{-- Stripe --}}
+                            @if ($payment_method === 'stripe' && settings('stripe')->is_enabled)
+                                <div class="w-full">
+
+                                    {{-- Form --}}
+                                    <form id="stripe-payment-form" wire:ignore>
+
+                                        {{-- Stripe form --}}
+                                        <div id="stripe-payment-element"></div>
+        
+                                        {{-- Pay --}}
+                                        <div class="mt-8">
+                                            <button
+                                                type="submit"
+                                                id="stripe-payment-button"
+                                                class="w-full text-sm font-medium flex justify-center py-5 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline bg-primary-600 hover:bg-primary-700 text-white cursor-pointer disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500"
+                                                >
+                                                    {{ __('messages.t_pay')    }}
+                                            </button>
+                                        </div>
+                                        
+                                    </form>
+
+                                    {{-- Stripe Js --}}
+                                    <script>
+
+                                        // Stripe public key
+                                        const stripe = Stripe("{{ config('stripe.public_key') }}");
+
+                                        // Payment options
+                                        const options = {
+                                            clientSecret: '{{ $stripe_intent_secret }}',
+                                            appearance  : {
+                                                theme: 'night',
+                                                variables: {
+                                                    colorPrimary   : '#0570de',
+                                                    colorBackground: "{{ current_theme() === 'enabled' ? '#333' : '#ffffff' }}",
+                                                    colorText      : '#30313d',
+                                                    colorDanger    : '#df1b41',
+                                                    spacingUnit    : '6px',
+                                                    borderRadius   : '3px'
+                                                }
+                                            },
+                                        };
+
+                                        const elements = stripe.elements(options);
+
+                                        // Create and mount the Payment Element
+                                        const paymentElement = elements.create('payment');
+                                        paymentElement.mount('#stripe-payment-element');
+
+                                        const form = document.getElementById('stripe-payment-form');
+
+                                        form.addEventListener('submit', async (event) => {
+                                            event.preventDefault();
+                                            document.getElementById("stripe-payment-button").disabled = true;
+                                            await stripe.confirmPayment({
+                                                elements,
+                                                confirmParams: {
+                                                    return_url: "{{ url('checkout/callback/stripe') }}",
+                                                },
+                                            }).then((response) => {
+
+                                                // Check if error
+                                                if (response.error) {
+                                                    window.$wireui.notify({
+                                                        title      : "{{ __('messages.t_error') }}",
+                                                        description: response.error.message,
+                                                        icon       : 'error'
+                                                    });
+                                                }
+
+                                                document.getElementById("stripe-payment-button").disabled = false;
+                                            }).catch((error) => {
+                                                window.$wireui.notify({
+                                                    title      : "{{ __('messages.t_error') }}",
+                                                    description: error.message,
+                                                    icon       : 'error'
+                                                });
+                                                document.getElementById("stripe-payment-button").disabled = false;
+                                            });
+                                        });
+                                    </script>
+
+                                </div>
+                            @endif
+
+                            {{-- Wallet --}}
+                            @if ($payment_method === 'wallet' && auth()->user()->balance_available >= $exchange_total_amount)
+                                <div class="w-full">
+                                    <div class="flex items-center justify-center text-2xl text-gray-900 font-black dark:text-white">
+                                        @money(auth()->user()->balance_available, settings('currency')->code, true)
+                                    </div>
+                                    <div class="text-center text-xs mt-2 tracking-wide text-gray-500 dark:text-gray-300">
+                                        {{ __('messages.t_available_balance') }}
+                                    </div>
+        
+                                    {{-- Place order button --}}
+                                    <div class="mt-8">
+                                        <x-forms.button action="checkout" :text="__('messages.t_pay')" :block="true" />
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- Offline --}}
+                            @if ($payment_method === 'offline' && settings('offline_payment')->is_enabled)
+                                <div class="w-full">
+
+                                    {{-- Bank details --}}
+                                    <div class="text-sm font-normal mt-2 tracking-wide text-gray-500 dark:text-gray-200">
+                                        {!! nl2br(settings('offline_payment')->details) !!}
+                                    </div>
+        
+                                    {{-- Place order button --}}
+                                    <div class="mt-8">
+                                        <x-forms.button action="checkout" :text="__('messages.t_place_order')" :block="true" />
+                                    </div>
+
+                                </div>
+                            @endif
+
+                            {{-- Flutterwave --}}
+                            @if ($payment_method === 'flutterwave' && settings('flutterwave')->is_enabled)
+                                <div class="w-full">
+
+                                    {{-- Flutterwave Js --}}
+                                    <script>
+                                        window.makeFlutterwavePayment = function() {
+                                            FlutterwaveCheckout({
+                                                public_key     : "{{ config('flutterwave.public_key') }}",
+                                                tx_ref         : "{{ uid(32) }}",
+                                                amount         : Number({{ $exchange_total_amount }}),
+                                                currency       : "{{ settings('flutterwave')->currency }}",
+                                                payment_options: "card, banktransfer, ussd, account, mpesa, mobilemoneyghana, mobilemoneyfranco, mobilemoneyuganda, mobilemoneyrwanda, mobilemoneyzambia, barter, nqr, credit",
+                                                redirect_url   : "{{ url('checkout/callback/flutterwave') }}",
+                                                customer       : {
+                                                    email       : "{{ auth()->user()->email }}",
+                                                    name        : "{{ auth()->user()->username }}",
+                                                },
+                                                customizations: {
+                                                    title      : "{{ __('messages.t_checkout') }}",
+                                                    logo       : "{{ src(auth()->user()->avatar) }}",
+                                                },
+                                            });
+                                        }
+                                    </script>
+
+                                    {{-- Pay --}}
+                                    <div class="mt-8">
+                                        <button
+                                            @click="window.makeFlutterwavePayment"
+                                            id="flutterwave-payment-button"
+                                            class="w-full text-sm font-medium flex justify-center py-5 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline bg-primary-600 hover:bg-primary-700 text-white cursor-pointer disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+                                            >
+                                                {{ __('messages.t_pay')    }}
+                                        </button>
+                                    </div>
+
+                                </div>
+                            @endif
+
+                            {{-- Paystack --}}
+                            @if ($payment_method === 'paystack' && settings('paystack')->is_enabled)
+                                <div class="w-full">
+
+                                    {{-- Paystack Js --}}
+                                    <script>
+                                        window.makePaystackPayment = function(){
+                                            let handler = PaystackPop.setup({
+                                                key     : "{{ config('paystack.publicKey') }}",
+                                                email   : '{{ auth()->user()->email }}',
+                                                amount  : Number({{ $exchange_total_amount }}) * 100,
+                                                currency: "{{ settings('paystack')->currency }}",
+                                                ref     : '{{ uid(32) }}',
+                                                onClose : function(){
+                                                    
+                                                },
+                                                callback: function(response){
+                                                    @this.checkout(response.reference);
+                                                }
+                                            });
+
+                                            handler.openIframe();
+                                        }
+                                    </script>
+
+                                    {{-- Pay --}}
+                                    <div class="mt-8">
+                                        <button
+                                            @click="window.makePaystackPayment"
+                                            id="paystack-payment-button"
+                                            class="w-full text-sm font-medium flex justify-center py-5 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline bg-primary-600 hover:bg-primary-700 text-white cursor-pointer disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+                                            >
+                                                {{ __('messages.t_pay')    }}
+                                        </button>
+                                    </div>
+
+                                </div>
+                            @endif
+
+                            {{-- Cashfree --}}
+                            @if ($payment_method === 'cashfree' && settings('cashfree')->is_enabled)
+
+                                {{-- Form --}}
+                                <div class="w-full">
+                                    <div class="grid grid-cols-12 md:gap-x-5 gap-y-5" id="cashfree-payment-card">
+
+                                        {{-- Phone number --}}
+                                        <div class="col-span-12">
+                                            <label for="cashfree-input-phone" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                @lang('messages.t_phone_number')
+                                            </label>
+                                            <div class="relative w-full">
+                                                <input type="text" id="cashfree-input-phone" minlength="10" maxlength="10" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="00 00 00 00 00" required>
+                                                <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                    <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"></path></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Card holder --}}
+                                        <div class="col-span-12">
+                                            <label for="cashfree-input-holder" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                @lang('messages.t_holder_name')
+                                            </label>
+                                            <div class="relative w-full">
+                                                <input data-card-holder type="text" id="cashfree-input-holder" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="John Doe" required>
+                                                <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                    <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="7" r="4"></circle><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Card number --}}
+                                        <div class="col-span-12">
+                                            <label for="cashfree-input-number" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                @lang('messages.t_card_number')
+                                            </label>
+                                            <div class="relative w-full">
+                                                <input data-card-number type="text" id="cashfree-input-number" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="4111111111111111" required>
+                                                <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                    <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="3" y="5" width="18" height="14" rx="3"></rect><line x1="3" y1="10" x2="21" y2="10"></line><line x1="7" y1="15" x2="7.01" y2="15"></line><line x1="11" y1="15" x2="13" y2="15"></line></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Card expiry month --}}
+                                        <div class="col-span-12 md:col-span-4">
+                                            <label for="cashfree-input-expiry-mm" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                @lang('messages.t_card_expiry_month')
+                                            </label>
+                                            <div class="relative w-full">
+                                                <input data-card-expiry-mm type="text" id="cashfree-input-expiry-mm" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="12" required>
+                                                <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                    <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="4" y="5" width="16" height="16" rx="2"></rect><line x1="16" y1="3" x2="16" y2="7"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="4" y1="11" x2="20" y2="11"></line><rect x="8" y="15" width="2" height="2"></rect></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Card expiry year --}}
+                                        <div class="col-span-12 md:col-span-5">
+                                            <label for="cashfree-input-expiry-yy" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                @lang('messages.t_card_expiry_year')
+                                            </label>
+                                            <div class="relative w-full">
+                                                <input data-card-expiry-yy maxlength="2" minlength="2" type="text" id="cashfree-input-expiry-yy" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="27" required>
+                                                <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                    <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="4" y="5" width="16" height="16" rx="2"></rect><line x1="16" y1="3" x2="16" y2="7"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="4" y1="11" x2="20" y2="11"></line><line x1="11" y1="15" x2="12" y2="15"></line><line x1="12" y1="15" x2="12" y2="18"></line></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Card cvv --}}
+                                        <div class="col-span-12 md:col-span-3">
+                                            <label for="cashfree-input-cvv" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                @lang('messages.t_card_cvv')
+                                            </label>
+                                            <div class="relative w-full">
+                                                <input data-card-cvv type="text" id="cashfree-input-cvv" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="123" required>
+                                                <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                    <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3"></path><circle cx="12" cy="11" r="1"></circle><line x1="12" y1="12" x2="12" y2="14.5"></line></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Pay --}}
+                                        <div class="col-span-12 mt-8">
+                                            <button
+                                                id="cashfree-payment-button"
+                                                class="w-full text-sm font-medium flex justify-center py-5 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline bg-primary-600 hover:bg-primary-700 text-white cursor-pointer disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500"
+                                                >
+                                                    {{ __('messages.t_pay')    }}
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </div>
 
-                                {{-- Form --}}
-                                <div id="walletBrick_container"></div>
+                                {{-- JavaScript --}}
+                                <script>
+                                    $(document).ready(function (e) {
 
-                            </div>
+                                        let isCardReadyToPay = true;
 
-                            {{-- Javascript --}}
-                            <script>
-                                const bricksBuilder     = mercadopago.bricks();
-                                const renderWalletBrick = async (bricksBuilder) => {
-                                    const settings = {
-                                        initialization: {
-                                            preferenceId: "{{ $payment_gateway_params['mercadopago']['preference_id'] }}",
-                                        },
-                                        callbacks: {
-                                            onReady: () => {
-                                                $('#mercadopago-waiting').hide();
+                                        const config = {
+                                            onPaymentSuccess: function (data) {
+                                                // Success
+                                                if (data.order.status == "PAID") {
+
+                                                    // Handle
+                                                    @this.checkout(data.order.orderId);
+
+                                                } else {
+
+                                                    // Enable button
+                                                    document.getElementById('cashfree-payment-button').disabled    = false;
+                                                    document.getElementById('cashfree-payment-button').textContent = "{{ __('messages.t_pay') }}";
+
+                                                    // Payment failed
+                                                    window.$wireui.notify({
+                                                        title      : "{{ __('messages.t_error') }}",
+                                                        description: "{{ __('messages.t_we_could_not_handle_ur_deposit_payment') }}",
+                                                        icon       : 'error'
+                                                    });
+
+                                                }
                                             },
-                                            onSubmit: () => {
-                                                //
+                                            onPaymentFailure: function (data) {
+                                                // Enable button
+                                                document.getElementById('cashfree-payment-button').disabled    = false;
+                                                document.getElementById('cashfree-payment-button').textContent = "{{ __('messages.t_pay') }}";
+
+                                                window.$wireui.notify({
+                                                    title      : "{{ __('messages.t_error') }}",
+                                                    description: data.transaction.txMsg,
+                                                    icon       : 'error'
+                                                });
+                                                
                                             },
-                                            onError: (error) => {
-                                                console.log(error);
+                                            onError: function (err) {
+                                                // Enable button
+                                                document.getElementById('cashfree-payment-button').disabled    = false;
+                                                document.getElementById('cashfree-payment-button').textContent = "{{ __('messages.t_pay') }}";
+
+                                                window.$wireui.notify({
+                                                    title      : "{{ __('messages.t_error') }}",
+                                                    description: err.message,
+                                                    icon       : 'error'
+                                                });
+                                                
                                             },
-                                        },
-                                    };
-                                    window.walletBrickController = await bricksBuilder.create(
-                                        'wallet',
-                                        'walletBrick_container',
-                                        settings
-                                    );
-                                };
-                                renderWalletBrick(bricksBuilder);
-                            </script>
+                                        };
 
-                        </div>
-                    @endif
+                                        const cfCheckout = Cashfree.initializeApp(config);
 
-                    {{-- Paymob --}}
-                    @if ($selected_method === 'paymob' && isset($payment_gateway_params['paymob']))
-                        <div class="w-full">
-                            <iframe src="https://accept.paymobsolutions.com/api/acceptance/iframes/{{ payment_method('paymob')?->settings['iframe_id'] }}?payment_token={{ $payment_gateway_params['paymob']['token'] }}" width="100%" height="500px"></iframe>
-                        </div>
-                    @endif
+                                        cfCheckout.elements([
+                                            {
+                                                pay     : document.getElementById("cashfree-payment-card"),
+                                                type    : "card",
+                                                onChange: cardEventHandler,
+                                            },
+                                        ]);
 
-                    {{-- Paymob PK --}}
-                    @if ($selected_method === 'paymob-pk' && isset($payment_gateway_params['paymob-pk']))
-                        <div class="w-full">
-                            <iframe src="https://pakistan.paymob.com/api/acceptance/iframes/{{ payment_method('paymob')?->settings['iframe_id'] }}?payment_token={{ $payment_gateway_params['paymob']['token'] }}" width="100%" height="500px"></iframe>
-                        </div>
-                    @endif
-
-                    {{-- Paystack --}}
-                    @if ($selected_method === 'paystack' && isset($payment_gateway_params['paystack']))
-                        <div class="w-full">
-
-                            {{-- Paystack Js --}}
-                            <script>
-                                window.makePaystackPayment = function(){
-                                    let handler = PaystackPop.setup({
-                                        key     : "{{ payment_gateway('paystack')?->settings['public_key'] }}",
-                                        email   : '{{ auth()->user()->email }}',
-                                        amount  : Number("{{ convertToNumber( number_format( $total * payment_gateway('paystack')?->exchange_rate / settings('currency')->exchange_rate, 2, '.', '' ) ) }}") * 100,
-                                        currency: "{{ payment_gateway('paystack')?->currency }}",
-                                        ref     : "{{ $payment_gateway_params['paystack']['order'] }}",
-                                        channels: ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
-                                        onClose : function(){},
-                                        callback: function(response){
-                                            location.href = response.redirecturl;
-                                        }
-                                    });
-                                    handler.openIframe();
-                                }
-                            </script>
-
-                            {{-- Pay --}}
-                            <button @click="window.makePaystackPayment" type="button" id="paystack-payment-button" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                {{ __('messages.t_checkout') }}
-                            </button>
-
-                        </div>
-                    @endif
-
-                    {{-- Paytr --}}
-                    @if ($selected_method === 'paytr' && isset($payment_gateway_params['paytr']))
-                        <div class="w-full">
-                            <iframe src="https://www.paytr.com/odeme/guvenli/{{ $payment_gateway_params['paytr']['token'] }}" id="paytriframe" frameborder="0" scrolling="yes" style="width: 100%;" height="600px"></iframe>
-                            <script>iFrameResize({},'#paytriframe');</script>
-                        </div>
-                    @endif
-
-                    {{-- Razorpay --}}
-                    @if ($selected_method === 'razorpay' && isset($payment_gateway_params['razorpay']))
-                        <div class="w-full">
-                            <script>
-                                window.makeRazorpayPayment = function() {
-
-                                    // Set options
-                                    var options = {
-                                        "key"        : "{{ payment_gateway('razorpay')?->settings['key_id'] }}",
-                                        "amount"     : "{{ convertToNumber( number_format( $total * payment_gateway('razorpay')?->exchange_rate / settings('currency')->exchange_rate, 2, '.', '' ) ) * 100 }}",
-                                        "currency"   : "{{ payment_gateway('razorpay')?->currency }}",
-                                        "order_id"   : "{{ $payment_gateway_params['razorpay']['id'] }}",
-                                        "name"       : "{{ auth()->user()->fullname ?? auth()->user()->username }}",
-                                        "description": "{{ __('messages.t_add_funds') }}",
-                                        "image"      : "{{ src(auth()->user()->avatar) }}",
-                                        "handler"    : function (response){
-
-                                            // Set main domain link
-                                            const app_link = "{{ url('callback/razorpay?action=G') }}";
-
-                                            // Redirect
-                                            location.href = app_link + "&payment_id=" + response.razorpay_payment_id + "&order_id=" + response.razorpay_order_id + "&signature=" + response.razorpay_signature;
-
-                                        },
-                                    };
-
-                                    // Start payment
-                                    var rzp1 = new Razorpay(options);
-
-                                    // On Failed
-                                    rzp1.on('payment.failed', function (response){
-                                        alert(response.error.description);
-                                    });
-
-                                    // Open modal
-                                    rzp1.open();
-
-                                }
-                            </script>
-
-                            {{-- Payment button --}}
-                            <button @click="window.makeRazorpayPayment" type="button" id="razorpay-payment-button" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                {{ __('messages.t_checkout') }}
-                            </button>
-                            
-                        </div>
-                    @endif
-
-                    {{-- Stripe --}}
-                    @if ($selected_method === 'stripe' && isset($payment_gateway_params['stripe']))
-                        <div class="w-full">
-
-                            {{-- Form --}}
-                            <form id="stripe-payment-form" wire:ignore>
-
-                                {{-- Stripe form --}}
-                                <div id="stripe-payment-element"></div>
-
-                                {{-- Pay --}}
-                                <button id="stripe-payment-button" type="submit" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                    {{ __('messages.t_checkout') }}
-                                </button>
-                                
-                            </form>
-
-                            {{-- Stripe Js --}}
-                            <script>
-
-                                // Stripe public key
-                                const stripe = Stripe("{{ payment_gateway('stripe')?->settings['public_key'] }}");
-
-                                // Payment options
-                                const options = {
-                                    clientSecret: "{{ $payment_gateway_params['stripe']['client_secret'] }}",
-                                    appearance  : {
-                                        theme    : 'stripe',
-                                        variables: {
-                                            colorPrimaryText: '#fff',
-                                            colorBackground : "{{ current_theme() === 'enabled' ? '#333' : '#ffffff' }}",
-                                            colorText       : '#30313d',
-                                            colorDanger     : '#df1b41',
-                                            spacingUnit     : '6px',
-                                            borderRadius    : '3px'
-                                        }
-                                    },
-                                };
-
-                                const elements = stripe.elements(options);
-
-                                // Create and mount the Payment Element
-                                const paymentElement = elements.create('payment');
-                                paymentElement.mount('#stripe-payment-element');
-
-                                const form = document.getElementById('stripe-payment-form');
-
-                                form.addEventListener('submit', async (event) => {
-                                    event.preventDefault();
-                                    document.getElementById("stripe-payment-button").disabled = true;
-                                    await stripe.confirmPayment({
-                                        elements,
-                                        confirmParams: {
-                                            return_url: "{{ url('callback/stripe?action=G') }}",
-                                        },
-                                    }).then((response) => {
-
-                                        // Check if error
-                                        if (response.error) {
-                                            window.$wireui.notify({
-                                                title      : "{{ __('messages.t_error') }}",
-                                                description: response.error.message,
-                                                icon       : 'error'
-                                            });
+                                        function cardEventHandler(data) {
+                                            isCardReadyToPay = data.isReadyToPay;
                                         }
 
-                                        document.getElementById("stripe-payment-button").disabled = false;
+                                        // Set empty order token
+                                        let order_token = null;
 
-                                    }).catch((error) => {
-                                        window.$wireui.notify({
-                                            title      : "{{ __('messages.t_error') }}",
-                                            description: error.message,
-                                            icon       : 'error'
+                                        // Handle payment
+                                        $("#cashfree-payment-button").click(async function () {
+
+                                            var _this         = this;
+
+                                            // Disable button
+                                            _this.disabled    = true;
+                                            _this.textContent = "{{ __('messages.t_please_wait_dots') }}";
+
+                                            // Check if card is valid for payment
+                                            if (isCardReadyToPay) {
+                                                if (!order_token) {                                                  
+
+                                                    $.ajax({
+                                                        type   : 'POST',
+                                                        data   : { phone: document.getElementById('cashfree-input-phone').value, amount: "{{ $exchange_total_amount }}" },
+                                                        url    : "{{ url('checkout/callback/cashfree/token') }}",
+                                                        headers: {
+                                                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                                        },
+                                                        success: async function (response) {
+                                                            
+                                                            // Check response
+                                                            if (response && response.success === true && response.order_token) {
+                                                                
+                                                                // Set order token
+                                                                order_token = response.order_token;
+                                                                await cfCheckout.pay(order_token, "card");
+
+                                                            } else {
+
+                                                                // Something went wrong
+                                                                window.$wireui.notify({
+                                                                    title      : "{{ __('messages.t_error') }}",
+                                                                    description: "{{ __('messages.t_toast_something_went_wrong') }}",
+                                                                    icon       : 'error'
+                                                                });
+                                                                
+                                                            }
+                                                            
+                                                            // Enable button
+                                                            _this.disabled    = false;
+                                                            _this.textContent = "{{ __('messages.t_pay') }}";
+
+                                                        },
+                                                        error: function(request, status, error) {
+                                                            
+                                                            // Something went wrong
+                                                            window.$wireui.notify({
+                                                                title      : "{{ __('messages.t_error') }}",
+                                                                description: request.responseJSON.message,
+                                                                icon       : 'error'
+                                                            });
+
+                                                            // Enable button
+                                                            _this.disabled    = false;
+                                                            _this.textContent = "{{ __('messages.t_pay') }}";
+
+                                                        }
+                                                    });
+
+                                                } else {
+                                                    await cfCheckout.pay(order_token, "card");
+                                                }
+                                            } else {
+
+                                                // Invalid credit card details
+                                                window.$wireui.notify({
+                                                    title      : "{{ __('messages.t_error') }}",
+                                                    description: "{{ __('messages.t_pls_check_ur_inputs_and_try_again') }}",
+                                                    icon       : 'error'
+                                                });
+
+                                            }
                                         });
 
-                                        document.getElementById("stripe-payment-button").disabled = false;
                                     });
-                                });
-                            </script>
+                                </script>
+
+                            @endif
+
+                            {{-- Mollie --}}
+                            @if ($payment_method === 'mollie' && settings('mollie')->is_enabled)
+                                <div class="w-full">
+
+                                    {{-- Pay --}}
+                                    <x-forms.button action="checkout" :text="__('messages.t_pay')" :block="true" />
+
+                                </div>
+                            @endif
+
+                            {{-- Mercadopago --}}
+                            @if ($payment_method === 'mercadopago' && settings('mercadopago')->is_enabled)
+
+                                {{-- Form --}}
+                                <div class="w-full relative">
+
+                                    {{-- Loading --}}
+                                    <div class="bg-gray-50 dark:bg-zinc-700 absolute w-full p-6 rounded-xl flex items-center justify-center" id="mercadopago-waiting">
+                                        <div role="status">
+                                            <svg aria-hidden="true" class="mb-1 w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary-600 mx-auto" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                            </svg>
+                                            <span class="text-xs font-bold tracking-widest text-gray-500 dark:text-gray-200">{{ __('messages.t_please_wait_dots') }}</span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Form --}}
+                                    <div id="walletBrick_container"></div>
+
+                                </div>
+
+                                {{-- Javascript --}}
+                                <script>
+                                    const bricksBuilder     = mercadopago.bricks();
+                                    const renderWalletBrick = async (bricksBuilder) => {
+                                        const settings = {
+                                            initialization: {
+                                                preferenceId: '{{ $mercadopago_preference_id }}',
+                                            },
+                                            callbacks: {
+                                                onReady: () => {
+                                                    $('#mercadopago-waiting').hide();
+                                                },
+                                                onSubmit: () => {
+                                                    //
+                                                },
+                                                onError: (error) => {
+                                                    alert(error);
+                                                },
+                                            },
+                                        };
+                                        window.walletBrickController = await bricksBuilder.create(
+                                            'wallet',
+                                            'walletBrick_container',
+                                            settings
+                                        );
+                                    };
+                                    renderWalletBrick(bricksBuilder);
+                                </script>
+
+                            @endif
+
+                            {{-- VNPay --}}
+                            @if ($payment_method === 'vnpay' && settings('vnpay')->is_enabled)
+                                <div class="w-full">
+
+                                    {{-- Pay --}}
+                                    <x-forms.button action="checkout" :text="__('messages.t_pay')" :block="true" />
+
+                                </div>
+                            @endif
+
+                            {{-- Paymob --}}
+                            @if ($payment_method === 'paymob' && settings('paymob')->is_enabled)
+                                <div class="w-full">
+
+                                    @if ($paymob_payment_token)
+                                        <iframe src="https://accept.paymobsolutions.com/api/acceptance/iframes/{{config('paymob.iframe_id')}}?payment_token={{ $paymob_payment_token }}" width="100%" height="500px"></iframe>
+                                    @else
+                                        <div class="grid grid-cols-1 gap-y-7 md:gap-x-4">
+
+                                            {{-- Phone number --}}
+                                            <div class="col-span-12">
+                                                <label for="paymob-input-phone" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                    @lang('messages.t_phone_number')
+                                                </label>
+                                                <div class="relative w-full">
+                                                    <input wire:model.defer="paymob_phone" type="text" id="paymob-input-phone" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="+20" required>
+                                                    <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                        <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"></path></svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Firstname --}}
+                                            <div class="col-span-12 md:col-span-6">
+                                                <label for="paymob-input-firstname" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                    @lang('messages.t_firstname')
+                                                </label>
+                                                <div class="relative w-full">
+                                                    <input wire:model.defer="paymob_firstname" type="text" id="paymob-input-firstname" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="{{ __('messages.t_enter_firstname') }}" required>
+                                                    <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                        <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"></path></svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Lastname --}}
+                                            <div class="col-span-12 md:col-span-6">
+                                                <label for="paymob-input-lastname" class="block mb-2 text-xs font-bold text-gray-900 dark:text-white">
+                                                    @lang('messages.t_lastname')
+                                                </label>
+                                                <div class="relative w-full">
+                                                    <input wire:model.defer="paymob_lastname" type="text" id="paymob-input-lastname" class="border border-gray-300 text-gray-900 text-sm rounded-lg font-medium focus:ring-primary-500 focus:border-primary-500 block w-full ltr:pr-12 rtl:pl-12 p-4 dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="{{ __('messages.t_enter_lastname') }}" required>
+                                                    <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                                        <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><desc></desc><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="10" r="3"></circle><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"></path></svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {{-- Get payment token --}}
+                                            <div class="col-span-12 mt-6">
+                                                <x-forms.button action="getPayMobPaymentKey" :text="__('messages.t_next')" :block="true" />
+                                            </div>
+
+                                        </div>
+
+                                    @endif
+                                </div>
+                            @endif
+
+                            {{-- Paytabs --}}
+                            @if ($payment_method === 'paytabs' && settings('paytabs')->is_enabled)
+                                <div class="w-full">
+
+                                    {{-- Pay --}}
+                                    <x-forms.button action="checkout" :text="__('messages.t_pay')" :block="true" />
+
+                                </div>
+                            @endif
+
+                            {{-- Razorpay --}}
+                            @if ($payment_method === 'razorpay' && settings('razorpay')->is_enabled)
+
+                                {{-- Form --}}
+                                <div class="w-full">
+                                    <script>
+                                        window.makeRazorpayPayment = function() {
+
+                                            // Set options
+                                            var options = {
+                                                "key"        : "{{ config('razorpay.key_id') }}",
+                                                "amount"     : "{{ $exchange_total_amount * 100 }}",
+                                                "currency"   : "{{ settings('razorpay')->currency }}",
+                                                "order_id"   : "{{ $razorpay_order_id }}",
+                                                "name"       : "{{ auth()->user()->username }}",
+                                                "description": "{{ __('messages.t_checkout') }}",
+                                                "image"      : "{{ src(auth()->user()->avatar) }}",
+                                                "handler"    : function (response){
+                                                    
+                                                    // Handle payment
+                                                    @this.checkout({
+                                                        razorpay_payment_id: response.razorpay_payment_id,
+                                                        razorpay_order_id  : response.razorpay_order_id,
+                                                        razorpay_signature : response.razorpay_signature,
+                                                    });
+
+                                                },
+                                            };
+
+                                            // Start payment
+                                            var rzp1 = new Razorpay(options);
+
+                                            // On Failed
+                                            rzp1.on('payment.failed', function (response){
+                                                alert(response.error.description);
+                                            });
+
+                                            // Open modal
+                                            rzp1.open();
+
+                                        }
+                                    </script>
+
+                                    {{-- Payment button --}}
+                                    <button
+                                        @click="window.makeRazorpayPayment"
+                                        wire:loading.attr="disabled"
+                                        type="button"
+                                        class="w-full text-sm font-medium flex justify-center py-5 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline bg-primary-600 hover:bg-primary-700 text-white cursor-pointer disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+                                        >
+                                            {{ __('messages.t_pay')    }}
+                                    </button>
+                                    
+                                </div>
+
+                            @endif
+
+                            {{-- Paytr --}}
+                            @if ($payment_method === 'paytr' && settings('paytr')->is_enabled)
+
+                                <div class="w-full">
+
+                                    {{-- Generate token --}}
+                                    @php
+
+                                        try {
+
+                                            // Generate order id
+                                            $merchant_oid   = "CHECKOUT" . uid();
+
+                                            // Get paytr currency
+                                            $paytr_currency = $gateway_currency == 'TRY' ? "TL" : $gateway_currency;
+
+                                            // Start new payment
+                                            $paytr          = new \App\Utils\PayTR\PayTR(); 
+    
+                                            // Set payment gateway api keys
+                                            $paytr->setMerchantId(config('paytr.merchant_id'));
+                                            $paytr->setMerchantKey(config('paytr.merchant_key'));
+                                            $paytr->setMerchantSalt(config('paytr.merchant_salt'));
+                                            $paytr->setMerchantOrderId($merchant_oid);
+    
+                                            // Set order details
+                                            $paytr->setEmail(auth()->user()->email);
+                                            $paytr->setPaymentAmount($exchange_total_amount);
+                                            $paytr->setUserName(auth()->user()->username);
+                                            $paytr->setAddress('N/A');
+                                            $paytr->setPhone('5205000000');
+                                            $paytr->setBasket([[ "name"=> __('messages.t_checkout'), "price"=> $exchange_total_amount, "currency"=> $paytr_currency ]]);
+                                            $paytr->setCurrency($paytr_currency);
+                                            $paytr->setSuccessUrl(url('callback/paytr?status=success&action=checkout'));
+                                            $paytr->setFailUrl(url('callback/paytr?status=failed&action=checkout'));
+                                            $paytr->initialize();
+    
+                                            // Get token
+                                            $paytr_token      = $paytr->token;
+
+                                            // Draft Checkout
+                                            $checkout_webhook = $this->checkoutWebhook([
+                                                'payment_id'     => $merchant_oid,
+                                                'payment_method' => 'paytr'
+                                            ]);
+                                            
+                                        } catch (\Throwable $th) {
+                                            throw $th;
+                                        }
+
+                                    @endphp   
+                                    
+                                    {{-- Payment iframe --}}
+                                    <iframe src="https://www.paytr.com/odeme/guvenli/{{ $paytr_token }}" id="paytriframe" frameborder="0" scrolling="yes" style="width: 100%;" height="600px"></iframe>
+                                    <script>iFrameResize({},'#paytriframe');</script>
+
+                                </div>
+                                
+                            @endif
+
+                            {{-- JazzCash --}}
+                            @if ($payment_method === 'jazzcash' && settings('jazzcash')->is_enabled)
+                                <div class="w-full">
+
+                                    @php
+
+                                        $jazzcash_env           = config('jazzcash.environment');
+                                        $jazzcash_endpoint      = config("jazzcash.$jazzcash_env.endpoint");
+                                        $jazzcash_merchant_id   = config("jazzcash.$jazzcash_env.merchant_id");
+                                        $jazzcash_password      = config("jazzcash.$jazzcash_env.password");
+                                        $jazzcash_salt          = config("jazzcash.$jazzcash_env.integerity_salt");
+                                        $jazzcash_return_url    = url('callback/jazzcash');
+
+                                        // Set order details
+                                        $pp_amount              = $exchange_total_amount * 100;
+                                        $pp_billref             = uid();
+                                        $pp_description         = __('messages.t_checkout');
+                                        $pp_language            = "EN";
+                                        $pp_merchant_id         = $jazzcash_merchant_id;
+                                        $pp_password            = $jazzcash_password;
+                                        $pp_return_url          = $jazzcash_return_url;
+                                        $pp_txn_currency        = $gateway_currency;
+                                        $pp_txn_datetime        = date('Y') . date('m') . date('d') . date('H') . date('i') . date('s');
+                                        $pp_txn_expiry_datetime = date('Y') . date('m') . date('d', strtotime('tomorrow')) . date('H') . date('i') . date('s');
+                                        $pp_txn_ref_no          = uid();
+                                        $pp_txn_type            = "";
+                                        $pp_version             = 1.1;
+                                        $pp_ppmpf_1             = 1;
+                                        $pp_ppmpf_2             = 2;
+                                        $pp_ppmpf_3             = 3;
+                                        $pp_ppmpf_4             = 4;
+                                        $pp_ppmpf_5             = 5;
+
+                                        // Set hash string value
+                                        $jazzcash_hash_string   = '';
+                                        $jazzcash_hash_string  .= "$jazzcash_salt&";
+                                        $jazzcash_hash_string  .= "$pp_amount&";
+                                        $jazzcash_hash_string  .= "$pp_billref&";
+                                        $jazzcash_hash_string  .= "$pp_description&";
+                                        $jazzcash_hash_string  .= "$pp_language&";
+                                        $jazzcash_hash_string  .= "$pp_merchant_id&";
+                                        $jazzcash_hash_string  .= "$pp_password&";
+                                        $jazzcash_hash_string  .= "$pp_return_url&";
+                                        $jazzcash_hash_string  .= "$pp_txn_currency&";
+                                        $jazzcash_hash_string  .= "$pp_txn_datetime&";
+                                        $jazzcash_hash_string  .= "$pp_txn_expiry_datetime&";
+                                        $jazzcash_hash_string  .= "$pp_txn_ref_no&";
+                                        $jazzcash_hash_string  .= "$pp_version&";
+                                        $jazzcash_hash_string  .= "$pp_ppmpf_1&";
+                                        $jazzcash_hash_string  .= "$pp_ppmpf_2&";
+                                        $jazzcash_hash_string  .= "$pp_ppmpf_3&";
+                                        $jazzcash_hash_string  .= "$pp_ppmpf_4&";
+                                        $jazzcash_hash_string  .= "$pp_ppmpf_5";
+
+                                        // Generate hash string
+                                        $jazzcash_signature     = hash_hmac('sha256', $jazzcash_hash_string, $jazzcash_salt);
+
+                                        // Set session
+                                        session()->put('jazzcash_callback', 'checkout');
+
+                                    @endphp
+
+                                    {{-- Form --}}
+                                    <form method="POST" action="{{ $jazzcash_endpoint }}">
+                                        <input type="hidden" name="pp_Version" value="{{ $pp_version }}">
+                                        <input type="hidden" name="pp_TxnType" value="{{ $pp_txn_type }}">
+                                        <input type="hidden" name="pp_MerchantID" value="{{ $pp_merchant_id }}">
+                                        <input type="hidden" name="pp_Password" value="{{ $pp_password }}">
+                                        <input type="hidden" name="pp_ReturnURL" value="{{ $jazzcash_return_url }}">
+                                        <input type="hidden" name="pp_Language" value="{{ $pp_language }}">
+                                        <input type="hidden" name="pp_TxnRefNo" value="{{ $pp_txn_ref_no }}">
+                                        <input type="hidden" name="pp_Amount" value="{{ $pp_amount }}">
+                                        <input type="hidden" name="pp_TxnCurrency" value="{{ $pp_txn_currency }}">
+                                        <input type="hidden" name="pp_TxnDateTime" value="{{ $pp_txn_datetime }}">
+                                        <input type="hidden" name="pp_TxnExpiryDateTime" value="{{ $pp_txn_expiry_datetime }}">
+                                        <input type="hidden" name="pp_BillReference" value="{{ $pp_billref }}">
+                                        <input type="hidden" name="pp_Description" value="{{ $pp_description }}">
+                                        <input type="hidden" name="pp_SecureHash" value="{{ $jazzcash_signature }}">
+                                        <input type="hidden" name="ppmpf_1" value="{{ $pp_ppmpf_1 }}">
+                                        <input type="hidden" name="ppmpf_2" value="{{ $pp_ppmpf_2 }}">
+                                        <input type="hidden" name="ppmpf_3" value="{{ $pp_ppmpf_3 }}">
+                                        <input type="hidden" name="ppmpf_4" value="{{ $pp_ppmpf_4 }}">
+                                        <input type="hidden" name="ppmpf_5" value="{{ $pp_ppmpf_5 }}">
+
+                                        {{-- Pay --}}
+                                        <div class="block mt-8">
+                                            <button
+                                                type="submit"
+                                                class="w-full text-sm font-medium flex justify-center py-5 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline bg-primary-600 hover:bg-primary-700 text-white cursor-pointer disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed dark:disabled:bg-zinc-700 dark:disabled:text-zinc-500"
+                                                >
+                                                    {{ __('messages.t_pay')    }}
+                                            </button>
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            @endif
+
+                            {{-- Youcanpay --}}
+                            @if ($payment_method === 'youcanpay' && settings('youcanpay')->is_enabled)
+                                <div class="w-full">
+                                    <script>window.location = "{{ $this->generateYoucanpayUrl() }}";</script>
+                                </div>
+                            @endif
+
+                            {{-- NowPayments.io --}}
+                            @if ($payment_method === 'nowpayments' && settings('nowpayments')->is_enabled)
+                                <div class="w-full flex flex-col items-center justify-center text-center">
+
+                                    {{-- Generate Qr code for Bitcoin currency --}}
+                                    @if (settings('nowpayments')->crypto_currency == 'btc')
+                                        <img src="https://chart.googleapis.com/chart?chs=225x225&chld=L|2&cht=qr&chl=bitcoin:{{ $nowpayments_pay_address }}?amount={{ $nowpayments_pay_amount }}" alt="{{ __('messages.t_checkout') }}">
+                                    @endif
+
+                                    <script>
+                                        function wsqrXOUsxxoLywE() {
+                                            return {
+                                                is_copied: false,
+                                                // Copy project url to clipboard
+                                                copyToClipboard() {
+
+                                                    var _this = this;
+
+                                                    // Get input
+                                                    const copyText = document.querySelector("#input-nowpayments-io-pay-address");
+
+                                                    copyText.select()
+                                                    copyText.setSelectionRange(0, 99999)
+                                                    document.execCommand("copy")
+                                                    _this.is_copied = true;
+                                                    setTimeout(() => {
+                                                        _this.is_copied = false;
+                                                    }, 2000);
+                                                }
+                                            }
+                                        }
+                                        window.wsqrXOUsxxoLywE = wsqrXOUsxxoLywE();
+                                    </script>
+
+                                    {{-- Pay Address --}}
+                                    <div class="w-full mt-4" x-data="window.wsqrXOUsxxoLywE">
+                                        <div class="mt-1 relative flex items-center">
+                                        <input type="text" id="input-nowpayments-io-pay-address" value="{{ $nowpayments_pay_address }}" class="shadow-sm focus:ring-primary-600 focus:border-primary-600 block w-full ltr:pr-16 rtl:pl-16 sm:text-[13px] border-gray-200 font-medium rounded-md">
+                                        <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex py-1.5 ltr:pr-1.5 rtl:pl-1.5">
+                                            <button x-on:click="copyToClipboard()" type="button" class="inline-flex justify-center items-center rounded border font-semibold focus:outline-none px-2 py-1 leading-5 text-xs border-gray-300 bg-gray-50 text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow">
+                                                <template x-if="is_copied">
+                                                    <span>@lang('messages.t_copied')</span>
+                                                </template>
+                                                <template x-if="!is_copied">
+                                                    <span>@lang('messages.t_copy')</span>
+                                                </template>
+                                            </button>
+                                        </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Amount --}}
+                                    <div class="font-bold my-4 text-base text-zinc-900 tracking-wide">
+                                        {{ $nowpayments_pay_amount }} {{ settings('nowpayments')->crypto_currency }}
+                                    </div>
+
+                                    {{-- Info --}}
+                                    <div class="text-sm text-gray-400 font-normal tracking-wide leading-relaxed">
+                                        @lang('messages.t_nowpayments_scan_qr_or_copy_pay_address_info')
+                                    </div>
+
+                                    {{-- I sent the amount --}}
+                                    <button
+                                        type="button" 
+                                        wire:click="checkout"
+                                        wire:loading.attr="disabled"
+                                        class="inline-flex justify-center items-center rounded border font-semibold focus:outline-none px-12 py-4 leading-5 text-[13px] mt-8 tracking-wide border-transparent bg-primary-500 text-white hover:bg-primary-600 focus:ring focus:ring-primary-500 focus:ring-opacity-25 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed">
+                                        
+                                        {{-- Loading indicator --}}
+                                        <div wire:loading wire:target="checkout">
+                                            <svg role="status" class="inline w-4 h-4 text-gray-700 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
+                                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
+                                            </svg>
+                                        </div>
+
+                                        {{-- Button text --}}
+                                        <div wire:loading.remove wire:target="checkout">
+                                            @lang('messages.t_i_sent_the_money')
+                                        </div>
+
+                                    </button>
+
+                                </div>
+                            @endif
 
                         </div>
                     @endif
 
-                    {{-- Offline --}}
-                    @if ($selected_method === 'offline' && $offline_method?->is_active)
-                        <div class="w-full">
-
-                            {{-- Details --}}
-                            <div class="w-full mb-8 text-sm text-gray-500 tracking-wide font-normal">
-                                {!! $offline_method?->details !!}
-                            </div>
-
-                            {{-- Submit --}}
-                            <button wire:click="offline" wire:loading.class.remove="bg-primary-600 hover:bg-primary-700 text-white cursor-pointer" wire:loading.attr="disabled" class="w-full text-[13px] font-semibold flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer disabled:!bg-gray-200 disabled:!text-gray-600 disabled:cursor-not-allowed dark:disabled:!bg-zinc-700 dark:disabled:!text-zinc-400">
-                                {{ __('messages.t_checkout') }}
-                            </button>
-
-                        </div>
-                    @endif
-
-                </div>
-            @endif
-
-            {{-- Checkout footer --}}
-            <div class="flex-col font-medium grid md:flex mt-4 space-y-4 text-gray-500 text-xs items-center">
-
-                {{-- Secure transaction --}}
-                <div class="flex items-center space-x-1 rtl:space-x-reverse text-green-500 dark:text-green-400">
-                    <svg class="w-3.5 h-3.5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80Zm-80,84a12,12,0,1,1,12-12A12,12,0,0,1,128,164Zm32-84H96V56a32,32,0,0,1,64,0Z"></path></svg>
-                    <span class="whitespace-nowrap">@lang('messages.t_ur_transaction_is_secure')</span>
-                </div>
-
-                {{-- Pages --}}
-                <div class="flex rtl:space-x-reverse space-x-3">
-                    
-                    @if (settings('footer')->terms)
-    
-                        {{-- Terms of service --}}
-                        <a href="{{ url('page', settings('footer')->terms?->slug) }}" class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 whitespace-nowrap">
-                            {{ settings('footer')->terms?->title }}
-                        </a>
-    
-                    @endif
-    
-                    @if (settings('footer')->privacy)
-    
-                        {{-- Divider --}}
-                        <span class="mx-1 text-gray-200 dark:text-zinc-600 hidden md:block">|</span>
-                        
-                        {{-- Privacy policy --}}
-                        <a href="{{ url('page', settings('footer')->privacy?->slug) }}" class="text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 whitespace-nowrap">
-                            {{ settings('footer')->privacy?->title }}
-                        </a>
-                        
-                    @endif
-                    
-                </div>
+                </fieldset>
 
             </div>
-
-        </div>
+        </section>
 
     </div>
     
@@ -703,37 +1654,68 @@
 
 @push('styles')
 
+    {{-- jQuery --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
     {{-- PayPal SDK --}}
-    @if ( payment_gateway('paypal')?->is_active )
-        <script src="https://www.paypal.com/sdk/js?client-id={{ payment_gateway('paypal')?->settings['client_id'] }}&currency={{ payment_gateway('paypal')?->currency }}"></script>
-    @endif
+    @if (settings('paypal')->is_enabled)
 
-    {{-- Mercadopago.js --}}
-    @if (payment_gateway('mercadopago')?->is_active)
-        <script src="https://sdk.mercadopago.com/js/v2"></script>
-        <script>
-            var mercadopago = new MercadoPago("{{ payment_gateway('mercadopago')?->settings['public_key'] }}");
-        </script>
-    @endif
+        {{-- Get client id and curency --}}
+        @php
+            $paypal_client_id = config('paypal.mode') === 'sandbox' ? config('paypal.sandbox.client_id') : config('paypal.live.client_id');
+            $currency         = config('paypal.currency');
+        @endphp
 
-    {{-- Flutterwave.js --}}
-    @if (payment_gateway('flutterwave')?->is_active)
-        <script src="https://checkout.flutterwave.com/v3.js"></script>
-    @endif
+        {{-- SDK --}}
+        <script src="https://www.paypal.com/sdk/js?client-id={{ $paypal_client_id }}&currency={{ $currency }}"></script>
 
-    {{-- Razorpay.js --}}
-    @if (payment_gateway('razorpay')?->is_active)
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     @endif
 
     {{-- Stripe.js --}}
-    @if (payment_gateway('stripe')?->is_active)
+    @if (settings('stripe')->is_enabled)
         <script src="https://js.stripe.com/v3/"></script>
     @endif
 
+    {{-- Flutterwave.js --}}
+    @if (settings('flutterwave')->is_enabled)
+        <script src="https://checkout.flutterwave.com/v3.js"></script>
+    @endif
+
     {{-- Paystack.js --}}
-    @if (payment_gateway('paystack')?->is_active)
+    @if (settings('paystack')->is_enabled)
         <script src="https://js.paystack.co/v1/inline.js"></script> 
+    @endif
+
+    {{-- Cashfree.js --}}
+    @if (settings('cashfree')->is_enabled)
+        @if (config('cashfree.isLive'))
+            <script src="https://sdk.cashfree.com/js/core/1.0.26/bundle.prod.js"></script>
+        @else
+            <script src="https://sdk.cashfree.com/js/core/1.0.26/bundle.sandbox.js"></script>
+        @endif
+    @endif
+
+    {{-- Mercadopago.js --}}
+    @if (settings('mercadopago')->is_enabled)
+        <script src="https://sdk.mercadopago.com/js/v2"></script>
+        <script>
+            var mercadopago = new MercadoPago("{{ config('mercadopago.public_key') }}");
+        </script>
+    @endif
+
+    {{-- Razorpay.js --}}
+    @if (settings('razorpay')->is_enabled)
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    @endif
+
+    {{-- Jazzcash.js --}}
+    @if (settings('jazzcash')->is_enabled)
+        <script src="https://sandbox.jazzcash.com.pk/Sandbox/Scripts/hmac-sha256.js"></script>
+    @endif
+
+    {{-- PayTR.js --}}
+    @if (settings('paytr')->is_enabled)
+        <script src="https://www.paytr.com/js/iframeResizer.min.js"></script>
     @endif
 
 @endpush

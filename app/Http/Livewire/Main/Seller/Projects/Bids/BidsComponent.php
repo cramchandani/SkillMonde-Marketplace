@@ -82,7 +82,7 @@ class BidsComponent extends Component
     {
         return ProjectBid::where('user_id', auth()->id())
         ->with(['project' => function($query) {
-            return $query->select('id', 'title', 'pid', 'slug', 'status', 'awarded_bid_id');
+            return $query->select('id', 'title', 'pid', 'slug', 'status');
         }])
                                 ->latest()
                                 ->paginate(42);

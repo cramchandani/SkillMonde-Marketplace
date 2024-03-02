@@ -18,6 +18,11 @@ class CreateComponent extends Component
     public $name;
     public $slug;
     public $category_id;
+    
+    public function setSlug()
+    {
+        $this->slug = strtolower(str_replace(' ', '-', $this->name));
+    }
 
 
     /**

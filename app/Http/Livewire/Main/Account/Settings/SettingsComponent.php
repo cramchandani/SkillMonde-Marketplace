@@ -18,8 +18,6 @@ class SettingsComponent extends Component
     public $email;
     public $fullname;
     public $country;
-    public $city;
-    public $timezone;
     public $password;
 
     /**
@@ -34,12 +32,10 @@ class SettingsComponent extends Component
 
         // Fill form
         $this->fill([
-            'username' => $user->username,
-            'email'    => $user->email,
-            'fullname' => $user->fullname,
-            'country'  => $user->country_id,
-            'city'     => $user->city,
-            'timezone' => $user->timezone
+            'username'    => $user->username,
+            'email'       => $user->email,
+            'fullname'    => $user->fullname,
+            'country'     => $user->country_id
         ]);
     }
 
@@ -108,7 +104,7 @@ class SettingsComponent extends Component
 
             // Set current user
             $user = auth()->user();
-
+        /*
             // Validate current password
             if ( $user->password && !Hash::check($this->password, $user->password)) {
                 
@@ -122,32 +118,24 @@ class SettingsComponent extends Component
                 return;
 
             }
-
-            // Get available timezone
-            $timezones = config('timezones');
-
-            // Check if timezone exists
-            if (array_search($this->timezone, array_column($timezones, 'tzCode')) === FALSE) {
-                
-                // Selected timezone not found
+        */
+        
+            // Ensure the country is selected
+            if (!$this->country) {
                 $this->notification([
                     'title'       => __('messages.t_error'),
-                    'description' => __('messages.t_selected_timezone_does_not_exist'),
+                    'description' => __('messages.t_country_required'),
                     'icon'        => 'error'
                 ]);
-
-                return;                
-
+    
+                return;
             }
-
             // Update user data
             User::where('id', auth()->id())->update([
-                'username'   => clean($this->username),
-                'email'      => clean($this->email),
-                'fullname'   => $this->fullname ? clean($this->fullname) : null,
-                'country_id' => $this->country ? $this->country : null,
-                'city'       => $this->city ? clean($this->city) : null,
-                'timezone'   => $this->timezone
+                'username'    => clean($this->username),
+                'email'       => clean($this->email),
+                'fullname'    => $this->fullname ? clean($this->fullname) : null,
+                'country_id'  => $this->country ? $this->country : null
             ]);
 
             // Refresh user
@@ -183,6 +171,8 @@ class SettingsComponent extends Component
                 'description' => __('messages.t_toast_something_went_wrong'),
                 'icon'        => 'error'
             ]);
+
+            throw $th;
 
         }
     }

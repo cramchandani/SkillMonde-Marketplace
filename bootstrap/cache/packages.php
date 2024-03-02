@@ -72,11 +72,33 @@
       'Cloudinary' => 'CloudinaryLabs\\CloudinaryLaravel\\Facades\\Cloudinary',
     ),
   ),
-  'edwardhendrix/laravel-config-writer' => 
+  'daftspunk/laravel-config-writer' => 
   array (
     'providers' => 
     array (
       0 => 'October\\Rain\\Config\\ServiceProvider',
+    ),
+  ),
+  'htmlmin/htmlmin' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'HTMLMin\\HTMLMin\\HTMLMinServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'HTMLMin' => 'HTMLMin\\HTMLMin\\Facades\\HTMLMin',
+    ),
+  ),
+  'intervention/httpauth' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Intervention\\HttpAuth\\Laravel\\HttpAuthServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'HttpAuth' => 'Intervention\\HttpAuth\\Laravel\\Facades\\HttpAuth',
     ),
   ),
   'intervention/image' => 
@@ -88,17 +110,6 @@
     'aliases' => 
     array (
       'Image' => 'Intervention\\Image\\Facades\\Image',
-    ),
-  ),
-  'jenssegers/agent' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Jenssegers\\Agent\\AgentServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Agent' => 'Jenssegers\\Agent\\Facades\\Agent',
     ),
   ),
   'laravel/sail' => 
@@ -275,17 +286,6 @@
     'providers' => 
     array (
       0 => 'Conner\\Tagging\\Providers\\TaggingServiceProvider',
-    ),
-  ),
-  'simplesoftwareio/simple-qrcode' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'QrCode' => 'SimpleSoftwareIO\\QrCode\\Facades\\QrCode',
     ),
   ),
   'socialiteproviders/manager' => 

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('title', 60)->default('Riverr');
             $table->string('subtitle', 120)->default('Freelance Services Marketplace');
             $table->string('separator', 5)->default('|');
-            $table->foreignId('logo_id')->nullable()->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreignId('favicon_id')->nullable()->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreignId('logo_id')->nullable()->references('id')->on('file_manager');
+            $table->foreignId('favicon_id')->nullable()->references('id')->on('file_manager');
             $table->text('header_announce_text')->nullable();
             $table->text('header_announce_link')->nullable();
             $table->boolean('is_language_switcher')->default(true);

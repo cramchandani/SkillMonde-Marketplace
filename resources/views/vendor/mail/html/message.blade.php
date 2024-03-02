@@ -1,21 +1,30 @@
-<x-mail::layout>
+@component('mail::layout')
+{{-- Header --}}
+@slot('header')
+@component('mail::header', ['url' => config('app.url')])
+<a href="{{ url('/') }}" class="h-full">
+    <img src="{{ src(settings('general')->logo) }}" alt="{{ settings('general')->title }}"
+        height="30px">
+</a>
+@endcomponent
+@endslot
 
 {{-- Body --}}
 {{ $slot }}
 
 {{-- Subcopy --}}
 @isset($subcopy)
-<x-slot:subcopy>
-<x-mail::subcopy>
+@slot('subcopy')
+@component('mail::subcopy')
 {{ $subcopy }}
-</x-mail::subcopy>
-</x-slot:subcopy>
+@endcomponent
+@endslot
 @endisset
 
 {{-- Footer --}}
-<x-slot:footer>
-<x-mail::footer>
-    <span>© {{ date('Y') }} {{ config('app.name') }}</span>
-</x-mail::footer>
-</x-slot:footer>
-</x-mail::layout>
+@slot('footer')
+@component('mail::footer')
+© {{ date('Y') }} {{ config('app.name') }}. @lang('All rights reserved.')
+@endcomponent
+@endslot
+@endcomponent

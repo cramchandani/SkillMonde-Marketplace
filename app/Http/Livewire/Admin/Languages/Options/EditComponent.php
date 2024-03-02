@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\Admin\Languages\Options;
 
-use Artisan;
 use Livewire\Component;
 use App\Models\Language;
 use WireUi\Traits\Actions;
@@ -87,9 +86,6 @@ class EditComponent extends Component
 
             // Refresh supported langs
             supported_languages(true);
-
-            // Clear cache
-            Artisan::call('cache:clear');
 
             // Success
             $this->notification([

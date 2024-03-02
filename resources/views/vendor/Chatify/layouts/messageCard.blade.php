@@ -6,7 +6,7 @@
 
             {{-- Message content --}}
             @if ($message)
-                <div class="msg-card-content" title="{{ $fullTime }}">
+                <div class="msg-card-content" id="msg-card-content" title="{{ $fullTime }}">
                     {!! ($message == null && $attachment != null && @$attachment[2] != 'file') ? $attachment[1] : nl2br($message) !!}
                 </div>
             @endif
@@ -32,7 +32,7 @@
                                 <span>{{ format_bytes($attachment[4]) }}</span>
     
                                 {{-- Download --}}
-                                <a href="{{ url('inbox/download', $attachment[0]) }}" class="text-blue-600 hover:underline disabled:text-gray-400 disabled:cursor-not-allowed disabled:pointer-events-none disabled:no-underline">@lang('messages.t_download')</a>
+                                <button type="button" onclick="downloadAttachement(this)" data-file="{{ $attachment[0] }}" class="text-blue-600 hover:underline disabled:text-gray-400 disabled:cursor-not-allowed disabled:pointer-events-none disabled:no-underline">@lang('messages.t_download')</button>
     
                             </div>
     
@@ -64,7 +64,7 @@
 
             {{-- Message content --}}
             @if ($message)
-                <div class="msg-card-content" title="{{ $fullTime }}">
+                <div class="msg-card-content" id="msg-card-content" title="{{ $fullTime }}">
                     {!! ($message == null && $attachment != null && @$attachment[2] != 'file') ? $attachment[1] : nl2br($message) !!}
                 </div>
             @endif
@@ -90,7 +90,7 @@
                                 <span>{{ format_bytes($attachment[4]) }}</span>
     
                                 {{-- Download --}}
-                                <a href="{{ url('inbox/download', $attachment[0]) }}" class="text-blue-600 hover:underline disabled:text-gray-400 disabled:cursor-not-allowed disabled:pointer-events-none disabled:no-underline">@lang('messages.t_download')</a>
+                                <button type="button" onclick="downloadAttachement(this)" data-file="{{ $attachment[0] }}" class="text-blue-600 hover:underline disabled:text-gray-400 disabled:cursor-not-allowed disabled:pointer-events-none disabled:no-underline">@lang('messages.t_download')</button>
     
                             </div>
     

@@ -3,7 +3,6 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -39,12 +38,12 @@ class YourBidRejected extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_ur_bid_needs_changes');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_ur_bid_needs_changes');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_ur_bid_has_been_rejected')))
+                    ->line(__('messages.t_notification_ur_bid_has_been_rejected'))
                     ->action(__('messages.t_submitted_proposals'), url('seller/projects/bids'));
     }
 

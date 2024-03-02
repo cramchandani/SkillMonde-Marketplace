@@ -336,8 +336,7 @@ class EditController extends Controller
             'is_free_posting as is_free',
             'is_premium_posting as is_premium',
             'commission_type',
-            'commission_from_publisher as commission_value',
-            'max_skills'
+            'commission_from_publisher as commission_value'
         )->first();
     }
 

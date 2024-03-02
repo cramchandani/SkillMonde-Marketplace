@@ -1,5 +1,4 @@
-<x-mail::message>
-    
+@component('mail::message')
 {{-- Greeting --}}
 @if (! empty($greeting))
 # {{ $greeting }}
@@ -25,9 +24,9 @@
         default => 'primary',
     };
 ?>
-<x-mail::button :url="$actionUrl" :color="$color">
+@component('mail::button', ['url' => $actionUrl, 'color' => $color])
 {{ $actionText }}
-</x-mail::button>
+@endcomponent
 @endisset
 
 {{-- Outro Lines --}}
@@ -46,8 +45,8 @@
 
 {{-- Subcopy --}}
 @isset($actionText)
-<x-slot:subcopy>
-    @lang('messages.t_if_u_have_trouble_click_link_notification', ['actionText' => $actionText]) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
-</x-slot:subcopy>
+@slot('subcopy')
+@lang('messages.t_if_u_have_trouble_click_link_notification', ['actionText' => $actionText]) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
+@endslot
 @endisset
-</x-mail::message>
+@endcomponent

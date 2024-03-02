@@ -26,6 +26,10 @@ class CreateComponent extends Component
     public $thumbnail;
     public $ogimage;
 
+    public function setSlug()
+    {
+        $this->slug = strtolower(str_replace(' ', '-', $this->name));
+    }
     /**
      * Render component
      *

@@ -8,8 +8,9 @@
     </div>
 
     {{-- Bid card --}}
+    @if(isset($view_data['freelancer']) && $view_data['freelancer'] !== null)
     <div class="relative bg-white dark:bg-zinc-800 shadow rounded-lg px-4 py-5 sm:px-6 mt-6 {{ $view_data['bid']['is_highlight'] ? 'ltr:border-l-8 rtl:border-l-8 border-amber-300' : '' }}">
-    
+        
         {{-- Bid heading --}}
         <div class="sm:flex items-center justify-between mb-8">
     
@@ -92,7 +93,16 @@
                     {{-- Budget --}}
                     @if ($view_data['bid']['amount'] && $view_data['bid']['days'])
                         <span class="flex items-center text-sm font-normal text-gray-500 bg-gray-100 dark:bg-zinc-700 dark:text-zinc-400 px-3 py-2 rounded-sm justify-center">
+                            @auth
+                                @if (auth()->user()->uid === $view_data['project']['employer_id'])
                             <span class="font-semibold text-zinc-800 dark:text-white">@money($view_data['bid']['amount'], settings('currency')->code, true)</span>
+                                @else
+                                    <span class="font-semibold text-zinc-800 dark:text-white">Hidden</span>
+                                @endif
+                            @endauth
+                            @guest
+                           <span class="font-semibold text-zinc-800 dark:text-white">Hidden</span>
+                           @endguest
                             <span class="mx-2">/</span>
                             <div>
                                 @if ($view_data['bid']['days'] === 1)
@@ -114,43 +124,66 @@
     
             {{-- Bid message --}}
             <div class="mb-2 font-normal text-sm leading-relaxed text-gray-500 dark:text-gray-300">
-                @if (strlen($view_data['bid']['message']) > 250)
+                @guest
                     <div class="break-all">
-
-                        {{-- Short text --}}
-                        <span style="word-break: break-word;" id="bid-card-message-short-{{ $view_data['bid']['id'] }}">
-                            {{ add_3_dots(htmlspecialchars_decode($view_data['bid']['message']), 220, null) }}
-                        </span>
-
-                        {{-- Long text --}}
-                        <span style="word-break: break-word;" id="bid-card-message-long-{{ $view_data['bid']['id'] }}" class="hidden">
-                            {!! nl2br(htmlspecialchars_decode($view_data['bid']['message'])) !!}
-                        </span>
-
-                        {{-- Show more or less --}}
-                        <span class="whitespace-nowrap before:content-['['] after:content-[']'] before:px-1 after:px-1 text-sm font-semibold text-blue-600 hover:underline cursor-pointer hover:text-blue-500" id="bid-card-message-more-less-button-{{ $view_data['bid']['id'] }}">@lang('messages.t_more')</span>
-                            
+                        {{-- Bid message --}}
+                        <div class="mb-2 font-normal text-sm leading-relaxed text-gray-500 dark:text-gray-300">
+                            {{ Str::limit(htmlspecialchars_decode($view_data['bid']['message']), 50, '...') }}
+                        </div>
                     </div>
-                    <script>
-                        const target_btn_{{ $view_data['bid']['id'] }}   = document.getElementById("bid-card-message-more-less-button-{{ $view_data['bid']['id'] }}");
-                        const target_short_{{ $view_data['bid']['id'] }} = document.getElementById("bid-card-message-short-{{ $view_data['bid']['id'] }}");
-                        const target_long_{{ $view_data['bid']['id'] }}  = document.getElementById("bid-card-message-long-{{ $view_data['bid']['id'] }}");
-                        target_btn_{{ $view_data['bid']['id'] }}.onclick = function() {
-                            if (target_long_{{ $view_data['bid']['id'] }}.classList.contains('hidden')) {
-                                target_short_{{ $view_data['bid']['id'] }}.classList.add('hidden');
-                                target_long_{{ $view_data['bid']['id'] }}.classList.remove('hidden');
-                                target_btn_{{ $view_data['bid']['id'] }}.innerHTML = "{{ __('messages.t_less') }}";
-                            } else {
-                                target_short_{{ $view_data['bid']['id'] }}.classList.remove('hidden');
-                                target_long_{{ $view_data['bid']['id'] }}.classList.add('hidden');
-                                target_btn_{{ $view_data['bid']['id'] }}.innerHTML = "{{ __('messages.t_more') }}";
-                            }
-                        }
-                    </script>
-                @else
-                    {!! nl2br($view_data['bid']['message']) !!}
-                @endif
+                @endguest
+                
+                @auth
+                    @if (auth()->user()->uid === $view_data['project']['employer_id'])
+                        
+                        @if (strlen($view_data['bid']['message']) > 50)
+                            <div class="break-all">
+        
+                                {{-- Short text --}}
+                                <span id="bid-card-message-short-{{ $view_data['bid']['id'] }}">
+                                    {{ add_3_dots(htmlspecialchars_decode($view_data['bid']['message']), 50, null) }}
+                                </span>
+        
+                                {{-- Long text --}}
+                                <span id="bid-card-message-long-{{ $view_data['bid']['id'] }}" class="hidden">
+                                    {!! nl2br(htmlspecialchars_decode($view_data['bid']['message'])) !!}
+                                </span>
+        
+                                {{-- Show more or less --}}
+                                <span class="whitespace-nowrap before:content-['['] after:content-[']'] before:px-1 after:px-1 text-sm font-semibold text-blue-600 hover:underline cursor-pointer hover:text-blue-500" id="bid-card-message-more-less-button-{{ $view_data['bid']['id'] }}">@lang('messages.t_more')</span>
+                                    
+                            </div>
+                            <script>
+                                const target_btn   = document.getElementById("bid-card-message-more-less-button-{{ $view_data['bid']['id'] }}");
+                                const target_short = document.getElementById("bid-card-message-short-{{ $view_data['bid']['id'] }}");
+                                const target_long  = document.getElementById("bid-card-message-long-{{ $view_data['bid']['id'] }}");
+                                target_btn.onclick = function() {
+                                    if (target_long.classList.contains('hidden')) {
+                                        target_short.classList.add('hidden');
+                                        target_long.classList.remove('hidden');
+                                        target_btn.innerHTML = "{{ __('messages.t_less') }}";
+                                    } else {
+                                        target_short.classList.remove('hidden');
+                                        target_long.classList.add('hidden');
+                                        target_btn.innerHTML = "{{ __('messages.t_more') }}";
+                                    }
+                                }
+                            </script>
+                        @else
+                            {!! nl2br($view_data['bid']['message']) !!}
+                        @endif
+                    @else
+                        <div class="break-all">
+                            {{-- Bid message --}}
+                            <div class="mb-2 font-normal text-sm leading-relaxed text-gray-500 dark:text-gray-300">
+                                {{ Str::limit(htmlspecialchars_decode($view_data['bid']['message']), 50, '...') }}
+                            </div>
+                        </div>
+                    @endif
+                    
+                @endauth
             </div>
+            
     
         @elseif ($view_data['bid']['is_sealed'])
     
@@ -182,8 +215,8 @@
                         
                         {{-- Approve bid --}}
                         @if ($view_data['project']['status'] === 'active' && !$view_data['bid']['is_awarded'])
-                            <button x-on:click="$wire.accept" class="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-opacity-50 focus:ring-zinc-300 focus:ring-offset-2 focus:ring-offset-zinc-100 space-x-1 rtl:space-x-reverse dark:shadow-none dark:bg-zinc-700 dark:border-zinc-800 dark:hover:bg-zinc-700/40 dark:text-zinc-300 dark:hover:text-gray-100 dark:ring-offset-zinc-500">
-                                <svg class="w-4 h-4 text-zinc-400 dark:text-zinc-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <button x-on:click="$wire.accept" class="inline-flex items-center rounded border border-gray-300 footer-second px-2.5 py-1.5 text-xs font-semibold text-gray-100 shadow-sm hover:footer-second hover:text-white focus:outline-none focus:ring-1 focus:ring-opacity-50 focus:ring-zinc-300 focus:ring-offset-2 focus:ring-offset-zinc-100 space-x-1 rtl:space-x-reverse dark:shadow-none dark:bg-zinc-700 dark:border-zinc-800 dark:hover:bg-zinc-700/40 dark:text-zinc-300 dark:hover:text-gray-100 dark:ring-offset-zinc-500">
+                                <svg class="w-4 h-4 text-gray-100 dark:text-zinc-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                 <span>@lang('messages.t_award')</span>
                             </button>
                         @endif
@@ -195,14 +228,16 @@
                                 <span>@lang('messages.t_revoke')</span>
                             </button>
                         @endif
-        
+                        
+                        
                         {{-- Chat now --}}
                         @if ($this->view_data['freelancer']['chat'])
-                            <a href="{{ url('messages/new', $view_data['freelancer']['username']) }}" class="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-opacity-50 focus:ring-zinc-300 focus:ring-offset-2 focus:ring-offset-zinc-100 space-x-1 rtl:space-x-reverse dark:shadow-none dark:bg-zinc-700 dark:border-zinc-800 dark:hover:bg-zinc-700/40 dark:text-zinc-300 dark:hover:text-gray-100 dark:ring-offset-zinc-500">
-                                <svg class="w-4 h-4 text-zinc-400 dark:text-zinc-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"></path><path d="M10 3h4a8 8 0 1 1 0 16v3.5c-5-2-12-5-12-11.5a8 8 0 0 1 8-8z"></path></g></svg>
+                            <a href="{{ url('messages/new', $view_data['freelancer']['username']) }}" class="inline-flex items-center rounded border border-gray-300 bg-primary-500 px-2.5 py-1.5 text-xs font-semibold text-gray-100 hover:text-gray-100 shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-1 focus:ring-opacity-50 focus:ring-zinc-300 focus:ring-offset-2 focus:ring-offset-zinc-100 space-x-1 rtl:space-x-reverse dark:shadow-none dark:bg-zinc-700 dark:border-zinc-800 dark:hover:bg-zinc-700/40 dark:text-zinc-300 dark:hover:text-gray-100 dark:ring-offset-zinc-500">
+                                <svg class="w-4 h-4 text-gray-100 dark:text-zinc-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"></path><path d="M10 3h4a8 8 0 1 1 0 16v3.5c-5-2-12-5-12-11.5a8 8 0 0 1 8-8z"></path></g></svg>
                                 <span>@lang('messages.t_chat_now')</span>
                             </a>
                         @endif
+                        
 
                     @endif
                 @endauth
@@ -226,22 +261,26 @@
     
                 {{-- Report bid --}}
                 @auth
+                
                     @if (auth()->id() != $view_data['freelancer']['id'])
                         <div class="flex items-center space-x-1 rtl:space-x-reverse hover:underline cursor-pointer" id="modal-report-bid-button-{{ $bid_id }}">
                             <svg class="w-4 h-4 text-gray-400" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11 7h2v7h-2zm0 8h2v2h-2z"></path><path d="m21.707 7.293-5-5A.996.996 0 0 0 16 2H8a.996.996 0 0 0-.707.293l-5 5A.996.996 0 0 0 2 8v8c0 .266.105.52.293.707l5 5A.996.996 0 0 0 8 22h8c.266 0 .52-.105.707-.293l5-5A.996.996 0 0 0 22 16V8a.996.996 0 0 0-.293-.707zM20 15.586 15.586 20H8.414L4 15.586V8.414L8.414 4h7.172L20 8.414v7.172z"></path></svg>
                             <span>@lang('messages.t_report_bid')</span>
                         </div>
                     @endif
+                
                 @endauth
     
                 {{-- Edit bid --}}
                 @auth
-                    @if (auth()->id() == $view_data['freelancer']['id'] && !$view_data['bid']['is_awarded'] && $view_data['project']['status'] === 'active' && !$view_data['project']['awarded'])
+                
+                    @if (auth()->id() == $view_data['freelancer']['id'] && !$view_data['bid']['is_awarded'] && $view_data['project']['status'] === 'active')
                         <a href="{{ url('seller/projects/bids/edit', $bid_id) }}" class="flex items-center space-x-1 rtl:space-x-reverse hover:underline cursor-pointer">
                             <svg class="w-4 h-4 text-gray-400" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.045 7.401c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.378-.378-.88-.586-1.414-.586s-1.036.208-1.413.585L4 13.585V18h4.413L19.045 7.401zm-3-3 1.587 1.585-1.59 1.584-1.586-1.585 1.589-1.584zM6 16v-1.585l7.04-7.018 1.586 1.586L7.587 16H6zm-2 4h16v2H4z"></path></svg>
                             <span>@lang('messages.t_edit_bid')</span>
                         </a>
                     @endif
+                
                 @endauth
     
             </aside>
@@ -249,9 +288,11 @@
         </div>
     
     </div>
+    @endif
     
     {{-- Report Bid Modal --}}
     @auth
+    @if(isset($view_data['freelancer']) && $view_data['freelancer'] !== null)
         @if (auth()->id() != $view_data['freelancer']['id'])
             <x-forms.modal id="modal-report-bid-container-{{ $bid_id }}" target="modal-report-bid-button-{{ $bid_id }}" uid="modal_{{ uid() }}" placement="center-center" size="max-w-xl">
             
@@ -316,9 +357,11 @@
             
             </x-forms.modal>
         @endif
+    @endif
     @endauth
 
     {{-- Run this code only if this bid is awarded --}}
+    @if(isset($view_data['freelancer']) && $view_data['freelancer'] !== null)
     @if ($view_data['bid']['is_awarded'])
         <script>
             document.addEventListener('update-awarded-bid-card', (e) => {
@@ -337,5 +380,33 @@
             });
         </script>
     @endif
+    @endif
+<script>
+    function copyToClipboard() {
+        const amountDisplay = document.getElementById('amountDisplay');
+        const amountText = amountDisplay.textContent;
+
+        // Create a temporary input element to copy the text to the clipboard
+        const tempInput = document.createElement('input');
+        tempInput.value = amountText;
+        document.body.appendChild(tempInput);
+
+        // Select the text in the input element
+        tempInput.select();
+        document.execCommand('copy');
+
+        // Remove the temporary input element
+        document.body.removeChild(tempInput);
+
+        // Provide user feedback (optional)
+        const copyButton = document.getElementById('copyButton');
+        copyButton.textContent = 'Copied!';
+        setTimeout(() => {
+            copyButton.textContent = 'Copy';
+        }, 2000); // Reset the button text after 2 seconds
+    }
+</script>
+
+
 
 </div>

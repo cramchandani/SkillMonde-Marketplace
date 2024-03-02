@@ -81,91 +81,7 @@
 
                 {{-- Select payment method --}}
                 <div class="rounded-lg bg-white shadow-sm border-gray-200 border px-10 py-6 relative mb-10 dark:bg-zinc-800 dark:border-transparent">
-        
-                    {{-- TITLE / Select a payment method --}}
-                    <h5 class="flex items-center mb-5 pt-4">
-                        <span class="text-xs uppercase tracking-widest text-primary-600 dark:text-white font-bold ltr:mr-3 rtl:ml-3">
-                            @lang('messages.t_select_payment_method')    
-                        </span> 
-                        <span aria-hidden="true" class="grow bg-gray-100 rounded h-0.5 dark:bg-zinc-700"></span>
-                    </h5>
-        
-                    {{-- Enabed payment mathods list --}}
-                    @if (!$selected_payment_method)
-                        <fieldset>
-                            <legend class="sr-only">
-                                @lang('messages.t_select_payment_method')    
-                            </legend>
-                            <div class="space-y-5">
-        
-                                {{-- Paypal --}}
-                                @if (settings('paypal')->is_enabled)
-                                    <div class="flex items-center">
-                                        <input id="selected_payment_method_paypal" name="selected_payment_method" wire:model="selected_payment_method" value="paypal" type="radio" class="focus:ring-primary-500 h-5 w-5 text-primary-600 border-gray-300 focus:ring-offset-0 dark:bg-zinc-600 dark:border-transparent">
-                                        <label for="selected_payment_method_paypal" class="flex items-center ltr:ml-3 rtl:mr-3 cursor-pointer">
-                                            <span class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300"> 
-                                                {{ settings('paypal')->name }}    
-                                            </span>
-                                        </label>
-                                    </div>
-                                @endif
-                                
-                            </div>
-                        </fieldset>
-                    @endif
-        
-                    {{-- Check selected payment method --}}
-                    @switch($selected_payment_method)
-        
-                        {{-- PayPal --}}
-                        @case('paypal')
-        
-                            {{-- Calculate exchange rate --}}
-                            @php
-                                
-                                $gateway_exchange_rate = (float)settings('paypal')->exchange_rate;
-                                $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
-        
-                            @endphp
-                            
-                            <div class="w-full md:max-w-xs mx-auto mt-12 block">
-        
-                                {{-- Paypal button --}}
-                                <div id="paypal-button-container" wire:ignore></div>
-        
-                                <script>
-                                    // Render the PayPal button into #paypal-button-container
-                                    paypal.Buttons({
-        
-                                        // Set up the transaction
-                                        createOrder: function(data, actions) {
-                                            return actions.order.create({
-                                                purchase_units: [{
-                                                    amount: {
-                                                        value: '{{ $exchange_total_amount }}'
-                                                    }
-                                                }]
-                                            });
-                                        },
-        
-                                        // Finalize the transaction
-                                        onApprove: function(data, actions) {
-        
-                                            @this.checkout(data.orderID);
-        
-                                        }
-        
-                                        }).render('#paypal-button-container');
-                                </script>
-        
-                            </div>
-        
-                            @break
-                            
-                        @default
-                            
-                    @endswitch
-
+                    
                     {{-- TITLE / Selected upgrades --}}
                     <h5 class="flex items-center mb-6 mt-12">
                         <span class="text-xs uppercase tracking-widest text-primary-600 dark:text-white font-bold ltr:mr-3 rtl:ml-3">
@@ -261,6 +177,172 @@
                         </div>
                     </div>
         
+                    {{-- TITLE / Select a payment method --}}
+                    <h5 class="flex items-center mb-5 pt-4">
+                        <span class="text-xs uppercase tracking-widest text-primary-600 dark:text-white font-bold ltr:mr-3 rtl:ml-3">
+                            @lang('messages.t_select_payment_method')    
+                        </span> 
+                        <span aria-hidden="true" class="grow bg-gray-100 rounded h-0.5 dark:bg-zinc-700"></span>
+                    </h5>
+        
+                    {{-- Enabed payment mathods list --}}
+                    @if (!$selected_payment_method)
+                        <fieldset>
+                            <legend class="sr-only">
+                                @lang('messages.t_select_payment_method')    
+                            </legend>
+                            <div class="space-y-5">
+        
+                                {{-- Paypal --}}
+                                @if (settings('paypal')->is_enabled)
+                                    <div class="flex items-center">
+                                        <input id="selected_payment_method_paypal" name="selected_payment_method" wire:model="selected_payment_method" value="paypal" type="radio" class="focus:ring-primary-500 h-5 w-5 text-primary-600 border-gray-300 focus:ring-offset-0 dark:bg-zinc-600 dark:border-transparent">
+                                        <label for="selected_payment_method_paypal" class="flex items-center ltr:ml-3 rtl:mr-3 cursor-pointer">
+                                            <span class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300"> 
+                                                {{ settings('paypal')->name }}    
+                                            </span>
+                                        </label>
+                                    </div>
+                                @endif
+                                {{-- Razorpay --}}
+                                @if (settings('razorpay')->is_enabled)
+                                    <div class="flex items-center">
+                                        <input id="selected_payment_method_razorpay" name="selected_payment_method" wire:model="selected_payment_method" value="razorpay" type="radio" class="focus:ring-primary-500 h-4 w-4 text-primary-600 border-gray-300 dark:bg-zinc-600 dark:border-zinc-600 dark:focus:ring-zinc-400 dark:focus:ring-offset-zinc-800">
+                                        <label for="selected_payment_method_razorpay" class="flex items-center ltr:ml-3 rtl:mr-3 cursor-pointer">
+                                            <span class="block text-sm font-semibold text-zinc-700 dark:text-zinc-200"> 
+                                                {{ settings('razorpay')->name }}    
+                                            </span>
+                                        </label>
+                                    </div>
+                                @endif
+                                
+                            </div>
+                        </fieldset>
+                    @endif
+        
+                    {{-- Check selected payment method --}}
+                    @switch($selected_payment_method)
+        
+                        {{-- PayPal --}}
+                        @case('paypal')
+        
+                            {{-- Calculate exchange rate --}}
+                            @php
+                                
+                                $gateway_exchange_rate = (float)settings('paypal')->exchange_rate;
+                                $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+        
+                            @endphp
+                            
+                            <div class="w-full md:max-w-xs mx-auto mt-12 block">
+        
+                                {{-- Paypal button --}}
+                                <div id="paypal-button-container" wire:ignore></div>
+        
+                                <script>
+                                    // Render the PayPal button into #paypal-button-container
+                                    paypal.Buttons({
+        
+                                        // Set up the transaction
+                                        createOrder: function(data, actions) {
+                                            return actions.order.create({
+                                                purchase_units: [{
+                                                    amount: {
+                                                        value: '{{ $exchange_total_amount }}'
+                                                    }
+                                                }]
+                                            });
+                                        },
+        
+                                        // Finalize the transaction
+                                        onApprove: function(data, actions) {
+        
+                                            @this.checkout(data.orderID);
+        
+                                        }
+        
+                                        }).render('#paypal-button-container');
+                                </script>
+        
+                            </div>
+        
+                            @break
+                            
+                        {{-- RazorPay --}}
+                    @case('razorpay')
+                    
+                    @php
+                        $gateway_exchange_rate = (float)settings('razorpay')->exchange_rate;
+                        $exchange_total_amount = $this->calculateExchangeAmount($gateway_exchange_rate);
+                    @endphp
+
+                        {{-- Form --}}
+                                        <div class="w-full">
+                                            <script>
+                                                window.makeRazorpayPayment = function(orderId) {
+                                                    
+                                                    // Format subscription amount using money Blade directive
+                                                    //var formattedAmount = "{{ $subscription->amount }}"; // Assuming $subscription contains your subscription model
+                                                   // var formattedAmount = @json($subscription->amount);
+
+                                                    // Set options
+                                                    var options = {
+                                                        "key"        : "{{ config('razorpay.key_id') }}",
+                                                        "amount"     : "{{ $exchange_total_amount * 100}}",//"{{ $this->amount * 100 }}",
+                                                        "currency"   : "{{ settings('razorpay')->currency }}",
+                                                        "order_id"   :  orderId,//"{{ $razorpay_order_id }}",
+                                                        "name"       : "{{ auth()->user()->username }}",
+                                                        "description": "{{ __('messages.t_add_funds') }}",
+                                                        "image"      : "{{ src(auth()->user()->avatar) }}",
+                                                        "handler"    : function (response){
+                                                            
+                                                            // Handle payment
+                                                            @this.handle({
+                                                                razorpay_payment_id: response.razorpay_payment_id,
+                                                                razorpay_order_id  : response.razorpay_order_id,
+                                                                razorpay_signature : response.razorpay_signature,
+                                                            });
+
+                                                        },
+                                                        "prefill": {
+                                                            "name": "{{ auth()->user()->fullname }}", //your customer's name
+                                                            "email": "{{ auth()->user()->email }}",
+                                                            "contact": ""
+                                                        },
+                                                    };
+
+                                                    // Start payment
+                                                    var rzp1 = new Razorpay(options);
+
+                                                    // On Failed
+                                                    rzp1.on('payment.failed', function (response){
+                                                        alert(response.error.description);
+                                                    });
+
+                                                    // Open modal
+                                                    rzp1.open();
+
+                                                }
+                                            </script>
+
+                                            {{-- Payment button --}}
+                                            <button
+                                                @click="() => window.makeRazorpayPayment('{{ $razorpay_order_id }}')"
+                                                wire:loading.attr="disabled"
+                                                type="button"
+                                                class="max-w-md mx-auto w-72 text-sm font-medium flex justify-center py-3 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline bg-primary-600 hover:bg-primary-700 text-white cursor-pointer disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed"
+                                                >
+                                                    {{ __('messages.t_pay')    }}
+                                            </button>
+                                            
+                                        </div>
+
+                        @break    
+                            
+                        @default
+                            
+                    @endswitch
+        
                 </div>
 
                 {{-- Project preview --}}
@@ -338,6 +420,11 @@
         {{-- SDK --}}
         <script src="https://www.paypal.com/sdk/js?client-id={{ $paypal_client_id }}&currency={{ $currency }}"></script>
 
+    @endif
+    
+    {{-- Razorpay.js --}}
+    @if (settings('razorpay')->is_enabled)
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     @endif
 
 @endpush

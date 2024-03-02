@@ -24,6 +24,12 @@ class Bid extends Component
     // Report form
     public $report_reason;
     public $report_description;
+    //
+    public $extraFundsNeeded;
+    
+    // Define a public property to hold the currency and amount values
+    public $currency;
+    public $amount;                                                         
 
     /**
      * Initialize component
@@ -58,29 +64,41 @@ class Bid extends Component
         $can_view         = $this->canView();
 
         // Let's chat if employer can chat with this user
+        
         if ($this->project->awarded_bid) {
-
+            /*
             if ($freelancer->id === $this->project->awarded_freelancer_id) {
                 $chat = true;
             } else {
                 $chat = false;
             }
+            */
+            // Check if the bid has been awarded
+            if ($bid->is_awarded) {
+                $chat = true;
+            } else {
+                $chat = false;
+            }
+
             
         } else {
             $chat = true;
         }
 
-        // Set freelancer for the view
-        $this->view_data['freelancer'] = [
-            'id'       => $freelancer->id,
-            'username' => $freelancer->username,
-            'fullname' => $freelancer->fullname,
-            'avatar'   => src($freelancer->avatar),
-            'country'  => $freelancer->country ? ['name' => $freelancer->country->name, 'code' => $freelancer->country->code] : null,
-            'rating'   => $freelancer->rating(),
-            'verified' => $freelancer->status === 'verified' ? true : false,
-            'chat'     => $chat
-        ];
+
+        // Set freelancer for the view if $freelancer is not null
+        $this->view_data['freelancer'] = $freelancer
+            ? [
+                'id'       => $freelancer->id,
+                'username' => $freelancer->username,
+                'fullname' => $freelancer->fullname,
+                'avatar'   => src($freelancer->avatar),
+                'country'  => $freelancer->country ? ['name' => $freelancer->country->name, 'code' => $freelancer->country->code] : null,
+                'rating'   => $freelancer->rating(),
+                'verified' => $freelancer->status === 'verified' ? true : false,
+                'chat'     => $chat
+            ]
+            : null;
 
         // Set bid for the view
         $this->view_data['bid']        = [
@@ -308,142 +326,164 @@ class Bid extends Component
      *
      * @return mixed
      */
+
     public function accept()
     {
         try {
-            
             // Check if user authenticated
             if (!auth()->check()) {
                 return;
             }
-
+    
             // Get bid
-            $bid     = ProjectBid::whereUid($this->bid_id)->with(['project', 'user'])->firstOrFail();
-
+            $bid = ProjectBid::whereUid($this->bid_id)->with(['project', 'user'])->firstOrFail();
+    
             // Get project
             $project = $bid->project;
+    
+            // Get current user
+            $user = auth()->user(); // Get the authenticated user
+    
+            // Get the available balance of the user from the 'balance_available' column
+            $availableBalance = $user->balance_available;
+    
+            // Get the cost of awarding the project from the 'amount' column in the bid
+            $awardCost = $bid->amount;
+    
+// Calculate how much extra funds are needed to award the project
+$extraFundsNeeded = max(0, $awardCost - $availableBalance);
 
-            // Get current user id
-            $user_id = auth()->id();
+// Send the extraFundsNeeded value to the Blade view
+$this->view_data['extraFundsNeeded'] = $extraFundsNeeded;
 
-            // This user must have permissions to accept this offer first
-            if ($project->user_id != $user_id) {
-                
-                // Error
+// Check if the user has enough available balance to award the project
+if ($availableBalance < $awardCost) {
+    // Error: User doesn't have sufficient funds
+    $this->notification([
+        'title' => __('messages.t_insufficient_funds'),
+        'description' => __('messages.t_extra_funds_needed', ['amount' => $extraFundsNeeded, 'currency' => settings('currency')->code]),
+        'icon' => 'error'
+    ]);
+   // dd(settings('currency')->code);
+    // Add a message to display the extra funds needed
+    $extraFundsMessage = __('messages.t_extra_funds_needed', ['amount' => $extraFundsNeeded]);
+    
+    // Redirect to the deposit page with the extra funds message as a query parameter
+    $depositUrl = '/account/deposit?extra_funds=' . urlencode($extraFundsMessage);
+    
+    $script = <<<SCRIPT
+    setTimeout(function() {
+        window.location.href = '$depositUrl';
+    }, 3000);
+SCRIPT;
+
+    return response()->json(['script' => $script]);
+}
+
+    
+            // Check if user has permissions to accept this offer
+            if ($project->user_id != $user->id) {
+                // Error: User doesn't have permission
                 $this->notification([
-                    'title'       => __('messages.t_error'),
+                    'title' => __('messages.t_error'),
                     'description' => __('messages.t_u_dont_have_permissions_to_do_action'),
-                    'icon'        => 'error'
+                    'icon' => 'error'
                 ]);
-
                 return;
-
             }
-
-            // Check employer already awarded this project to a freelancer
-            // And this freelancer accepted to work on it
-            if ($project->awarded_bid_id != $bid->id && $bid->is_freelancer_accepted) {
-                
-                // Looks like you already awarded this project to another freelancer
-                $this->notification([
-                    'title'       => __('messages.t_error'),
-                    'description' => __('messages.t_looks_like_u_already_awarded_project_other'),
-                    'icon'        => 'error'
-                ]);
-
-                return;
-
-            }
-
-            // After that, we have to check if this bid is active
-            if ($bid->status !== 'active') {
-                
-                // Error
-                $this->notification([
-                    'title'       => __('messages.t_error'),
-                    'description' => __('messages.t_this_bid_is_not_active_yet'),
-                    'icon'        => 'error'
-                ]);
-
-                return;
-
-            }
-
-            // Now the project must be open
+    
+            // Check if the project is open for bids
             if ($project->status !== 'active') {
-                
-                // Error
+                // Error: Project is not open for bids
                 $this->notification([
-                    'title'       => __('messages.t_error'),
+                    'title' => __('messages.t_error'),
                     'description' => __('messages.t_project_is_not_open_for_bid'),
-                    'icon'        => 'error'
+                    'icon' => 'error'
                 ]);
-
-                return;                
-
+                return;
             }
-
-            // Get awarded bid
+    
+            // Check if the bid is active
+            if ($bid->status !== 'active') {
+                // Error: Bid is not active
+                $this->notification([
+                    'title' => __('messages.t_error'),
+                    'description' => __('messages.t_this_bid_is_not_active_yet'),
+                    'icon' => 'error'
+                ]);
+                return;
+            }
+    
+            // Check if another freelancer was already awarded the project
+            if ($project->awarded_bid_id != $bid->id && $bid->is_freelancer_accepted) {
+                // Error: Project awarded to another freelancer
+                $this->notification([
+                    'title' => __('messages.t_error'),
+                    'description' => __('messages.t_looks_like_u_already_awarded_project_other'),
+                    'icon' => 'error'
+                ]);
+                return;
+            }
+    
+            // Get the awarded bid
             $awarded_bid = ProjectBid::where('project_id', $project->id)
-                                        ->where('is_awarded', true)
-                                        ->where('id', '!=', $bid->id)
-                                        ->first();
-
+                ->where('is_awarded', true)
+                ->where('id', '!=', $bid->id)
+                ->first();
+    
             // Check if an awarded bid already exists
             if ($awarded_bid) {
-                
                 // Update this awarded bid
-                $awarded_bid->is_awarded             = false;
+                $awarded_bid->is_awarded = false;
                 $awarded_bid->is_freelancer_accepted = false;
-                $awarded_bid->awarded_date           = null;
+                $awarded_bid->awarded_date = null;
                 $awarded_bid->save();
-
+    
                 // Update awarded bid card
                 $this->dispatchBrowserEvent('update-awarded-bid-card', $awarded_bid->uid);
-
             }
-
+    
             // Update this bid's status
-            $bid->is_awarded   = true;
+            $bid->is_awarded = true;
             $bid->awarded_date = now();
             $bid->save();
-
+    
             // Update project
-            $project->awarded_bid_id        = $bid->id;
+            $project->awarded_bid_id = $bid->id;
             $project->awarded_freelancer_id = $bid->user_id;
             $project->save();
-
+    
             // Send notification to the freelancer (From website)
             notification([
-                'text'    => 't_congratulations_employer_awarded_u_their_project_title',
-                'action'  => url('seller/projects'),
+                'text' => 't_congratulations_employer_awarded_u_their_project_title',
+                'action' => url('seller/projects'),
                 'user_id' => $bid->user_id,
-                'params'  => ['username' => $project->client->username, 'title' => $project->title]
-
+                'params' => ['username' => $project->client->username, 'title' => $project->title]
             ]);
-
+    
             // Send notification to the freelancer (By email)
             $bid->user->notify(new ProjectAwarded($bid, $project));
-
+    
             // Update bid in the card
             $this->view_data['bid']['is_awarded'] = true;
-
+    
+            // Deduct the awarded amount from the user's available balance
+           // $user->balance_available -= $awardCost;
+           // $user->save();
+    
             // Success
             $this->notification([
-                'title'       => __('messages.t_success'),
+                'title' => __('messages.t_success'),
                 'description' => __('messages.t_u_have_accepted_this_bid_success'),
-                'icon'        => 'success'
+                'icon' => 'success'
             ]);
-
         } catch (\Throwable $th) {
-
             // Error
             $this->notification([
-                'title'       => __('messages.t_error'),
+                'title' => __('messages.t_error'),
                 'description' => $th->getMessage(),
-                'icon'        => 'error'
+                'icon' => 'error'
             ]);
-
         }
     }
 

@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PaymentRejected extends Notification implements ShouldQueue
 {
@@ -44,12 +43,12 @@ class PaymentRejected extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_payment_rejected');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_payment_rejected');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_everyone_payment_rejected')))
+                    ->line(__('messages.t_notification_everyone_payment_rejected'))
                     ->action(__('messages.t_withdrawals_history'), url('seller/withdrawals'));
     }
 

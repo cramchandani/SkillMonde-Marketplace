@@ -103,7 +103,7 @@
             {{-- Price --}}
             <div class="gig-card-price">
                 <small class="text-body-3 dark:!text-zinc-200">{{ __('messages.t_starting_at') }}</small>
-                <span class=" ltr:text-right rtl:text-left dark:!text-white">@money($gig->price, settings('currency')->code, true)</span>
+                <span id="gig-amount" class=" ltr:text-right rtl:text-left dark:!text-white">@money($gig->price, settings('currency')->code, true)</span>
             </div>
             
         </div>

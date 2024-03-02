@@ -4,10 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Sitemap\Contracts\Sitemapable;
-use Spatie\Sitemap\Tags\Url;
 
-class Article extends Model implements Sitemapable
+class Article extends Model
 {
     use HasFactory;
 
@@ -31,18 +29,6 @@ class Article extends Model implements Sitemapable
         'image_id',
         'reading_time'
     ];
-
-
-    /**
-     * Get sitemap
-     *
-     * @return mixed
-     */
-    public function toSitemapTag(): Url | string | array
-    {
-        return url('blog', $this->slug);
-    }
-
 
     /**
      * Get article image

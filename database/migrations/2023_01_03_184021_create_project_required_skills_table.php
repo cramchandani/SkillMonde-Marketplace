@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('project_id')->index();
             $table->unsignedBigInteger('skill_id')->index();
 
-            $table->foreign('project_id')->references('id')->on('projects')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('skill_id')->references('id')->on('projects_skills')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('skill_id')->references('id')->on('projects_skills');
         });
     }
 

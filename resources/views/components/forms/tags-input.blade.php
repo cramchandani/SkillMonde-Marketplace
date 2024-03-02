@@ -12,7 +12,7 @@
         <input 
             type="text" 
             :disabled="tags.length === maximum ? true : false" 
-            maxlength="20" 
+            maxlength="40" 
             x-model="value" 
             x-ref="value" 
             @keyup.enter="addTag()" 

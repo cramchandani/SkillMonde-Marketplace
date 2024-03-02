@@ -38,9 +38,6 @@ class Header extends Component
      */     
     public function mount()
     {
-        // Clean query
-        $this->q = clean($this->q);
-        
         // Check if user online
         if (auth()->check()) {
             
@@ -208,9 +205,7 @@ class Header extends Component
      */
     public function getCategoriesProperty()
     {
-        return Category::with(['subcategories' => function($query) {
-            return $query->orderBy('id', 'desc');
-        }])->get();
+        return Category::with('subcategories')->get();
     }
 
 

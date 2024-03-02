@@ -33,7 +33,7 @@ class Reply extends Mailable implements ShouldQueue
     public function build()
     {
         // Set subject
-        $subject = __('messages.t_re_subject', ['subject' => $this->message->subject]);
+        $subject = "[" . config('app.name') . "] " . __('messages.t_re_subject', ['subject' => $this->message->subject]);
 
         return $this->markdown('mail.admin.support.reply')->subject($subject);
     }

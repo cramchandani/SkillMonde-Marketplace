@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title', 100);
             $table->text('description');
 
-            $table->foreign('article_id')->references('id')->on('blog_articles')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('article_id')->references('id')->on('blog_articles');
         });
     }
 

@@ -9,6 +9,8 @@ use App\Models\ProjectBidUpgrade;
 use App\Models\ProjectBiddingPlan;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
+use Razorpay\Api\Api;
+use GuzzleHttp\Client;
 
 class CheckoutComponent extends Component
 {
@@ -16,7 +18,15 @@ class CheckoutComponent extends Component
 
     public $subscription;
     public $selected_payment_method;
+    public $amount        = null;
+    public $razorpay_order_id;
+    
+    public $selected      = null;
+    public $fee           = 0;
+    public $is_third_step = false;
+    public $isSucceeded   = false;
 
+    //public $response;
     /**
      * Initialize component
      *
@@ -221,6 +231,24 @@ class CheckoutComponent extends Component
 
                     break;
                 
+                // Razorpay
+                case 'razorpay':
+                                            // Generate order id
+                        $razorpay_api   = new Api(config('razorpay.key_id'), config('razorpay.key_secret'));
+
+                        $razorpay_order = $razorpay_api->order->create([
+                            'amount'   => $this->amount * 100,
+                            'currency' => settings('razorpay')->currency,
+                        ]);
+
+                        // Set order id
+                        $this->razorpay_order_id = $razorpay_order->id;
+
+                        // Go to next step
+                        $this->is_third_step = true;
+
+                        break;
+                
                 default:
                     
                     // No payment selected
@@ -282,6 +310,115 @@ class CheckoutComponent extends Component
             return $amount;
         }
     }
+
+/**
+ * Handle payment
+ *
+ * @param mixed $data
+ * @return void
+ */
+public function handle($data = null)
+{
+    try {
+        // Check selected payment method
+        switch ($this->selected_payment_method) {
+
+            // PayPal
+            case 'paypal':
+                // Handle PayPal payment
+                $response = $this->paypal($data);
+                break;
+
+            // Razorpay
+            case 'razorpay':
+                // Handle Razorpay payment
+                $response = $this->razorpay($data);
+                break;
+
+            default:
+                // No payment method selected
+                $response = [
+                    'success' => false,
+                    'message' => __('messages.t_no_payment_method_selected'),
+                    'provider' => null
+                ];
+                break;
+        }
+
+        // Inside the handle function
+        if (isset($response['success']) && $response['success']) {
+            // Transaction completed
+            $this->isSucceeded = true; 
+        
+            // Success notification
+            $this->notification([
+                'title' => __('messages.t_success'),
+                'description' => __('messages.t_ur_transaction_has_completed'),
+                'icon' => 'success'
+            ]);
+        
+            // Scroll up
+            $this->dispatchBrowserEvent('scrollTo', 'scroll-to-deposit-container');
+        } else {
+            // Payment error notification
+            $this->notification([
+                'title' => __('messages.t_error'),
+                'description' => $response['message'] ?? __('messages.t_unknown_error'),
+                'icon' => 'error'
+            ]);
+        }
+
+
+    } catch (\Throwable $th) {
+        // Something went wrong notification
+        $this->notification([
+            'title' => __('messages.t_error'),
+            'description' => $th->getMessage(),
+            'icon' => 'error'
+        ]);
+    }
+}
+
+/**
+ * Handle Razorpay payment
+ *
+ * @param array $data
+ * @return array|string
+ */
+protected function razorpay($data)
+{
+    try {
+        // Get the payment information from the provided data
+        $payment = [
+            'amount' => $this->subscription->amount * 100,
+            'currency' => settings('razorpay')->currency,
+        ];
+
+        // Initialize the Razorpay API with your credentials
+        $api = new Api(config('razorpay.key_id'), config('razorpay.key_secret'));
+
+        // Fetch the Razorpay payment using the payment ID from the provided data
+        $response = $api->payment->fetch($data['razorpay_payment_id'])->capture($payment);
+
+        // Update subscription payment details
+        $this->subscription->payment_method = 'razorpay';
+        $this->subscription->payment_id = $response['id'];
+        $this->subscription->status = 'paid';
+        $this->subscription->save();
+        
+        // Successfull payment
+       // $this->success('razorpay', $order['id']);
+        
+        $this->success('razorpay', $response['id']);
+        
+        // Go to bids page with success message
+        return redirect('seller/projects/bids')->with('success', __('messages.t_ur_payment_has_succeeded'));
+    } catch (Exception $e) {
+        // Handle any exceptions that occur during payment capture
+        return $e->getMessage();
+    }
+}
+
 
 
     /**

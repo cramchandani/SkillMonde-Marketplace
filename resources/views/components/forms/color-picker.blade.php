@@ -3,7 +3,7 @@
 <div>
 
     {{-- Label --}}
-    <label for="color-picker-component-id-{{ $model }}" class="block text-sm font-medium tracking-wide {{ $errors->first($model) ? 'text-red-600 dark:text-red-500' : 'text-gray-600 dark:text-white' }}">{{ htmlspecialchars_decode($label) }}</label>
+    <label for="color-picker-component-id-{{ $model }}" class="block text-[0.8125rem] font-medium tracking-wide {{ $errors->first($model) ? 'text-red-600 dark:text-red-500' : 'text-gray-700 dark:text-white' }}">{{ htmlspecialchars_decode($label) }}</label>
 
     {{-- Form --}}
     <div class="mt-2 relative color-picker-wrapper">

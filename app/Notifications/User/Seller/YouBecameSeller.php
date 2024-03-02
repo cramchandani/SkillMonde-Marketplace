@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Seller;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class YouBecameSeller extends Notification implements ShouldQueue
 {
@@ -42,12 +41,12 @@ class YouBecameSeller extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_seller_u_became_seller');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_seller_u_became_seller');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_seller_line_1_u_became_seller')))
+                    ->line(__('messages.t_notification_seller_line_1_u_became_seller'))
                     ->action(__('messages.t_seller_dashboard'), url('seller/home'));
     }
 

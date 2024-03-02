@@ -26,7 +26,6 @@ use App\Models\ProjectRequiredSkill;
 use App\Models\UserWithdrawalHistory;
 use App\Models\UserWithdrawalSettings;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
-use Schema;
 
 class TrashComponent extends Component
 {
@@ -152,9 +151,6 @@ class TrashComponent extends Component
             // Get user
             $user = User::onlyTrashed()->where('id', $id)->firstOrFail();
             
-            // Disable foreign key check
-            Schema::disableForeignKeyConstraints();
-
             // Get conversations from this user
             $conversations = Conversation::where('from_id', $user->id)->orWhere('to_id', $user->id)->get();
 
@@ -197,7 +193,7 @@ class TrashComponent extends Component
                     if (in_array($item->status, ['pending', 'proceeded']) && !$item->is_finished) {
                         
                         // Update order in queue
-                        if ($item->gig->total_orders_in_queue() > 0) {
+                        if ($item->gig->orders_in_queue > 0) {
                             $item->gig()->decrement('orders_in_queue');
                         }
 
@@ -465,9 +461,6 @@ class TrashComponent extends Component
 
             // Finally force delete for this user
             $user->forceDelete();
-
-            // Enable foreign key check
-            Schema::enableForeignKeyConstraints();
 
             // Success
             $this->notification([

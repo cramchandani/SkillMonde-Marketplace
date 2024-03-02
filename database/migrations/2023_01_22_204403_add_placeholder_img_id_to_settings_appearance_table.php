@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::table('settings_appearance', function (Blueprint $table) {
             $table->unsignedBigInteger('placeholder_img_id')->index()->nullable()->after('font_family');
 
-            $table->foreign('placeholder_img_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('placeholder_img_id')->references('id')->on('file_manager');
         });
     }
 

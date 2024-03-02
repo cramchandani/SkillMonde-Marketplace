@@ -40,9 +40,9 @@ return new class extends Migration
             $table->timestamp('last_activity')->nullable();
             $table->timestamps();
 
-            $table->foreign('avatar_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('level_id')->references('id')->on('levels')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('country_id')->references('id')->on('countries')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('avatar_id')->references('id')->on('file_manager');
+            $table->foreign('level_id')->references('id')->on('levels');
+            $table->foreign('country_id')->references('id')->on('countries');
 
         });
     }

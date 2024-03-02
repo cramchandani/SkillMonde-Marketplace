@@ -80,7 +80,7 @@ class GigsComponent extends Component
             $gig = Gig::where('user_id', auth()->id())->where('uid', $id)->where('status', '!=', 'deleted')->firstOrFail();
 
             // Check if gig has orders in queue
-            if ($gig->total_orders_in_queue()) {
+            if ($gig->orders_in_queue) {
                 
                 // Finish orders first then you can delete it
                 $this->notification([
@@ -133,7 +133,7 @@ class GigsComponent extends Component
         $gig = Gig::where('user_id', auth()->id())->where('uid', $id)->where('status', '!=', 'deleted')->firstOrFail();
 
         // Check if gig has orders in queue
-        if ($gig->total_orders_in_queue()) {
+        if ($gig->orders_in_queue) {
             
             // Finish orders first then you can delete it
             $this->notification([

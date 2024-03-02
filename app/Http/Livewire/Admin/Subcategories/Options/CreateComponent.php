@@ -23,6 +23,11 @@ class CreateComponent extends Component
     public $icon;
     public $image;
     public $parent_id;
+    
+    public function setSlug()
+    {
+        $this->slug = strtolower(str_replace(' ', '-', $this->name));
+    }
 
     /**
      * Render component

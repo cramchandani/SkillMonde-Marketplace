@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class GigPublished extends Notification implements ShouldQueue
 {
@@ -44,12 +43,12 @@ class GigPublished extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_ur_gig_published');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_ur_gig_published');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_gig_published')))
+                    ->line(__('messages.t_notification_gig_published'))
                     ->action(__('messages.t_view_gig'), url('service', $this->gig->slug));
     }
 

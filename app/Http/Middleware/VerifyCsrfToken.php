@@ -13,8 +13,18 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'callback/*',
-        'callback/*/*'
+        'checkout/callback/cashfree',
+        'checkout/callback/paytabs',
+        'callback/paytabs',
+        'callback/jazzcash',
+        'callback/paytr',
+        'callback/xendit',
+        'account/deposit/callback/paytabs',
+        'callback/mollie/checkout',
+        'callback/mollie/deposit',
+        'callback/epoint/success',
+        'callback/epoint/failed',
+        'callback/epoint/results'
     ];
 
     

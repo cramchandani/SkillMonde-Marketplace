@@ -25,8 +25,8 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('vat_number', 30)->nullable();
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('country_id')->references('id')->on('countries')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('country_id')->references('id')->on('countries');
         });
     }
 

@@ -29,7 +29,7 @@ class NewsletterApproved extends Mailable implements ShouldQueue
     public function build()
     {
         // Set subject
-        $subject = __('messages.t_welcome_to_newsletter_tnx');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_welcome_to_newsletter_tnx');
 
         return $this->markdown('mail.user.everyone.newsletter_approved')->subject($subject);
     }

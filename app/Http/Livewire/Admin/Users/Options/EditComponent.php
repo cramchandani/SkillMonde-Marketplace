@@ -156,7 +156,7 @@ class EditComponent extends Component
             // Success
             $this->notification([
                 'title'       => __('messages.t_success'),
-                'description' => __('messages.t_toast_operation_success'),
+                'description' => __('messages.t_account_has_been_created'),
                 'icon'        => 'success'
             ]);
 

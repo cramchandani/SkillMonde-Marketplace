@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title', 100);
             $table->text('description');
 
-            $table->foreign('gig_id')->references('id')->on('gigs')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('gig_id')->references('id')->on('gigs');
         });
     }
 

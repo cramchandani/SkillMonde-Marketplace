@@ -2,13 +2,11 @@
 
 namespace App\Http\Livewire\Main\Account\Verification;
 
-use App\Models\Admin;
 use Livewire\Component;
 use WireUi\Traits\Actions;
 use Livewire\WithFileUploads;
 use App\Models\VerificationCenter;
 use App\Utils\Uploader\ImageUploader;
-use App\Notifications\Admin\NewIdVerificationPending;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
 use App\Http\Validators\Main\Account\Verification\DocIDValidator;
 use App\Http\Validators\Main\Account\Verification\SelfieValidator;
@@ -214,9 +212,6 @@ class VerificationComponent extends Component
             $verification->file_back_side  = $back_side_id;
             $verification->file_selfie     = $selfie;
             $verification->save();
-
-            // Send notification to admin
-            Admin::first()->notify(new NewIdVerificationPending());
 
             // Success, now refresh page
             $this->dispatchBrowserEvent('refresh');

@@ -25,7 +25,7 @@ class UsernameRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        return preg_match('/^[a-zA-Z0-9_]+$/', $value) && !is_numeric($value);
+        return preg_match('/^[a-zA-Z0-9_-]+$/', $value) && !is_numeric($value);
     }
 
     /**

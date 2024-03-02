@@ -53,12 +53,20 @@
                 {{-- Actions --}}
                 <div class="mt-5 flex lg:mt-0 lg:ltr::ml-4 lg:rtl:mr-4">
         
-                {{-- Switch to buying --}}
-                <span class="block">
-                    <a href="{{ url('/') }}" class="inline-flex items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-[13px] font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:focus:ring-offset-zinc-900 dark:focus:ring-zinc-900">
-                        @lang('messages.t_switch_to_buying')
-                    </a>
-                </span>
+                {{-- Switch to buying --
+					<span class="block">
+                        <a href="{{ url('/') }}" class="inline-flex items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-[13px] font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:focus:ring-offset-zinc-900 dark:focus:ring-zinc-900 whitespace-nowrap">
+                            @lang('messages.t_switch_to_buying')
+                        </a>
+                    </span>
+                    --}}
+		
+					{{-- Publish new gig --}}
+					<span class="mt-2 sm:mt-0 sm:ltr:ml-3 sm:rtl:mr-3">
+						<a href="{{ url('create') }}" class="inline-flex items-center rounded-sm border border-transparent bg-primary-600 px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-800 dark:focus:ring-zinc-800 whitespace-nowrap" id="create-gig">
+							@lang('messages.t_create_a_new_gig')
+						</a>
+					</span>
         
                 </div>
     

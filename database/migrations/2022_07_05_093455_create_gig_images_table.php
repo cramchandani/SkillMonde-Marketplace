@@ -20,10 +20,10 @@ return new class extends Migration
             $table->unsignedBigInteger('img_medium_id');
             $table->unsignedBigInteger('img_large_id');
 
-            $table->foreign('gig_id')->references('id')->on('gigs')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('img_thumb_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('img_medium_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('img_large_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('gig_id')->references('id')->on('gigs');
+            $table->foreign('img_thumb_id')->references('id')->on('file_manager');
+            $table->foreign('img_medium_id')->references('id')->on('file_manager');
+            $table->foreign('img_large_id')->references('id')->on('file_manager');
         });
     }
 

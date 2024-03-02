@@ -64,16 +64,17 @@
                 {{-- Actions --}}
                 <div class="mt-5 flex lg:mt-0 lg:ltr::ml-4 lg:rtl:mr-4 justify-between">
         
-                    {{-- Switch to buying --}}
-                    <span class="block">
-                        <a href="{{ url('/') }}" class="inline-flex items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-[13px] font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:focus:ring-offset-zinc-900 dark:focus:ring-zinc-900">
+                    {{-- Switch to buying --
+					<span class="block">
+                        <a href="{{ url('/') }}" class="inline-flex items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-[13px] font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:focus:ring-offset-zinc-900 dark:focus:ring-zinc-900 whitespace-nowrap">
                             @lang('messages.t_switch_to_buying')
                         </a>
                     </span>
-
-                    {{-- Publish new gig --}}
-					<span class="sm:ltr:ml-3 sm:rtl:mr-3">
-						<a href="{{ url('create') }}" class="inline-flex items-center rounded-sm border border-transparent bg-primary-600 px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-800 dark:focus:ring-zinc-800">
+                    --}}
+		
+					{{-- Publish new gig --}}
+					<span class="mt-2 sm:mt-0 sm:ltr:ml-3 sm:rtl:mr-3">
+						<a href="{{ url('create') }}" class="inline-flex items-center rounded-sm border border-transparent bg-primary-600 px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-800 dark:focus:ring-zinc-800 whitespace-nowrap" id="create-gig">
 							@lang('messages.t_create_a_new_gig')
 						</a>
 					</span>
@@ -207,10 +208,10 @@
                             {{-- Sales --}}
                             <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md text-center">
                                 <span class="text-gray-900 dark:text-gray-100 text-sm font-black">{{ number_format($gig->counter_sales) }}</span>
-                                @if ($gig->total_orders_in_queue() == 1)
-                                    <p class="text-xs text-gray-400 tracking-wide font-normal mt-1 whitespace-nowrap">{{ __('messages.t_number_order_in_queue', ['number' => $gig->total_orders_in_queue()]) }}</p>
+                                @if ($gig->orders_in_queue == 1)
+                                    <p class="text-xs text-gray-400 tracking-wide font-normal mt-1 whitespace-nowrap">{{ __('messages.t_number_order_in_queue', ['number' => $gig->orders_in_queue]) }}</p>
                                 @else
-                                    <p class="text-xs text-gray-400 tracking-wide font-normal mt-1 whitespace-nowrap">{{ __('messages.t_number_orders_in_queue', ['number' => $gig->total_orders_in_queue()]) }}</p>
+                                    <p class="text-xs text-gray-400 tracking-wide font-normal mt-1 whitespace-nowrap">{{ __('messages.t_number_orders_in_queue', ['number' => $gig->orders_in_queue]) }}</p>
                                 @endif
                             </td>
 
@@ -230,49 +231,42 @@
 
                                     {{-- Pending --}}
                                     @case('pending')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-yellow-50 text-yellow-800 dark:bg-transparent dark:text-amber-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-yellow-50 text-yellow-800 dark:bg-transparent dark:text-amber-400">
                                             {{ __('messages.t_pending') }}
                                         </span>
                                         @break
                                     
                                     {{-- Active --}}
                                     @case('active')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-green-50 text-green-800 dark:bg-transparent dark:text-green-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-green-50 text-green-800 dark:bg-transparent dark:text-green-400">
                                             {{ __('messages.t_active') }}
                                         </span>
                                         @break
 
                                     {{-- Deleted --}}
-                                    @case('rejected')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-red-50 text-red-800 dark:bg-transparent dark:text-red-400">
-                                            {{ __('messages.t_needs_changes') }}
-                                        </span>
-                                        @break
-
-                                    {{-- Deleted --}}
                                     @case('deleted')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-red-50 text-pink-800 dark:bg-transparent dark:text-pink-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-red-50 text-red-800 dark:bg-transparent dark:text-red-400">
                                             {{ __('messages.t_deleted') }}
                                         </span>
                                         @break
 
                                     {{-- Featured --}}
                                     @case('featured')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-purple-50 text-purple-800 dark:bg-transparent dark:text-purple-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-purple-50 text-purple-800 dark:bg-transparent dark:text-purple-400">
                                             {{ __('messages.t_featured') }}
                                         </span>
                                         @break
 
                                     {{-- Trending --}}
                                     @case('trending')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-blue-50 text-blue-800 dark:bg-transparent dark:text-blue-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-blue-50 text-blue-800 dark:bg-transparent dark:text-blue-400">
                                             {{ __('messages.t_trending') }}
                                         </span>
                                         @break
 
                                     {{-- Boosted --}}
                                     @case('boosted')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-gray-50 text-gray-800 dark:bg-transparent dark:text-gray-300">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-gray-50 text-gray-800 dark:bg-transparent dark:text-gray-300">
                                             {{ __('messages.t_boosted') }}
                                         </span>
                                         @break
@@ -286,39 +280,23 @@
                             <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md text-center">
                                 <div class="flex justify-center items-center space-x-2 rtl:space-x-reverse">
 
-                                    {{-- Rejection reason --}}
-                                    @if ($gig->status === 'rejected' && $gig->rejection_reason)
-                                        <div>
-                                            <button id="modal-rejection-reason-button-{{ $gig->uid }}" type="button" data-tooltip-target="tooltip-actions-rejection-{{ $gig->uid }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                                                <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 2H8C4.691 2 2 4.691 2 8v13a1 1 0 0 0 1 1h13c3.309 0 6-2.691 6-6V8c0-3.309-2.691-6-6-6zm4 14c0 2.206-1.794 4-4 4H4V8c0-2.206 1.794-4 4-4h8c2.206 0 4 1.794 4 4v8z"></path><path d="M11 6h2v8h-2zm0 10h2v2h-2z"></path></svg>
-                                            </button>
-                                            <x-forms.tooltip id="tooltip-actions-rejection-{{ $gig->uid }}" :text="__('messages.t_rejection_reason')" />
-                                        </div>
-                                    @endif
-
                                     {{-- Edit --}}
-                                    <div>
-                                        <a href="{{ url('seller/gigs/edit', $gig->uid) }}" data-tooltip-target="tooltip-actions-edit-{{ $gig->uid }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                                            <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.045 7.401c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.378-.378-.88-.586-1.414-.586s-1.036.208-1.413.585L4 13.585V18h4.413L19.045 7.401zm-3-3 1.587 1.585-1.59 1.584-1.586-1.585 1.589-1.584zM6 16v-1.585l7.04-7.018 1.586 1.586L7.587 16H6zm-2 4h16v2H4z"></path></svg>
-                                        </a>
-                                        <x-forms.tooltip id="tooltip-actions-edit-{{ $gig->uid }}" :text="__('messages.t_edit')" />
-                                    </div>
+                                    <a href="{{ url('seller/gigs/edit', $gig->uid) }}" data-tooltip-target="tooltip-actions-edit-{{ $gig->uid }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                                        <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.045 7.401c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.378-.378-.88-.586-1.414-.586s-1.036.208-1.413.585L4 13.585V18h4.413L19.045 7.401zm-3-3 1.587 1.585-1.59 1.584-1.586-1.585 1.589-1.584zM6 16v-1.585l7.04-7.018 1.586 1.586L7.587 16H6zm-2 4h16v2H4z"></path></svg>
+                                    </a>
+                                    <x-forms.tooltip id="tooltip-actions-edit-{{ $gig->uid }}" :text="__('messages.t_edit')" />
 
                                     {{-- Analytics --}}
-                                    <div>
-                                        <a href="{{ url('seller/gigs/analytics', $gig->uid) }}" data-tooltip-target="tooltip-actions-analytics-{{ $gig->uid }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                                            <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v17a1 1 0 0 0 1 1h17v-2H5V3H3z"></path><path d="M15.293 14.707a.999.999 0 0 0 1.414 0l5-5-1.414-1.414L16 12.586l-2.293-2.293a.999.999 0 0 0-1.414 0l-5 5 1.414 1.414L13 12.414l2.293 2.293z"></path></svg>
-                                        </a>
-                                        <x-forms.tooltip id="tooltip-actions-analytics-{{ $gig->uid }}" :text="__('messages.t_analytics')" />
-                                    </div>
+                                    <a href="{{ url('seller/gigs/analytics', $gig->uid) }}" data-tooltip-target="tooltip-actions-analytics-{{ $gig->uid }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                                        <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v17a1 1 0 0 0 1 1h17v-2H5V3H3z"></path><path d="M15.293 14.707a.999.999 0 0 0 1.414 0l5-5-1.414-1.414L16 12.586l-2.293-2.293a.999.999 0 0 0-1.414 0l-5 5 1.414 1.414L13 12.414l2.293 2.293z"></path></svg>
+                                    </a>
+                                    <x-forms.tooltip id="tooltip-actions-analytics-{{ $gig->uid }}" :text="__('messages.t_analytics')" />
 
                                     {{-- Delete --}}
-                                    <div>
-                                        <button wire:click="confirmDelete('{{ $gig->uid }}')" type="button" data-tooltip-target="tooltip-actions-delete-{{ $gig->uid }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                                            <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
-                                        </button>
-                                        <x-forms.tooltip id="tooltip-actions-delete-{{ $gig->uid }}" :text="__('messages.t_delete')" />
-                                    </div>
+                                    <button wire:click="confirmDelete('{{ $gig->uid }}')" type="button" data-tooltip-target="tooltip-actions-delete-{{ $gig->uid }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+                                        <svg class="w-4 h-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                                    </button>
+                                    <x-forms.tooltip id="tooltip-actions-delete-{{ $gig->uid }}" :text="__('messages.t_delete')" />
                                         
                                 </div>
                             </td>
@@ -369,29 +347,9 @@
 
                         </x-forms.modal>
 
-                        {{-- Rejection reason --}}
-                        @if ($gig->status === 'rejected' && $gig->rejection_reason)
-                            <x-forms.modal id="modal-rejection-reason-container-{{ $gig->uid }}" target="modal-rejection-reason-button-{{ $gig->uid }}" uid="modal_{{ uid() }}" placement="center-center" size="max-w-md">
-
-                                {{-- Header --}}
-                                <x-slot name="title">{{ __('messages.t_rejection_reason') }}</x-slot>
-
-                                {{-- Body --}}
-                                <x-slot name="content">
-
-                                    {{-- Message --}}
-                                    <div class="text-sm text-gray-500 dark:text-zinc-300 leading-relaxed">
-                                        {!! $gig->rejection_reason !!}
-                                    </div>
-
-                                </x-slot>
-
-                            </x-forms.modal>
-                        @endif
-
                     @empty
                         <tr>
-                            <td colspan="7" class="py-3 font-light text-sm text-gray-400 dark:text-zinc-200 text-center tracking-wide shadow-sm bg-white dark:bg-zinc-800 rounded-md">
+                            <td colspan="5" class="py-3 font-light text-sm text-gray-400 dark:text-zinc-200 text-center tracking-wide shadow-sm bg-white dark:bg-zinc-800 rounded-md">
                                 @lang('messages.no_results_found')
                             </td>
                         </tr>

@@ -100,7 +100,7 @@
                             :label="__('messages.t_description')"
                             :placeholder="__('messages.t_briefly_describe_ur_gig')"
                             model="description"
-                            old="{!! str_replace(['&amp;nbsp;', '&nbsp;'], ' ', $gig->description) !!}"
+                            old="{!! str_replace('&amp;nbsp;', ' ', $gig->description) !!}"
                             target="edit-gig-action-btn" />
                     </div>
         
@@ -163,7 +163,7 @@
                     </div>
 
                     {{-- Seo preview --}}
-                    <div class="col-span-12 mt-5 overflow-hidden">
+                    <div class="col-span-12 mt-5">
                         <template x-if="seo.title && seo.description">
                             <div class="relative max-w-full">
                                 <span class="text-xs font-normal truncate block text-green-700" x-text="seoUrlPreview"></span>
@@ -275,7 +275,7 @@
 
                 {{-- Question --}}
                 <div class="col-span-12">
-                    <div class="mt-2.5 relative">
+                    <div class="mt-2 relative">
                         <input type="text" placeholder="{{ __('messages.t_faq_question_example') }}" wire:model.defer="question" class="dark:bg-transparent block w-full text-xs rounded border-2 ltr:pr-10 rtl:pl-10 py-3 ltr:pl-3 rtl:pr-3 font-normal {{ $errors->first('question') ? 'border-red-500 text-red-600 placeholder-red-400 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 dark:border-zinc-600 placeholder-gray-400 dark:placeholder-gray-200 focus:ring-primary-600 focus:border-primary-600 dark:text-gray-100' }}" maxlength="100">
                         {{-- Icon --}}
                         <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 ltr:pr-3 rtl:pl-3 flex items-center pointer-events-none">

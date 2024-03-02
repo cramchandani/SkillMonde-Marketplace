@@ -2,19 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('test', function() {
+// Updater
+if (File::exists(app_path('Http/Controllers/Update/UpdateController.php'))) {
 
-    $subcategories = App\Models\Subcategory::whereDoesntHave('parent')->get();
-   
-    foreach ($subcategories as $s) {
-    
-        $s->update([
-            'parent_id' => 6
-        ]);
+    // Upgrade
+    Route::namespace('App\Http\Controllers\Update')->prefix('update')->group(function() {
 
-    }
+        // Index
+        Route::get('/', 'UpdateController@update');
 
-});
+    });
+
+}
 
 // Tasks
 Route::prefix('tasks')->group(function() {
@@ -74,6 +73,7 @@ Route::namespace('App\Http\Livewire\Main')->group(function() {
     });
 
     // Blog
+    /*
     Route::namespace('Blog')->prefix('blog')->group(function() {
 
         // Index
@@ -83,6 +83,7 @@ Route::namespace('App\Http\Livewire\Main')->group(function() {
         Route::get('{slug}', ArticleComponent::class);
 
     });
+    */
 
     // Sellers
     Route::namespace('Sellers')->prefix('sellers')->group(function() {
@@ -226,11 +227,60 @@ Route::namespace('App\Http\Livewire\Main')->group(function() {
         // Checkout
         Route::get('/', CheckoutComponent::class);
 
+        // Callback
+        Route::namespace('Callback')->prefix('callback')->group(function() {
+
+            // Stripe
+            Route::get('stripe', StripeComponent::class);
+
+            // Flutterwave
+            Route::get('flutterwave', FlutterwaveComponent::class);
+
+            // VNPay
+            Route::get('vnpay', VnpayComponent::class);
+
+            // Paytabs
+            Route::post('paytabs', PaytabsComponent::class);
+
+            // YouCanPay
+            Route::get('youcanpay', YoucanpayComponent::class);
+
+            // Mollie
+            Route::get('mollie/{id}', MollieComponent::class);
+
+            // Mercadopago
+            Route::get('mercadopago', MercadopagoComponent::class);
+
+            // Xendit
+            Route::get('xendit', XenditComponent::class);
+
+            // Epoint.az (Failed)
+            Route::get('epoint/failed', function() {
+
+                // We couldn't handle your payment
+                return redirect('checkout')->with('error', __('messages.t_we_could_not_handle_ur_payment'));
+
+            });
+
+            // Epoint.az (Success)
+            Route::get('epoint/success', EpointComponent::class);
+
+        });
+
     });
 
     // Account
     Route::namespace('Account')->prefix('account')->middleware('auth')->group(function() {
 
+        // Landing
+        Route::namespace('Landing')->group(function() {
+
+            // Index
+            Route::get('landing', LandingComponent::class);
+
+        });
+        
+        
         // Settings
         Route::namespace('Settings')->group(function() {
 
@@ -366,22 +416,6 @@ Route::namespace('App\Http\Livewire\Main')->group(function() {
                 Route::get('milestones/{id}', MilestonesComponent::class);
                 
             });
-
-        });
-
-        // Sessions
-        Route::namespace('Sessions')->prefix('sessions')->group(function() {
-
-            // All
-            Route::get('/', SessionsComponent::class);
-
-        });
-
-        // Submitted offers
-        Route::namespace('Offers')->prefix('offers')->group(function() {
-
-            // All
-            Route::get('/', OffersComponent::class);
 
         });
 
@@ -563,14 +597,6 @@ Route::namespace('App\Http\Livewire\Main')->group(function() {
 
         });
 
-        // Offers
-        Route::namespace('Offers')->prefix('offers')->group(function() {
-
-            // All
-            Route::get('/', OffersComponent::class);
-
-        });
-
     });
 
     // Help
@@ -656,6 +682,34 @@ Route::namespace('App\Http\Livewire\Main')->group(function() {
         Route::get('{id}', ReviewsComponent::class);
 
     });
+    
+    
+    // Edtech Page
+    Route::get('/edtech', 'App\Http\Livewire\Main\CustomPage\EdtechComponent')->name('edtech');
+    
+    // Pubishers page
+    Route::get('/publishers', 'App\Http\Livewire\Main\CustomPage\PublishersComponent')->name('publishers');
+    
+    // NGO page
+    Route::get('/ngo', 'App\Http\Livewire\Main\CustomPage\NgoComponent')->name('ngo');
+
+    // Government page
+    Route::get('/government', 'App\Http\Livewire\Main\CustomPage\GovernmentComponent')->name('government');
+    
+    // Corporate page
+    Route::get('/corporate', 'App\Http\Livewire\Main\CustomPage\CorporateComponent')->name('corporate');
+    
+    // Academic page
+    Route::get('/academic', 'App\Http\Livewire\Main\CustomPage\AcademicComponent')->name('academic');
+    
+    // Thank You page
+    Route::get('/thank-you', 'App\Http\Livewire\Main\CustomPage\ThankyouComponent')->name('thank-you');
+    
+    // Post project
+    Route::get('/post-project', 'App\Http\Livewire\Main\CustomPage\PostprojectComponent')->name('postproject');
+    
+    Route::get('/sellers', '\App\Http\Livewire\Main\Sellers\SellersComponent')->name('sellers');
+    
 
 });
 
@@ -691,6 +745,7 @@ Route::namespace('App\Http\Controllers\Main')->group(function() {
         Route::post('edit/{id}', 'EditController@update');
 
     });
+    
 
 });
 
@@ -729,122 +784,146 @@ Route::namespace('App\Http\Controllers\Uploads')->prefix('uploads')->group(funct
 
     });
 
-    // Offers
-    Route::namespace('Offers')->prefix('offers')->middleware('auth')->group(function() {
-
-        // File
-        Route::get('{file}', 'OffersController@attachment');
-
-        // Work
-        Route::get('work/{file}', 'OffersController@work');
-
-    });
-
 });
 
-// Callback routes for payment gateways
-Route::namespace('App\Http\Controllers\Callback')->prefix('callback')->group(function() {
-
-    // Asaas
-    Route::post('asaas', 'AsaasController@callback');
-
-    // Campay
-    Route::get('campay/success', 'CampayController@success');
-    Route::get('campay/failed', 'CampayController@failed');
-
-    // Cashfree
-    Route::get('cashfree', 'CashfreeController@callback');
-    Route::post('cashfree', 'CashfreeController@webhook');
-
-    // cPay
-    Route::get('cpay/success', 'CpayController@success');
-    Route::get('cpay/failed', 'CpayController@failed');
-
-    // Duitku
-    Route::get('duitku', 'DuitkuController@callback');
-
-    // Ecpay
-    Route::post('ecpay', 'EcpayController@callback');
-
-    // Epoint.az
-    Route::get('epoint/success', 'EpointController@success');
-    Route::get('epoint/failed', 'EpointController@failed');
-
-    // FastPay
-    Route::get('fastpay/success', 'FastpayController@success');
-    Route::get('fastpay/failed', 'FastpayController@failed');
-    Route::get('fastpay/cancel', 'FastpayController@cancel');
-
-    // Flutterwave
-    Route::get('flutterwave', 'FlutterwaveController@callback');
-
-    // Freekassa
-    Route::post('freekassa', 'FreekassaController@webhook');
-
-    // Genie business
-    Route::get('genie-business', 'GenieController@callback');
-    Route::post('genie-business', 'GenieController@webhook');
-
-    // Iyzico
-    Route::post('iyzico', 'IyzicoController@callback');
-
-    // Jazzcash
-    Route::post('jazzcash', 'JazzcashController@callback');
-
-    // Mercadopago
-    Route::get('mercadopago/success', 'MercadopagoController@success');
-    Route::get('mercadopago/pending', 'MercadopagoController@pending');
-    Route::get('mercadopago/failed', 'MercadopagoController@failed');
-
-    // Mollie
-    Route::get('mollie', 'MollieController@callback');
-    Route::post('mollie', 'MollieController@webhook');
-
-    // Nowpayments.io
-    Route::post('nowpayments/ipn', 'NowpaymentsController@ipn');
-    Route::get('nowpayments/success', 'NowpaymentsController@success');
-    Route::get('nowpayments/cancel', 'NowpaymentsController@cancel');
-
-    // Paymob
-    Route::get('paymob', 'PaymobController@callback');
-
-    // Paymob Pakistan
-    Route::get('paymob-pk', 'PaymobPkController@callback');
-
-    // PayPal
-    Route::get('paypal', 'PaypalController@callback');
-
-    // Paystack
-    Route::get('paystack', 'PaystackController@callback');
-    Route::post('paystack', 'PaystackController@webhook');
-
-    // Paytabs
-    Route::post('paytabs', 'PaytabsController@callback');
-
-    // PayTR
-    Route::get('paytr/success', 'PaytrController@success');
-    Route::get('paytr/failed', 'PaytrController@failed');
-    Route::post('paytr', 'PaytrController@webhook');
-
-    // Razorpay
-    Route::get('razorpay', 'RazorpayController@callback');
-
-    // Robokassa
-    Route::post('robokassa', 'RobokassaController@callback');
+// Deposit callback
+Route::namespace('App\Http\Controllers\Main\Account\Deposit')->prefix('account/deposit/callback')->middleware('auth')->group(function() {
 
     // Stripe
     Route::get('stripe', 'StripeController@callback');
 
-    // Vnpay
-    Route::get('vnpay', 'VnpayController@callback');
+    // Flutterwave
+    Route::get('flutterwave', 'FlutterwaveController@callback');
 
-    // Xendit
-    Route::get('xendit/success', 'XenditController@success');
-    Route::get('xendit/failed', 'XenditController@failed');
-    Route::post('xendit', 'XenditController@webhook');
+    // Cashfree
+    Route::post('cashfree/token', 'CashfreeController@token');
+    Route::post('cashfree', 'CashfreeController@callback');
+
+    // VNPay
+    Route::get('vnpay', 'VNPayController@callback');
+
+    // PayTabs
+    Route::post('paytabs', 'PaytabsController@callback');
 
     // Youcanpay
     Route::get('youcanpay', 'YoucanpayController@callback');
 
+    // Mollie
+    Route::get('mollie/{id}', 'MollieController@callback');
+
+    // Mercadopago
+    Route::get('mercadopago', 'MercadopagoController@callback');
+
+    // Xendit
+    Route::get('xendit', 'XenditController@callback');
+
+    // Epoint.az (Failed)
+    Route::get('epoint/failed', function() {
+
+        // We couldn't handle your payment
+        return redirect('account/deposit/history')->with('error', __('messages.t_we_could_not_handle_ur_deposit_payment'));
+
+    });
+
+    // Epoint.az (Success)
+    Route::get('epoint/success', 'EpointController@callback');
+
+});
+
+// Payment methods callback (Authenticated)
+Route::namespace('App\Http\Controllers\Main\Callback')->prefix('callback')->middleware('auth')->group(function() {
+
+    // Paymob
+    Route::get('paymob', 'PaymobController@callback');
+
+    // Jazzcash
+    Route::post('jazzcash', 'JazzcashController@callback');
+
+});
+
+// Payment methods callback (Guest)
+Route::namespace('App\Http\Controllers\Main\Callback')->prefix('callback')->group(function() {
+
+    // PayTR
+    Route::get('paytr', 'PaytrController@callback');
+    Route::post('paytr', 'PaytrController@webhook');
+
+    // Mollie
+    Route::post('mollie/checkout', 'MollieController@checkout');
+    Route::post('mollie/deposit', 'MollieController@deposit');
+
+    // Xendit
+    Route::post('xendit', 'XenditController@webhook');
+
+});
+
+// Cashfree checkout callback
+Route::post('checkout/callback/cashfree/token', 'App\Http\Controllers\Main\Checkout\CashfreeController@token');
+
+// Mollie checkout callback
+Route::get('checkout/callback/mollie/redirect', 'App\Http\Controllers\Main\Checkout\MollieController@redirect');
+Route::get('checkout/callback/mollie/webhook', 'App\Http\Controllers\Main\Checkout\MollieController@webhook');
+
+// Chat
+Route::namespace('App\Http\Controllers\Chat')->prefix('inbox')->middleware('auth')->group(function() {
+
+    // Index
+    Route::get('/', 'MessagesController@index')->name(config('chatify.routes.prefix'));
+
+    // Fetch info for specific id
+    Route::post('/idInfo', 'MessagesController@idFetchData');
+
+    // Send message route
+    Route::post('/sendMessage', 'MessagesController@send')->name('send.message');
+
+    // Fetch messages
+    Route::post('/fetchMessages', 'MessagesController@fetch')->name('fetch.messages');
+
+    // Download attachments route to create a downloadable links
+    Route::get('/download/{fileName}', 'MessagesController@download')->name(config('chatify.attachments.download_route_name'));
+
+    // Authentication for pusher private channels
+    Route::post('/chat/auth', 'MessagesController@pusherAuth')->name('pusher.auth');
+
+    // Make messages as seen
+    Route::post('/makeSeen', 'MessagesController@seen')->name('messages.seen');
+
+    // Get contacts
+    Route::get('/getContacts', 'MessagesController@getContacts')->name('contacts.get');
+
+    // Update contact item data
+    Route::post('/updateContacts', 'MessagesController@updateContactItem')->name('contacts.update');
+
+
+    // Star in favorite list
+    Route::post('/star', 'MessagesController@favorite')->name('star');
+
+    // get favorites list
+    Route::post('/favorites', 'MessagesController@getFavorites')->name('favorites');
+
+    // Search in messenger
+    Route::get('/search', 'MessagesController@search')->name('search');
+
+    // Get shared photos
+    Route::post('/shared', 'MessagesController@sharedPhotos')->name('shared');
+
+    // Delete Conversation
+    Route::post('/deleteConversation', 'MessagesController@deleteConversation')->name('conversation.delete');
+
+    // Delete Message
+    Route::post('/deleteMessage', 'MessagesController@deleteMessage')->name('message.delete');
+
+    // Update setting
+    Route::post('/updateSettings', 'MessagesController@updateSettings')->name('avatar.update');
+
+    // Set active status
+    Route::post('/setActiveStatus', 'MessagesController@setActiveStatus')->name('activeStatus.set');
+
+    // [Group] view by id
+    Route::get('/group/{id}', 'MessagesController@index')->name('group');
+
+    // user view by id
+    Route::get('/{id}', 'MessagesController@index')->name('user');
+    // routes/web.php
 
 });

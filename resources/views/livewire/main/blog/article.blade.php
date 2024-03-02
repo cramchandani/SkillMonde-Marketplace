@@ -267,6 +267,11 @@
 
                             </div>
 
+                            {{-- reCaptcha --}}
+                            @if (settings('security')->is_recaptcha)
+                                <x-honey recaptcha/>
+                            @endif
+
                         </form>
                     </div>
                 </div>

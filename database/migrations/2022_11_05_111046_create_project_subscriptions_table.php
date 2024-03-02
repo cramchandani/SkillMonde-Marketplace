@@ -24,8 +24,8 @@ return new class extends Migration
             $table->unsignedBigInteger('receipt_id')->index()->nullable();
             $table->timestamp('created_at');
 
-            $table->foreign('project_id')->references('id')->on('projects')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('receipt_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('receipt_id')->references('id')->on('file_manager');
         });
     }
 

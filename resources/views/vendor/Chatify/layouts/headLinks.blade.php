@@ -23,6 +23,8 @@
 	{{-- Favicon --}}
 	<link rel="icon" type="image/png" href="{{ src( settings('general')->favicon ) }}"/>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  
 	{{-- Styles --}}
 	<link rel="stylesheet" href="{{ mix('css/app.css') }}" />
 	<link rel="stylesheet" href="{{ url('public/js/plugins/emojipanel/dist/emojipanel.css') }}" />
@@ -30,6 +32,9 @@
 	<link rel='stylesheet' href="{{ url('public/js/plugins/nprogress/nprogress.css') }}" />
 	<link rel="stylesheet" href="{{ url('public/css/chatify/style.css') }}" />
 	<link rel="stylesheet" href="{{ url('public/css/chatify/'.$dark_mode.'.mode.css') }}" />
+	
+	<script src="https://meet.jit.si/external_api.js"></script>
+	
 
 	{{-- Messenger Color Style--}}
 	@include('Chatify::layouts.messengerColor')
@@ -50,9 +55,44 @@
 			margin: 5px;
 			display: inline-block;
 		}
-		.messenger-messagingView {
-			height: 100% !important;
-		}
+		
+	.modal.modal-fullscreen .modal-dialog,
+    .modal.modal-fullscreen .modal-content {
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .modal.modal-fullscreen .modal-dialog {
+      margin: 0;
+      width: 100%;
+      animation-duration:0.6s;
+    }
+    .modal.modal-fullscreen .modal-content {
+      border: none;
+      -moz-border-radius: 0;
+      border-radius: 0;
+      -webkit-box-shadow: inherit;
+      -moz-box-shadow: inherit;
+      -o-box-shadow: inherit;
+      box-shadow: inherit;
+    }
+    .modal.modal-fullscreen.force-fullscreen .modal-body {
+      padding: 0;
+    }
+    .modal.modal-fullscreen.force-fullscreen .modal-header,
+    .modal.modal-fullscreen.force-fullscreen .modal-footer {
+      left: 0;
+      position: absolute;
+      right: 0;
+    }
+    .modal.modal-fullscreen.force-fullscreen .modal-header {
+      top: 0;
+    }
+    .modal.modal-fullscreen.force-fullscreen .modal-footer {
+      bottom: 0;
+    }	
 	</style>
 
 	{{-- JavaScript variables --}}
@@ -76,5 +116,8 @@
 	<script src="{{ url('public/js/plugins/momentjs/moment-with-locales.js') }}"></script>
 	<script src="{{ url('public/js/plugins/momentjs/moment-timezone.min.js') }}"></script>
 	<script src="{{ url('public/js/plugins/momentjs/moment-timezone-with-data-1970-2030.min.js') }}"></script>
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+  
 
 </head>

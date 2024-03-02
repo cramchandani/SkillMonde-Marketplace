@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => 'Riverr',
+    'name' => 'Skillmonde',
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug' => true,
+    'debug' => (bool) false,
 
     /*
     |--------------------------------------------------------------------------
@@ -54,9 +54,9 @@ return [
     |
     */
 
-    'url'       => 'https://store.localhost/skillmonde/riverr_1_3_3',
+    'url'       => 'https://skillmonde.com',
 
-    'asset_url' => 'https://store.localhost/skillmonde/riverr_1_3_3',
+    'asset_url' => 'https://www.skillmonde.com',
 
     /*
     |--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Kolkata',
 
     /*
     |--------------------------------------------------------------------------
@@ -121,7 +121,7 @@ return [
     |
     */
 
-    'key' => 'base64:CQ8MQeolKfTUIiqmqaqhNOWEfd4625F10vVb/13Ya+A=',
+    'key' => 'base64:nm8pJLS8ejwfmB9TaYkG3kVSZV387oQVq7+YUL90s1c=',
 
     'cipher' => 'AES-256-CBC',
 
@@ -191,7 +191,8 @@ return [
         October\Rain\Config\ServiceProvider::class,
         Unicodeveloper\Paystack\PaystackServiceProvider::class,
         LoveyCom\CashFree\CashFreeServiceProvider::class,
-        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
+        Paytabscom\Laravel_paytabs\PaypageServiceProvider::class, 
+        HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -219,11 +220,12 @@ return [
         'Stripe'   => Cartalyst\Stripe\Laravel\Facades\Stripe::class,
         'Mailjet'  => Mailjet\LaravelMailjet\Facades\Mailjet::class,
         'Paystack' => Unicodeveloper\Paystack\Facades\Paystack::class,
+        'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class
     ])->toArray(),
 
     /**
      * Mix base url
      */
-    'mix_url' => 'https://store.localhost/skillmonde/riverr_1_3_3/public'
+    'mix_url' => 'https://www.skillmonde.com/public'
 
 ];

@@ -4,7 +4,7 @@
             <div class="divide-y divide-gray-200 dark:divide-zinc-700 lg:grid lg:grid-cols-12 lg:divide-y-0 lg:divide-x rtl:divide-x-reverse">
 
                 {{-- Sidebar --}}
-                <aside class="lg:col-span-3 py-6 hidden lg:block" wire:ignore>
+                <aside class="lg:col-span-3 py-6 hidden lg:block aside-div" wire:ignore>
                     <x-main.account.sidebar />
                 </aside>
 
@@ -135,10 +135,6 @@
                                                                             @elseif ($item->order->invoice && $item->order->invoice->status === 'pending')
                                                                                 <p class="mt-2 text-[11px] text-amber-500 font-medium">
                                                                                     {{ __('messages.t_pending_payment') }}
-                                                                                </p>
-                                                                            @elseif ($item->status === 'delivered' && $item->is_finished)
-                                                                                <p class="mt-2 text-[11px] text-purple-500 font-medium">
-                                                                                    {{ __('messages.t_completed') }}
                                                                                 </p>
                                                                             @else
 

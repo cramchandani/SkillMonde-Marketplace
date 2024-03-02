@@ -46,8 +46,15 @@
 
         {{-- Styles --}}
         <link rel="preload" href="{{ mix('css/app.css') }}" as="style">
+        
+                {{-- New Theme --}}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+        
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-
+        
+        <link href="{{ asset('public/css/newtheme/styles.css') }}" type="text/css" rel="stylesheet">
         {{-- Preload Livewire --}}
         <link rel="preload" href="{{ livewire_asset_path() }}" as="script">
 
@@ -60,9 +67,6 @@
                 --color-primary-l: {{ hex2hsl( settings('appearance')->colors['primary'] )[2] }}%;
             }
             html {
-                font-family: @php echo settings('appearance')->font_family @endphp, sans-serif !important;
-            }
-            .fileuploader, .fileuploader-popup {
                 font-family: @php echo settings('appearance')->font_family @endphp, sans-serif !important;
             }
             .home-hero-section {
@@ -135,7 +139,14 @@
             @endif
             
         </style>
-
+        
+        <?php /* ?>
+        {{-- Vegas slideshow plugin --}}
+		@if (request()->is('/'))
+			<link rel="stylesheet" href="{{ url('node_modules/vegas/dist/vegas.min.css') }}">
+		@endif
+        <?php */ ?>
+        
         {{-- Styles --}}
         @stack('styles')
 
@@ -158,11 +169,12 @@
         @if (settings('appearance')->custom_code_head_main_layout)
             {!! settings('appearance')->custom_code_head_main_layout !!}
         @endif
+        
 
     </head>
 
-    <body class="antialiased bg-[#fafafa] dark:bg-[#161616] text-gray-600 min-h-full flex flex-col application application-ltr overflow-x-hidden overflow-y-scroll {{ app()->getLocale() === 'ar' ? 'application-ar' : '' }}" style="overflow-y: scroll">
-
+    <body class="antialiased bg-gray-50 dark:bg-[#161616] text-gray-600 min-h-full flex flex-col application application-ltr overflow-x-hidden overflow-y-scroll {{ app()->getLocale() === 'ar' ? 'application-ar' : '' }}" style="overflow-y: scroll">
+        
         {{-- Notification --}}
         <x-notifications position="top-center" z-index="z-[65]" />
 
@@ -176,63 +188,57 @@
         @if (request()->is('/'))
 
             {{-- Hero section content --}}
-            <div class="home-hero-section">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-                    <div class="w-full md:max-w-lg">
-                        
-                        {{-- Hero section title --}}
-                        <h1 class="text-center sm:ltr:text-left sm:rtl:text-right mt-4 text-xl tracking-tight font-extrabold text-white sm:mt-5 sm:text-3xl lg:mt-6 xl:text-4xl">
-                            {{ __('messages.t_find_best') }} {{ __('messages.t_freelance') }}<br> {{ __('messages.t_services_for_ur_business') }}
-                        </h1>
-                        <div class="mt-10 sm:mt-12">
-    
-                            {{-- Search form --}}
-                            <form class="flex items-center mb-4" action="{{ url('search') }}" accept="GET">   
-    
-                                {{-- Input --}}
-                                <div class="relative w-full">
-                                    <div class="absolute inset-y-0 ltr:left-0 rtl:right-0 flex items-center ltr:pl-3 rtl:pr-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
-                                    </div>
-                                    <input type="search" name="q" class="bg-white border-none text-gray-900 text-sm font-medium rounded-md block w-full ltr:pl-10 rtl:pr-10 px-2.5 py-4 focus:outline-none focus:ring-0" placeholder="{{ __('messages.t_what_service_are_u_looking_for_today') }}" required>
-                                </div>
-    
-                                {{-- Button --}}
-                                <button type="submit" class="px-5 py-4 ltr:ml-2 rtl:mr-2 text-sm font-medium text-white bg-primary-600 rounded-md border-none hover:bg-primary-800 focus:ring-0 focus:outline-none">
-                                    @lang('messages.t_search')
-                                </button>
-    
-                            </form>
-    
-                            {{-- Popular tags --}}
-                            @php
-                                $popular_tags = App\Models\Category::whereHas('gigs')->withCount('gigs')->take(5)->orderBy('gigs_count')->get();
-                            @endphp
-                            <div class="hidden sm:flex items-center text-white font-semibold text-sm whitespace-nowrap">
-                                @lang('messages.t_popular_colon') 
-                                <ul class="flex ltr:ml-3 rtl:mr-3">
-                                    @foreach ($popular_tags as $tag)
-                                        <li class="flex ltr:mr-3 rtl:ml-3 whitespace-nowrap">
-                                            <a href="{{ url('categories', $tag->slug) }}" class="border-2 border-white rounded-[40px] hover:bg-white hover:text-gray-700 transition-all duration-200 px-3 py-0.5 text-xs">
-                                                {{ $tag->name }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            
-                        </div>
-                        
+<div class="max-w-screen-2xl dark:bg-zinc-800 d-flex flex-column justify-content-sm-center home justify-content-end px-sm-5 sm:px-sm-5 px-3 sm:px-1 md:px-2 lg:px-3" style="">
+  
+    <div id="carouselExampleCaptions" class="carousel slide vh-100" data-bs-ride="carousel">
+        <div class="carousel-inner h-100">
+            <div class="carousel-item h-100 active">
+                {{--<img src="{{ asset('public/img/home/skill-cara-1optimized.jpg') }}" class="d-block w-100 h-100 img image-shift-left" alt="@lang('messages.t_slide1_headline')" style="image-orientation: ;">--}}
+                <div class="background-image-container-1"></div>
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start top-50 start-50 translate-middle">
+                    <h1 class="text-start text-2xl lg:text-6xl sm:text-xl text-capitalize">@lang('messages.t_slide1_headline')</h1>
+                    <div class="d-flex flex-sm-row flex-column align-items-sm-center justify-content-between w-100 mt-4">
+                        <a href="https://skillmonde.com/start_selling" class="btn primary-btn text-white rounded-pill">@lang('messages.t_slide1_button_1')</a>
+                        <a href="https://www.skillmonde.com/explore/projects" class="btn secondary-btn text-white rounded-pill mt-sm-0 mt-3">@lang('messages.t_slide1_button_2')</a>
                     </div>
                 </div>
             </div>
+            <div class="carousel-item h-100">
+                {{--<img src="{{ asset('public/img/home/skill-cara-2optimized.jpg') }}" class="d-block w-100 h-100 img" alt="@lang('messages.t_slide2_headline')">--}}
+                <div class="background-image-container-2"></div>
+                <div class="carousel-caption d-flex flex-column justify-content-center align-items-start top-50 start-50 translate-middle">
+                    <h1 class="text-start text-2xl lg:text-6xl sm:text-xl text-capitalize">@lang('messages.t_slide2_headline')</h1>
+                    <div class="d-flex flex-sm-row flex-column align-items-sm-center justify-content-between w-100 mt-4">
+                        <a href="https://skillmonde.com/sellers" class="btn primary-btn text-white rounded-pill">@lang('messages.t_slide2_button_1')</a>
+                        <a href="https://skillmonde.com/post-project" class="btn secondary-btn text-white rounded-pill mt-sm-0 mt-3">@lang('messages.t_slide2_button_2')</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+</div>
 
         @endif
 
         {{-- Content --}}
         <main class="flex-grow"> 
-            <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-16 pb-24 space-y-8 min-h-screen">
+            <div class="container max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-16 pb-24 space-y-8 min-h-screen">
                 @yield('content')
+            </div>
+            <div>
+                <a href="https://api.whatsapp.com/send?phone=919650023642&text=I%20am%20a%20new%20user%20and%20I%20am%20looking%20for%20some%20help" target="_blank" class="whatsapp-button">
+                  <img src="{{ asset('public/img/assets/whatsapp-small.png') }}" alt="WhatsApp" />
+                </a>
+
             </div>
         </main>
 
@@ -251,7 +257,12 @@
         {{-- Helpers --}}
         <script defer src="{{ url('public/js/utils.js?v=1.3.1') }}"></script>
         <script src="{{ url('public/js/components.js?v=1.3.1') }}"></script>
-
+        
+        {{-- New Theme --}}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        {{-- jQuery --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        
         {{-- Custom JS codes --}}
         <script defer>
             
@@ -338,6 +349,51 @@
         @if (settings('appearance')->custom_code_footer_main_layout)
             {!! settings('appearance')->custom_code_footer_main_layout !!}
         @endif
+
+
+@if (request()->is('/'))
+
+<script>
+$(document).ready(function() {
+  var carousel = $('#carouselExampleCaptions');
+  carousel.carousel({
+    interval: 3000
+  });
+});
+</script>
+
+<script defer src="{{ url('public/js/newtheme/home.js') }}"></script>
+@endif
+        {{-- Custom scripts --}}
+        @stack('scripts')
+
+<script>
+function smoothScroll(target) {
+  var targetElement = document.querySelector(target);
+  var targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+  var startPosition = window.pageYOffset;
+  var distance = targetPosition - startPosition;
+  var duration = 800;
+  var start = null;
+
+  function animate(currentTime) {
+    if (start === null) start = currentTime;
+    var timeElapsed = currentTime - start;
+    var scrollPosition = ease(timeElapsed, startPosition, distance, duration);
+    window.scrollTo(0, scrollPosition);
+    if (timeElapsed < duration) requestAnimationFrame(animate);
+  }
+
+  function ease(t, b, c, d) {
+    t /= d / 2;
+    if (t < 1) return c / 2 * t * t + b;
+    t--;
+    return -c / 2 * (t * (t - 2) - 1) + b;
+  }
+
+  requestAnimationFrame(animate);
+}
+</script>
 
     </body>
 

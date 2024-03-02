@@ -3,9 +3,10 @@
     {{-- Section title --}}
     <div class="px-4 md:px-3 py-4 md:py-5 bg-white border !border-b-0 dark:bg-gray-700 rounded-tl-lg rounded-tr-lg">
         <div class="sm:flex items-center justify-between">
-            <p class="text-sm font-bold leading-wide text-gray-800">
+            <!--<p class="text-sm font-bold leading-wide text-gray-800">
                 {{ __('messages.t_users') }}
             </p>
+            -->
             <div class="space-x-3 rtl:space-x-reverse">
 
                 {{-- Trash --}}
@@ -19,10 +20,43 @@
                     <svg class="w-5 h-5 -mt-0.5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path></svg>
                     <span>{{ __('messages.t_create_user') }}</span>
                 </a>
+                
+                
+                <div class="inline-flex justify-center items-center space-x-2 rtl:space-x-reverse" >
+                    <button 
+                        wire:click="export" class="inline-flex justify-center items-center space-x-2 rtl:space-x-reverse rounded border font-semibold focus:outline-none px-3 py-3 leading-5 text-[13px] border-primary-600 bg-primary-600 text-white hover:text-white hover:bg-primary-700 hover:border-primary-700 focus:ring focus:ring-primary-500 focus:ring-opacity-50 active:bg-primary-700 active:border-primary-700">
+                        <svg class="w-5 h-5 -mt-0.5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 10v11a2 2 0 002 2h14a2 2 0 002-2v-7h-7a5 5 0 01-5-5z"></path>
+                            <path d="M18 2h-5a3 3 0 00-3 3v7H6a2 2 0 00-2 2v11a2 2 0 002 2h14a2 2 0 002-2v-7h-7a5 5 0 01-5-5z"></path>
+                        </svg>
+                        <span>{{ __('Export Users as CSV') }}</span>
+                    </button>
+                </div>
+
+
+
 
             </div>
         </div>
     </div>
+    
+<div class="px-4 md:px-3 py-4 md:py-5 bg-white border !border-b-0 dark:bg-gray-700 rounded-tl-lg rounded-tr-lg">
+    <div class="sm:flex items-center justify-between">
+        <p class="text-sm font-bold leading-wide text-gray-800">
+            {{ __('messages.t_search_users') }}
+        </p>
+        <div class="space-x-3 rtl:space-x-reverse">
+            {{-- Add this search input field --}}
+            <input
+                wire:model.debounce.300ms="search"
+                type="text"
+                placeholder="{{ __('Search users...') }}"
+                class="w-48 px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-gray-500 focus:ring-opacity-25 dark:bg-gray-600"
+            >
+            {{-- Rest of your code --}}
+        </div>
+    </div>
+</div>
 
     {{-- Section content --}}
     <div class="bg-white dark:bg-zinc-800 overflow-y-auto border !border-t-0 !border-b-0 dark:border-zinc-600">
@@ -33,6 +67,7 @@
                     <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_account_type') }}</th>
                     <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_earnings') }}</th>
                     <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_registeration_date') }}</th>
+                    <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_referrer') }}</th>
                     <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_status') }}</th>
                     <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_options') }}</th>
                 </tr>
@@ -80,6 +115,11 @@
                         {{-- Registeration date --}}
                         <td class="text-center">
                             <span class="text-xs font-medium text-gray-500">{{ format_date($user->created_at, 'ago') }}</span>
+                        </td>
+                        
+                        {{-- Referrer --}}
+                        <td class="text-center">
+                            <span class="text-xs font-medium text-gray-500">{{ $user->referrer }}</span>
                         </td>
 
                         {{-- Status --}}
@@ -214,12 +254,35 @@
             </tbody>
         </table>
     </div>
+    
+    {{-- Pagination --}}
+    <div class="bg-gray-100 px-4 py-5 sm:px-6 rounded-bl-lg rounded-br-lg flex justify-center border-t-0 border-r border-l border-b">
+        {{ $users->appends(['search' => request('search')])->links() }}
+    </div>
 
     {{-- Pagination --}}
-    @if ($users->hasPages())
-        <div class="bg-gray-100 px-4 py-5 sm:px-6 rounded-bl-lg rounded-br-lg flex justify-center border-t-0 border-r border-l border-b">
-            {!! $users->links('pagination::tailwind') !!}
-        </div>
+    <?php /*
+    @if (empty(request('search')))
+        @if ($users->hasPages())
+            <div class="bg-gray-100 px-4 py-5 sm:px-6 rounded-bl-lg rounded-br-lg flex justify-center border-t-0 border-r border-l border-b">
+                {!! $users->links('pagination::tailwind') !!}
+            </div>
+        @endif
+    @else
+        {{ $users->appends(['search' => request('search')])->links() }}
     @endif
+    */ ?>
+    {{-- Hidden button to trigger page refresh --}}
+    <button wire:click="refreshPage" style="display: none;"></button>
 
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('livewire:load', function () {
+        window.addEventListener('popstate', () => {
+            location.reload(); // Reload the page when the back/forward buttons are used for pagination
+        });
+    });
+</script>
+
+@endpush

@@ -1709,13 +1709,6 @@ class CountriesTableSeeder extends Seeder
                 'name'      => 'Kosova',
                 'code'      => 'KS',
                 'is_active' => 1,
-            ),
-            243 => 
-            array (
-                'id'        => 244,
-                'name'      => 'Palestine',
-                'code'      => 'PS',
-                'is_active' => 1,
             )
         ));
         

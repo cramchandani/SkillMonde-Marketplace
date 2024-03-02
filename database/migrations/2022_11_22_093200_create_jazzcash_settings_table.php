@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('exchange_rate')->default(224);
             $table->integer('deposit_fee')->default(3);
 
-            $table->foreign('logo_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('logo_id')->references('id')->on('file_manager');
         });
     }
 

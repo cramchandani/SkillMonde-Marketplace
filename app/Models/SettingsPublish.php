@@ -37,16 +37,6 @@ class SettingsPublish extends Model
         'max_document_size',
         'max_images',
         'max_image_size',
-        'max_documents',
-        'enable_custom_offers',
-        'custom_offers_require_approval',
-        'custom_offers_commission_type',
-        'custom_offers_commission_value_freelancer',
-        'custom_offers_commission_value_buyer',
-        'custom_offers_expiry_days',
-        'custom_offer_enable_attachments',
-        'custom_offer_attachment_max_size',
-        'custom_offer_attachment_max_files',
-        'custom_offer_attachments_allowed_extensions'
+        'max_documents'
     ];
 }

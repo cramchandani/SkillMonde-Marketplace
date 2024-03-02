@@ -22,9 +22,6 @@ class ProjectsComponent extends Component
      */
     public function mount()
     {
-        // Clean query
-        $this->q = clean($this->q);
-
         // Check if this section enabled
         if (!settings('projects')->is_enabled) {
             return redirect('/');

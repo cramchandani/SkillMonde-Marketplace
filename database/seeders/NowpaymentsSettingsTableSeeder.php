@@ -20,7 +20,7 @@ class NowpaymentsSettingsTableSeeder extends Seeder
                 array (
                     'id'              => 1,
                     'name'            => 'NowPayments.io',
-                    'is_enabled'      => 0,
+                    'is_enabled'      => 1,
                     'logo_id'         => NULL,
                     'currency'        => 'USD',
                     'crypto_currency' => 'btc',

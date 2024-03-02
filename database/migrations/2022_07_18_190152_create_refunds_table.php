@@ -26,9 +26,9 @@ return new class extends Migration
             $table->boolean('request_admin_intervention')->default(false);
             $table->timestamp('created_at');
 
-            $table->foreign('item_id')->references('id')->on('order_items')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('seller_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('buyer_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('item_id')->references('id')->on('order_items');
+            $table->foreign('seller_id')->references('id')->on('users');
+            $table->foreign('buyer_id')->references('id')->on('users');
         });
     }
 

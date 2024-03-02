@@ -34,8 +34,8 @@ return new class extends Migration
             $table->timestamp('freelancer_rejected_date')->nullable();
             $table->timestamps();
 
-            $table->foreign('project_id')->references('id')->on('projects')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

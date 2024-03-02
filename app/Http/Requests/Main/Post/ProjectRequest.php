@@ -25,18 +25,15 @@ class ProjectRequest extends FormRequest
      */
     public function rules()
     {
-        // Get max skills
-        $max_skills = settings('projects')->max_skills;
-
         return [
             'title'       => 'required|max:100',
             'description' => 'required',
             'category'    => 'required|exists:projects_categories,id',
-            'skills'      => ['required', 'array', "max:$max_skills"],
+            'skills'      => 'required|array|min:1|max:5',
             'skills.*'    => [ Rule::exists('projects_skills', 'id')->where(function($query) {
                 return $query->where('category_id', $this->request->get('category'));
             }) ],
-            'salary_type' => 'required|in:hourly,fixed',
+            'salary_type' => 'required|in:hourly,fixed,per_word,per_minute,per_unit,per_chapter,per_book,per_course,per_video,per_animation,per_art_image,per_cover,per_page,per_question,per_others',
             'price_min'   => ['required', 'regex:/^([1-9][0-9]*|0)(\.[0-9]{1,2})?$/'],
             'price_max'   => ['required', 'regex:/^([1-9][0-9]*|0)(\.[0-9]{1,2})?$/']
         ];

@@ -247,32 +247,6 @@
                         </a>
                     @endif
 
-                    {{-- Pending reported bids --}}
-                    @if ($notifications['count_pending_offers'])
-                        <a href="{{ admin_url('offers') }}" class="w-full p-3 bg-violet-100 text-violet-700 rounded flex items-center hover:bg-opacity-50">
-        
-                            {{-- Icon --}}
-                            <div class="focus:outline-none w-8 h-8 border rounded-full border-violet-200 flex items-center flex-shrink-0 justify-center">
-                                <svg class="h-4 w-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 3h20v4H2zm17 5H3v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8h-2zm-3 6H8v-2h8v2z"></path></svg>
-                            </div>
-        
-                            {{-- Notification --}}
-                            <div class="ltr:pl-3 rtl:pr-3 w-full flex items-center justify-between">
-        
-                                {{-- Message --}}
-                                <p class="focus:outline-none text-sm leading-none">
-                                    @lang('messages.t_offers_pending_approval')
-                                </p>
-        
-                                {{-- Total --}}
-                                <p class="bg-violet-200 border border-violet-300 flex focus:outline-none font-bold h-6 items-center justify-center p-1 rounded-full text-xs w-6">
-                                    {{ $notifications['count_pending_offers'] }}
-                                </p>
-        
-                            </div>
-                        </a>
-                    @endif
-
                     {{-- Pending projects subscriptions --}}
                     @if ($notifications['count_pending_projects_subscriptions'])
                         <a href="{{ admin_url('projects/subscriptions') }}" class="w-full p-3 bg-pink-100 text-pink-700 rounded flex items-center hover:bg-opacity-50">

@@ -56,19 +56,6 @@ class ServiceComponent extends Component
             abort(404);
 
         }
-
-        // Get availability
-        $availability = $gig->owner->availability()
-                                    ->where('expected_available_date', '<=', now())
-                                    ->first();
-
-        // Check if user is unavailable
-        if ($availability) {
-            
-            // Delete it
-            $availability->delete();
-
-        }
         
     }
 

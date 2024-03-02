@@ -331,7 +331,96 @@
         }
         window.WbHObCwPcNqueuQ = WbHObCwPcNqueuQ();
     </script>
+<script>
+    // Get the text area element
+    const textarea = document.getElementById('live-chat-message-textarea');
+    
+    // Add an event listener to detect when the user pastes or types in the text area
+    textarea.addEventListener('input', function() {
+      // Get the text content of the text area
+      const text = textarea.value;
+    
+      // Regular expressions for detecting email addresses, phone/mobile numbers, and bank account numbers
+     // const emailRegex = /\S+@\S+\.\S+/;
+      
+      const emailRegex = /(\S+@\S+\.\S+)|(\S+\[at]\S+\[dot]\S+)/;
 
+      //const phoneRegex = /\d{10,}/;
+      const phoneRegex = /(\+?91[\-\.\s]?)?[2-9]\d{9}|(\+?1[\-\.\s]?)?\(?[2-9][0-9]{2}\)?[\-\.\s]?[0-9]{3}[\-\.\s]?[0-9]{4}|(\+?61[\-\.\s]?)?\(?(0?[2-57-8])\)?[\-\.\s]?[0-9]{4}[\-\.\s]?[0-9]{4}|(\+?44[\-\.\s]?)?\(?0?\d{4}\)?[\-\.\s]?\d{3}[\-\.\s]?\d{3}|(\+?7[\-\.\s]?)?(\d{3}[\-\.\s]?){2}\d{2}|\+86[\-\.\s]?1[3456789]\d{9}|(\+?92[\-\.\s]?)?3\d{9}|(\+?880[\-\.\s]?)?((\d{10})|(1\d{9}))|(\+?90[\-\.\s]?)?0?5\d{9}/;
+
+      const bankAccountRegex = /(\b\d{8}(?:\d{2})?\b)|(\b\d{2}-\d{4}-\d{7}-\d{2}\b)|(\b\d{3}-\d{7}-\d{1}\b)|(\b\d{7}-\d{1}\b)|(\b\d{10}\b)|(\b\d{12}\b)|(\b\d{16}\b)|(\b\d{4}.\d{4}.\d{4}.\d{4}\b)/;
+      const mobileRegex = /(\+?91[\-\.\s]?)?[2-9]\d{9}|(\+?1[\-\.\s]?)?\(?[2-9][0-9]{2}\)?[\-\.\s]?[0-9]{3}[\-\.\s]?[0-9]{4}|(\+?61[\-\.\s]?)?\(?(0?[2-57-8])\)?[\-\.\s]?[0-9]{4}[\-\.\s]?[0-9]{4}|(\+?44[\-\.\s]?)?\(?0?\d{4}\)?[\-\.\s]?\d{3}[\-\.\s]?\d{3}|(\+?7[\-\.\s]?)?(\d{3}[\-\.\s]?){2}\d{2}|\+86[\-\.\s]?1[3456789]\d{9}|(\+?92[\-\.\s]?)?3\d{9}|(\+?880[\-\.\s]?)?((\d{10})|(1\d{9}))|(\+?90[\-\.\s]?)?0?5\d{9}/;
+
+      // Detect and remove any email addresses, phone/mobile numbers, or bank account numbers from the text content
+      const filteredText = text.replace(emailRegex, '').replace(phoneRegex, '').replace(bankAccountRegex, '').replace(mobileRegex, '');
+    
+      // If email, phone number, or bank account number detected, alert the user
+      if (text !== filteredText) {
+        alert("Oops! It looks like you've included some sensitive information in your message. Please remove any traces of email addresses, phone numbers, or bank account numbers before sending.");
+      }
+    
+      // Update the text area with the final filtered text content
+      textarea.value = filteredText;
+    });
+    
+</script>
+
+<script src="https://meet.jit.si/external_api.js"></script>
+
+<script>
+  let api;
+  let modal;
+  const roomName = `skillmonde-with-{{ $conversation->sender->username }}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+
+  function startVideoChat() {
+    const domain = 'meet.jit.si';
+    const options = {
+      roomName: roomName,
+      width: 800,
+      height: 600,
+      parentNode: document.querySelector('#jitsi-container'),
+      userInfo: {
+        displayName: '@if ($conversation->sender->fullname){{ $conversation->sender->fullname }}@endif',
+      },
+      configOverwrite: {
+        enableWelcomePage: false,
+      },
+      interfaceConfigOverwrite: {
+        SHOW_BRAND_WATERMARK: true,
+        JITSI_WATERMARK_LINK: 'https://skillmonde.com/public/img/assets/logo.png',
+        DISABLE_FOCUS_INDICATOR: true,
+        TOOLBAR_BUTTONS: [
+          'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
+          'fodeviceselection', 'hangup', 'profile', 'chat',
+          'whiteboard', 'settings', 'raisehand',
+          'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts', 'tileview', 'videobackgroundblur', 'mute-everyone', 'security'
+        ],
+        
+       // defaultLogoUrl: 'https://skillmonde.com/public/img/assets/logo.png',
+        HIDE_DEEP_LINKING_LOGO: true,
+        SHOW_JITSI_WATERMARK: false,
+        TILE_VIEW_MAX_COLUMNS: 5,
+        DISABLE_POLLING: true,
+        
+      },
+      
+    };
+    api = new JitsiMeetExternalAPI(domain, options);
+    modal = document.querySelector('#exampleModal');
+    api.on('readyToClose', function() {
+      modal.hide();
+    });
+  }
+
+  function stopVideoChat() {
+    if (api) {
+      api.dispose();
+    }
+  }
+
+  modal = document.querySelector('#exampleModal');
+  modal.addEventListener('hidden.bs.modal', stopVideoChat);
+</script>
 @endpush
 
 @push('styles')

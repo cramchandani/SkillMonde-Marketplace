@@ -3,21 +3,27 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class NewMessage extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    public $conversation;
+    public $message;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(public $uid) {}
+    public function __construct($conversation, $message)
+    {
+        $this->conversation = $conversation;
+        $this->message      = $message;
+    }
 
     /**
      * Get the notification's delivery channels.
@@ -39,13 +45,13 @@ class NewMessage extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_u_have_new_message');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_u_have_new_message');
 
         return (new MailMessage)
                     ->subject($subject)
-                    ->greeting(__('messages.t_hello_username', ['username' => $notifiable->fullname ?? $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_u_received_new_message')))
-                    ->action(__('messages.t_view_conversation'), url('inbox', $this->uid));
+                    ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
+                    ->line(__('messages.t_notification_u_received_new_message'))
+                    ->action(__('messages.t_view_conversation'), url('messages', $this->conversation->uid));
     }
 
     /**

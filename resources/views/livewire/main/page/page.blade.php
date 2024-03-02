@@ -1,5 +1,5 @@
 <div class="w-full px-2 lg:px-0">
-    <div class="w-full lg:max-w-4xl mx-auto">
+    <div class="w-full lg:max-w-7xl mx-auto">
         <div class="relative py-16 bg-white dark:bg-zinc-800 overflow-hidden rounded-md shadow-sm border border-gray-100 dark:border-zinc-700">
             <div class="relative px-4 sm:px-6 lg:px-8">
                 <div class="text-lg mx-auto">
@@ -10,7 +10,7 @@
                         </span>
                     </h1>
                 </div>
-                <div class="mt-16 dark:text-gray-200 quill-container break-words text-sm md:text-base leading-relaxed md:px-12 px-2">
+                <div class="mt-16 px-6 dark:text-gray-200 quill-container text-base text-justify">
                     {!! htmlspecialchars_decode($page->content) !!}
                 </div>
             </div>

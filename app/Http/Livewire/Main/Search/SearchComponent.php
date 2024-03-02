@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Main\Search;
 
 use App\Models\Gig;
 use Livewire\Component;
+use App\Models\Category;
 use Livewire\WithPagination;
 use Illuminate\Support\Arr;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
@@ -24,6 +25,10 @@ class SearchComponent extends Component
     public $max_price;
     public $delivery_time;
     public $rating;
+    public $category;
+    // define $categories as a property
+    public $categories;
+    
 
     /**
      * Init component
@@ -32,9 +37,6 @@ class SearchComponent extends Component
      */
     public function mount()
     {
-        // Clean query
-        $this->q = clean($this->q);
-
         // Set delivery times
         $this->delivery_times = [
             ['value' => 1, 'text' => __('messages.t_1_day')],
@@ -48,6 +50,8 @@ class SearchComponent extends Component
             ['value' => 21, 'text' => __('messages.t_3_weeks')],
             ['value' => 30, 'text' => __('messages.t_1_month')]
         ];
+        
+        $this->categories = Category::with('subcategories')->get();
     }
 
 
@@ -85,7 +89,9 @@ class SearchComponent extends Component
         $this->seo()->jsonLd()->setType('WebSite');
 
         return view('livewire.main.search.search', [
-            'gigs' => $this->gigs
+            'gigs' => $this->gigs,
+            'categories' => $this->categories,
+            
         ])->extends('livewire.main.layout.app')->section('content');
     }
 
@@ -223,6 +229,11 @@ class SearchComponent extends Component
     {
         // Reset filter
         return redirect('search?q=' . $this->q);
+    }
+    
+    public function getCategoriesProperty()
+    {
+        return Category::with('subcategories')->get();
     }
     
 }

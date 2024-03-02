@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('requirement_id');
             $table->string('option', 100);
             
-            $table->foreign('requirement_id')->references('id')->on('gig_requirements')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('requirement_id')->references('id')->on('gig_requirements');
         });
     }
 

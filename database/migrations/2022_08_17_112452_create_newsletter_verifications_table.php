@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('token', 60)->index();
             $table->timestamp('created_at');
 
-            $table->foreign('list_id')->references('id')->on('newsletter_list')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('list_id')->references('id')->on('newsletter_list');
         });
     }
 

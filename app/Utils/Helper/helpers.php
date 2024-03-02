@@ -3,13 +3,9 @@
 use Carbon\Carbon;
 use App\Models\Gig;
 use App\Models\User;
-use App\Models\Level;
-use App\Models\Order;
 use App\Models\Refund;
 use App\Models\Project;
 use App\Models\Language;
-use App\Models\ProjectBid;
-use App\Models\CustomOffer;
 use App\Models\ReportedGig;
 use App\Models\SettingsSeo;
 use App\Models\BlogSettings;
@@ -57,11 +53,11 @@ use App\Models\MercadopagoSettings;
 use App\Models\NowpaymentsSettings;
 use App\Models\ProjectSubscription;
 use Illuminate\Support\Facades\File;
-use App\Models\OfflinePaymentGateway;
 use App\Models\UserWithdrawalHistory;
 use Illuminate\Support\Facades\Cache;
 use App\Models\OfflinePaymentSettings;
-use App\Models\AutomaticPaymentGateway;
+use App\Models\ProjectBid;
+use App\Models\Slider;
 
 /**
  * Generate unique string
@@ -1431,8 +1427,11 @@ function hash_is_valid($secret, $payload, $verify)
  */
 function generate_jazzcash_hash($payload)
 {
+    // Get JazzCash env
+    $jazzcash_env  = config('jazzcash.environment');
+
     // Get jazzcash salt key
-    $jazzcash_salt       = payment_gateway('jazzcash')?->settings['integerity_salt'];
+    $jazzcash_salt = config("jazzcash.$jazzcash_env.integerity_salt");
 
     $sortedResponseArray = array();
 
@@ -1527,7 +1526,7 @@ function category_title($type, $category)
 function add_3_dots($string, $limit, $repl = "...") 
 {
     if(strlen($string) > $limit) {
-        return mb_strimwidth($string, 0, $limit, "...");
+        return substr($string, 0, $limit) . $repl; 
     } else {
         return $string;
     }
@@ -1756,7 +1755,7 @@ function pending_admin_notifications():array
         $count_pending_users                  = User::where('status', 'pending')->count();
 
         // Count pending deposit transactions
-        $count_pending_deposit_transactions   = DepositTransaction::where('payment_method', 'offline')->where('status', 'pending')->count();
+        $count_pending_deposit_transactions   = DepositTransaction::where('payment_method', 'offline_payment')->where('status', 'pending')->count();
 
         // Count pending gigs
         $count_pending_gigs                   = Gig::where('status', 'pending')->count();
@@ -1774,7 +1773,7 @@ function pending_admin_notifications():array
         $count_pending_projects_subscriptions = ProjectSubscription::where('status', 'pending')->count();
 
         // Count pending refunds
-        $count_pending_refunds                = Refund::where('is_seen_by_admin', false)->whereIn('status', ['pending', 'rejected_by_seller'])->where('request_admin_intervention', true)->count();
+        $count_pending_refunds                = Refund::where('is_seen_by_admin', false)->where('request_admin_intervention', true)->count();
 
         // Count reported gigs
         $count_reported_gigs                  = ReportedGig::where('status', 'pending')->count();
@@ -1803,11 +1802,8 @@ function pending_admin_notifications():array
         // Count pending bids
         $count_pending_bids                   = ProjectBid::where('status', 'pending_approval')->count();
 
-        // Count pending offers
-        $count_pending_offers                 = CustomOffer::where('admin_status', 'pending')->count();
-
         // Count total pending notifications
-        $total                                = convertToNumber($count_pending_users) + convertToNumber($count_pending_deposit_transactions) + convertToNumber($count_pending_gigs) + convertToNumber($count_pending_projects) + convertToNumber($count_pending_bids_subscriptions) + convertToNumber($count_reported_bids) + convertToNumber($count_pending_projects_subscriptions) + convertToNumber($count_pending_refunds) + convertToNumber($count_reported_gigs) + convertToNumber($count_reported_projects) + convertToNumber($count_reported_users) + convertToNumber($count_new_support_messages) + convertToNumber($count_pending_payouts) + convertToNumber($count_pending_portfolio_projects) + convertToNumber($count_pending_verifications) + convertToNumber($count_pending_checkout_payments) + convertToNumber($count_pending_bids) + convertToNumber($count_pending_offers);
+        $total                                = convertToNumber($count_pending_users) + convertToNumber($count_pending_deposit_transactions) + convertToNumber($count_pending_gigs) + convertToNumber($count_pending_projects) + convertToNumber($count_pending_bids_subscriptions) + convertToNumber($count_reported_bids) + convertToNumber($count_pending_projects_subscriptions) + convertToNumber($count_pending_refunds) + convertToNumber($count_reported_gigs) + convertToNumber($count_reported_projects) + convertToNumber($count_reported_users) + convertToNumber($count_new_support_messages) + convertToNumber($count_pending_payouts) + convertToNumber($count_pending_portfolio_projects) + convertToNumber($count_pending_verifications) + convertToNumber($count_pending_checkout_payments) + convertToNumber($count_pending_bids);
 
         // Return data
         return [
@@ -1828,7 +1824,6 @@ function pending_admin_notifications():array
             'count_pending_verifications'          => $count_pending_verifications,
             'count_pending_checkout_payments'      => $count_pending_checkout_payments,
             'count_pending_bids'                   => $count_pending_bids,
-            'count_pending_offers'                 => $count_pending_offers,
             'total'                                => convertToNumber($total)
         ];
 
@@ -1853,185 +1848,38 @@ function pending_admin_notifications():array
             'count_pending_verifications'          => 0,
             'count_pending_checkout_payments'      => 0,
             'count_pending_bids'                   => 0,
-            'count_pending_offers'                 => 0,
             'total'                                => 0
         ];
 
     }
 }
 
-
 /**
- * Check user level
+ * Get home sliders
  *
- * @param mixed $id
- * @return mixed
- */
-function check_user_level($user_id = null)
-{
-    try {
-        
-        // Check if a specific user id is set
-        if ($user_id) {
-
-            // Get user
-            $user = User::find($user_id);
-
-        } else {
-
-            // Get current user
-            $user = auth()->user();
-
-        }
-
-        // Get current level
-        $current_level = $user->level;
-
-        // Get user account type
-        $account_type  = $user->account_type;
-
-        // Check account type
-        if ($account_type === 'seller') {
-            
-            // Get sales
-            $sales_count = (int)$user->sales()->count();
-
-            // Get next level
-            $next_level  = Level::where('id', '!=', $current_level->id)
-                                ->where('account_type', 'seller')
-                                ->where(function ($query) use ($sales_count) {
-                                    $query->where('seller_sales_min', '<=', $sales_count);
-                                    $query->where('seller_sales_max', '>=', $sales_count);
-                                })
-                                ->latest('id')
-                                ->first();
-
-            // Check if there is a new level
-            if ($next_level) {
-                
-                // Update user's current level
-                $user->level_id = $next_level->id;
-                $user->save();
-
-            }
-
-        } else {
-
-            // count total purchases
-            $purchases_count = (int)Order::where('buyer_id', $user->id)->count();
-
-            // Get next level
-            $next_level      = Level::where('id', '!=', $current_level->id)
-                                    ->where('account_type', 'buyer')
-                                    ->where(function ($query) use ($purchases_count) {
-                                        $query->where('buyer_purchases_min', '<=', $purchases_count);
-                                        $query->where('buyer_purchases_max', '>=', $purchases_count);
-                                    })
-                                    ->latest('id')
-                                    ->first();
-
-            // Check if there is a new level
-            if ($next_level) {
-                
-                // Update user's current level
-                $user->level_id = $next_level->id;
-                $user->save();
-
-            }
-
-        }
-
-    } catch (\Throwable $th) {
-        
-        // Something went wrong
-        return;
-
-    }
-}
-
-
-/**
- * Get a payment gateway settings
- *
- * @param string $slug
- * @param bool $update
+ * @param boolean $updateCache
  * @return object
  */
-function payment_gateway($slug, $update = false, $is_offline = false)
+function sliders($updateCache = false)
 {
     try {
         
-        // Check if want to update cache
-        if ($update) {
+        // Get sliders
+        if ($updateCache) {
                 
-            // Check if offline payment gateway
-            if ($is_offline) {
-                
-                // Remove it from cache
-                Cache::forget('offline_payment_gateway_settings_' . $slug);
-
-            } else {
-
-                // Remove it from cache
-                Cache::forget('automatic_payment_gateway_settings_' . $slug);
-
-            }
+            // Remove it from cache
+            Cache::forget('home_sliders');
 
         } else {
 
-            // Check if offline payment gateway
-            if ($is_offline) {
-                
-                // Return data
-                return Cache::rememberForever('offline_payment_gateway_settings_' . $slug, function () use ($slug) {
-
-                    // Get the payment gateway
-                    $gateway = OfflinePaymentGateway::where('slug', $slug)->with('logo')->first();
-
-                    // Check if exists
-                    if ($gateway) {
-                        
-                        // Return settings
-                        return $gateway;
-
-                    } else {
-
-                        // Not found, return an empty object
-                        return null;
-
-                    }
-
-                });
-
-            }
-
             // Return data
-            return Cache::rememberForever('automatic_payment_gateway_settings_' . $slug, function () use ($slug) {
-
-                // Get the payment gateway
-                $gateway = AutomaticPaymentGateway::where('slug', $slug)->with('logo')->first();
-
-                // Check if exists
-                if ($gateway) {
-                    
-                    // Return settings
-                    return $gateway;
-
-                } else {
-
-                    // Not found, return an empty object
-                    return null;
-
-                }
-
+            return Cache::rememberForever('home_sliders', function () {
+                return Slider::all();
             });
 
         }
 
     } catch (\Throwable $th) {
-        
-        // Not found, return an empty object
-        return null;
-
-    }    
+        return [];
+    }
 }

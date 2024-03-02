@@ -11,9 +11,36 @@
                 </div>
             </div>
         </div>
-
+        
+        <div class="mt-16 px-2 dark:text-gray-200 quill-container text-base">
+                    <p class="text-justity py-2">Just send us your questions or concerns by writing a mail to <a href="mailto:info@skillmonde.com">info@skillmonde.com</a> and we will give you the help you need.</p>
+                    
+                    <p class="text-justity py-2">SkillMonde support will be available from <span class="font-semibold">Monday to Friday (10:00 pm to 6:00 pm)</span> except on <span class="font-semibold">Indian Banking Holidays</span>.</p>
+                    
+                    <p class="text-justity py-2">Please allow us time to resolve your queries as there might be existing tickets going through resolution.</p>
+                    
+                    <p class="text-justity py-2">In addition to it you can go through FAQ's listed on our website and ask for suggestions in our telegram community channel.</p>
+                    
+                    <div class="row">
+                        <h4 class="font-bold text-lg">Operating Address:</h4>
+                      <address class="border rounded-md">
+                        <strong>CoreConcepts Learning Solutions and Technologies Private Limited</strong><br>
+                        Plot No. 29, First Floor, <br>
+                        Nukleus Tower, Sector-142,<br>
+                        Noida- 201305<br>
+                        <abbr title="Phone">Phone:</abbr> +91-9650023642
+                      </address>
+                    </div>
+                    
+                    <h4 class="font-bold text-lg py-2">Telegram Community Channel</h4>
+                    
+                     <p class="text-justity pb-2">Click <a href="https://t.me/+m5b4VvDJEjQ2N2U9" class="font-semibold" target="_blank">here</a> to connect our community.</p>
+                </div>
+                <hr/>
+        
         {{-- Section content --}}
         <div class="px-8 py-6">
+            <h2 class="font-extrabold text-lg text-center pb-6 capitalize" style="color: #8dc440 !important;">Need to get in touch with us? Fill the form below with your inquiry and our team will contact you soon.</h2>
             <div class="grid grid-cols-12 gap-5">
 
                 {{-- Fullname --}}

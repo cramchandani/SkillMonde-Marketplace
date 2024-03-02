@@ -48,9 +48,9 @@ return [
             'url'            => env('DATABASE_URL'),
             'host'           => 'localhost',
             'port'           => 3306,
-            'database'       => 'marketplace_1',
-            'username'       => 'marketplace',
-            'password'       => 'marketplace',
+            'database'       => 'skillmonde_origmarket',
+            'username'       => 'skillmonde_origmarket',
+            'password'       => '0Kr#j5QIAX7r8R',
             'unix_socket'    => '',
             'charset'        => 'utf8mb4',
             'collation'      => 'utf8mb4_unicode_ci',
@@ -93,6 +93,17 @@ return [
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
+        
+        'affiliate' => [
+            'driver' => 'mysql',
+            'host' => 'localhost',
+            'port' =>  3306,
+            'database' => 'skillmonde_affiliate', // database of affiliate
+            'username' => 'skillmonde_affiliate', // database username of affiliate
+            'password' => 'S2HRn&yHb*={', // database password of affiliate
+            // ...
+        ],
+
 
     ],
 
@@ -134,7 +145,7 @@ return [
             'host' => env('REDIS_HOST', '127.0.0.1'),
             'username' => env('REDIS_USERNAME'),
             'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', 3306),
+            'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
         ],
 

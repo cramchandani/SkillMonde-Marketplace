@@ -35,7 +35,7 @@
                         :label="__('messages.t_content')"
                         :placeholder="__('messages.t_enter_article_content')"
                         model="content"
-                        old="{!! str_replace(['&amp;nbsp;', '&nbsp;'], ' ', $article->content) !!}"
+                        old="{!! str_replace('&amp;nbsp;', ' ', $article->content) !!}"
                         target="edit-blog-article-btn"  />
                 </div>
 

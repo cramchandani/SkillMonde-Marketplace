@@ -43,7 +43,7 @@
                 </nav>
                 
             </div>
-
+            
             {{-- tabs and lists --}}
             <div class="m-body contacts-container">
                {{-- Lists [Users/Group] --}}
@@ -81,6 +81,27 @@
                  </div>
 
             </div>
+            
+            <div class="container text-center mb-6" style="bottom:5%;position: relative;"> 
+                <div class="col">
+                    <div class="detail-change flex items-center justify-between">
+                        <button id="start-button" type="button" class="btn btn-sm btn-primary bg-purple-500 hover:bg-purple-700 text-white font-semibold py-2 px-2 rounded">
+                          Start Meeting
+                        </button>
+                        
+                        <button id="hang-button" type="button" class="btn btn-sm btn-primary bg-red-300 hover:bg-red-600 text-white font-semibold py-2 px-2 rounded border-red-400" style="display:none;">
+                          Leave Meeting
+                        </button>
+                        <?php /* ?>
+                                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-sm btn-primary bg-purple-500 hover:bg-purple-700 text-white font-semibold py-2 px-2 rounded" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="startVideoChat()">
+                          Connect with Video Chat
+                        </button>
+                        <?php */ ?>
+                    </div>
+                </div>    
+            </div> 
+            
         </div>
     
         {{-- ----------------------Messaging side---------------------- --}}

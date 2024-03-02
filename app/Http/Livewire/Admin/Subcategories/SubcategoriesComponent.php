@@ -8,7 +8,6 @@ use WireUi\Traits\Actions;
 use App\Models\Subcategory;
 use Livewire\WithPagination;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
-use Schema;
 
 class SubcategoriesComponent extends Component
 {
@@ -53,8 +52,6 @@ class SubcategoriesComponent extends Component
         // Get subcategory
         $subcategory = Subcategory::where('id', $id)->firstOrFail();
 
-        Schema::disableForeignKeyConstraints();
-
         // Count gigs in this category
         $gigs     = Gig::where('subcategory_id', $subcategory->id)->count();
 
@@ -84,8 +81,6 @@ class SubcategoriesComponent extends Component
 
         // Delete subcategory
         $subcategory->delete();
-
-        Schema::enableForeignKeyConstraints();
 
         // Success
         $this->notification([

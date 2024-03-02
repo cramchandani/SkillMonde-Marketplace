@@ -22,7 +22,6 @@ class SettingsComponent extends Component
     public $commission_from_freelancer;
     public $commission_from_publisher;
     public $who_can_post;
-    public $max_skills;
 
     /**
      * Initialize component
@@ -45,8 +44,7 @@ class SettingsComponent extends Component
             'commission_type'            => $settings->commission_type,
             'commission_from_freelancer' => $settings->commission_from_freelancer,
             'commission_from_publisher'  => $settings->commission_from_publisher,
-            'who_can_post'               => $settings->who_can_post,
-            'max_skills'                 => $settings->max_skills
+            'who_can_post'               => $settings->who_can_post
         ]);
     }
 
@@ -89,8 +87,7 @@ class SettingsComponent extends Component
                 'commission_type'            => $this->commission_type,
                 'commission_from_freelancer' => $this->commission_from_freelancer,
                 'commission_from_publisher'  => $this->commission_from_publisher,
-                'who_can_post'               => $this->who_can_post,
-                'max_skills'                 => $this->max_skills
+                'who_can_post'               => $this->who_can_post
             ]);
 
             // Refresh data from cache
@@ -119,9 +116,11 @@ class SettingsComponent extends Component
             // Error
             $this->notification([
                 'title'       => __('messages.t_error'),
-                'description' => $th->getMessage(),
+                'description' => __('messages.t_toast_something_went_wrong'),
                 'icon'        => 'error'
             ]);
+
+            throw $th;
 
         }
     }

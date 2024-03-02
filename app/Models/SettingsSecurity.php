@@ -28,5 +28,5 @@ class SettingsSecurity extends Model
      *
      * @var array
      */
-    protected $fillable = ['is_recaptcha', 'is_social_media_accounts'];
+    protected $fillable = ['is_recaptcha'];
 }

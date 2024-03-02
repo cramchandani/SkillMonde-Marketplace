@@ -55,7 +55,7 @@ class TrashComponent extends Component
      */
     public function getGigsProperty()
     {
-        return Gig::onlyTrashed()->whereHas('category')->whereHas('subcategory')->paginate(40);
+        return Gig::onlyTrashed()->paginate(40);
     }
     
 
@@ -100,10 +100,6 @@ class TrashComponent extends Component
 
         // Restore gig
         $gig->restore();
-
-        // Update it's status
-        $gig->status = 'active';
-        $gig->save();
 
         // Success
         $this->notification([

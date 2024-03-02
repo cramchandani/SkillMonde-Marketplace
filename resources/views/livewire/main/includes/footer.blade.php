@@ -1,5 +1,5 @@
-<footer class="bg-white dark:bg-zinc-800 px-4 sm:px-6 lg:px-60 pt-20 pb-10 lg:pb-20 relative z-10">
-    <div class="container mx-auto px-4">
+<footer class="dark:bg-zinc-800 pt-20 relative z-10 footer container-fluid text-white" x-data="window.vZeNLeukZPSQcld" style="max-width:95%;--bs-gutter-x: 0;">
+    <div class="container mx-auto px-4  px-4 sm:px-6 lg:px-60 px-sm-5 px-2 ">
 
         {{-- Grid (PAGES) --}}
         <div class="grid grid-cols-1 md:gap-x-6 gap-y-6 mb-10 lg:grid-cols-12 md:grid-cols-6 sm:grid-cols-2">
@@ -8,7 +8,7 @@
             <div class="col-span-3">
 
                 {{-- Column title --}}
-                <div class="font-bold text-sm text-gray-700 mb-4 uppercase dark:text-white tracking-widest">
+                <div class="font-bold text-sm text-white-700 mb-4 uppercase dark:text-white tracking-widest">
                     {{ __('messages.t_footer_column_1') }}
                 </div>
 
@@ -19,11 +19,11 @@
                             @if ($page->column == 1)
                                 <li>
                                     @if ($page->is_link && $page->link)
-                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-white hover:text-white-400 hover:underline dark:text-white-100 dark:hover:text-gray-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @else
-                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-white hover:text-white-400 hover:underline dark:text-white-100 dark:hover:text-white-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @endif
@@ -39,7 +39,7 @@
             <div class="col-span-3">
                 
                 {{-- Column title --}}
-                <div class="font-bold text-sm text-gray-700 mb-4 uppercase dark:text-white tracking-widest">
+                <div class="font-bold text-sm text-white-700 mb-4 uppercase dark:text-white tracking-widest">
                     {{ __('messages.t_footer_column_2') }}
                 </div>
                 
@@ -50,11 +50,11 @@
                             @if ($page->column == 2)
                                 <li>
                                     @if ($page->is_link && $page->link)
-                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-white hover:text-white-400 hover:underline dark:text-white-100 dark:hover:text-white-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @else
-                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-white hover:text-gray-400 hover:underline dark:text-white-100 dark:hover:text-white-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @endif
@@ -70,7 +70,7 @@
             <div class="col-span-3">
                 
                 {{-- Column title --}}
-                <div class="font-bold text-sm text-gray-700 mb-4 uppercase dark:text-white tracking-widest">
+                <div class="font-bold text-sm text-white-700 mb-4 uppercase dark:text-white tracking-widest">
                     {{ __('messages.t_footer_column_3') }}
                 </div>
 
@@ -81,11 +81,11 @@
                             @if ($page->column == 3)
                                 <li>
                                     @if ($page->is_link && $page->link)
-                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-white hover:text-white-400 hover:underline dark:text-gray-100 dark:hover:text-white-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @else
-                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-white hover:text-white-400 hover:underline dark:text-white-100 dark:hover:text-white-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @endif
@@ -101,7 +101,7 @@
             <div class="col-span-3">
                 
                 {{-- Column title --}}
-                <div class="font-bold text-sm text-gray-700 mb-4 uppercase dark:text-white tracking-widest">
+                <div class="font-bold text-sm text-white-700 mb-4 uppercase dark:text-white tracking-widest">
                     {{ __('messages.t_footer_column_4') }}
                 </div>
 
@@ -112,11 +112,11 @@
                             @if ($page->column == 4)
                                 <li>
                                     @if ($page->is_link && $page->link)
-                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ $page->link }}" target="_blank" class="block font-normal text-white hover:text-white-400 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @else
-                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-gray-400 hover:text-gray-600 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
+                                        <a href="{{ url('page', $page->slug) }}" class="block font-normal text-white hover:text-white-400 hover:underline dark:text-gray-100 dark:hover:text-gray-50 text-sm mb-2">
                                             {{ $page->title }}
                                         </a>
                                     @endif
@@ -126,36 +126,32 @@
                     </ul>
                 @endif
 
-                @if (settings('footer')->is_language_switcher || settings('appearance')->is_dark_mode)
+                @if (settings('footer')->is_language_switcher && settings('appearance')->is_dark_mode)
                     <div class="mt-10 grid grid-cols-1 gap-y-4">
                         
                         {{-- Change language --}}
                         @if (settings('footer')->is_language_switcher)
+                            <button @click="languages = !languages" class="inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 dark:bg-zinc-600 dark:text-gray-300 dark:border-zinc-600 dark:focus:ring-offset-zinc-600 dark:hover:bg-zinc-800 max-w-fit">
+                                <img src="{{ url('public/img/flags/rounded/'. strtolower($default_country_code) .'.svg') }}" alt="" class="w-4 h-4 ltr:mr-3 rtl:ml-3">
+                                <span class="text-xs font-semibold text-gray-500 dark:text-gray-300 whitespace-nowrap">{{ $default_language_name }}</span>
+                                <i class="mdi mdi-chevron-down ltr:ml-1 rtl:mr-1"></i>
+                            </button>
+                        @endif
+    
 
-                            {{-- Button --}}
-                            <button data-dropdown-toggle="change-footer-language-dropdown" data-dropdown-placement="{{ config()->get('direction') === 'ltr' ? 'top-end' : 'top-start' }}"  type="button" class="inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 dark:bg-zinc-600 dark:text-gray-300 dark:border-zinc-600 dark:focus:ring-offset-zinc-600 dark:hover:bg-zinc-800 max-w-fit">
+                    </div>
+                @endif
+
+ @if (settings('footer')->is_language_switcher || settings('appearance')->is_dark_mode)
+                    <div class="mt-10 grid grid-cols-1 gap-y-4">
+                        
+                        {{-- Change language --}}
+                        @if (settings('footer')->is_language_switcher)
+                            <button @click="languages = !languages" class="inline-flex items-center px-2.5 py-2 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 dark:bg-zinc-600 dark:text-gray-300 dark:border-zinc-600 dark:focus:ring-offset-zinc-600 dark:hover:bg-zinc-800 max-w-fit">
                                 <img src="{{ placeholder_img() }}" data-src="{{ url('public/img/flags/rounded/'. strtolower($default_country_code) .'.svg') }}" alt="" class="lazy w-4 h-4 ltr:mr-3 rtl:ml-3">
                                 <span class="text-xs font-semibold text-gray-500 dark:text-gray-300 whitespace-nowrap">{{ $default_language_name }}</span>
                                 <svg class="w-4 h-4 ltr:ml-1 rtl:mr-1" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                             </button>
-
-                            {{-- Dropdown --}}
-                            <div id="change-footer-language-dropdown" class="z-10 hidden bg-white rounded-md border w-48 dark:bg-zinc-800 dark:border-zinc-700">
-                                <ul class="text-gray-700 dark:text-gray-200">
-                                    @foreach (supported_languages() as $lang)
-                                        <li wire:key="footer-languages-id-{{ $lang->language_code }}" @if ($default_language_code !== $lang->language_code) wire:click="setLocale('{{ $lang->language_code }}')" @endif class="py-2.5 px-4 flex w-full items-center cursor-pointer justify-between {{ $default_language_code === $lang->language_code ? 'bg-blue-50 text-blue-600 dark:bg-zinc-700 dark:text-white' : 'hover:bg-gray-50 dark:hover:bg-zinc-700' }} focus:outline-none first:rounded-t-md last:rounded-b-md">
-                                            <div class="inline-flex items-center">
-                                                <img src="{{ placeholder_img() }}" data-src="{{ url('public/img/flags/rounded/' . $lang->country_code . '.svg') }}" alt="{{ $lang->name }}" class="lazy w-5 ltr:mr-3 rtl:ml-3">
-                                                <span class="font-medium text-[13px] tracking-wide">{{ $lang->name }}</span>
-                                            </div>
-                                            <div wire:loading wire:target="setLocale('{{ $lang->language_code }}')">
-                                                <svg role="status" class="block w-4 h-4 text-gray-700 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/> <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/> </svg>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-
                         @endif
                         
                         {{-- Dark/Light mode --}}
@@ -212,23 +208,24 @@
 
         </div>
         
-        <div class="grid md:flex justify-center md:justify-between items-center border-t-2 border-gray-50 dark:border-zinc-700 pt-4">
-
+        <div class="grid md:flex justify-center md:justify-between items-center  border-gray-50 dark:border-zinc-700 pt-4">
+            <!--
             {{-- Logo --}}
             <div class="flex items-center justify-center md:justify-items-start mb-4 md:mb-0">
 
-                {{-- Logo --}}
+                {{-- Logo -
                 <div>
                     <a href="{{ url('/') }}" class="h-full">
-                        <img src="{{ placeholder_img() }}" data-src="{{ src(settings('footer')->logo) }}" alt="{{ settings('general')->title }}" class="lazy py-2.5 max-h-20 w-auto" height="{{ settings('appearance')->sizes['header_desktop_logo_height'] }}" width="150">
+                        <img src="{{ src(settings('footer')->logo) }}" alt="{{ settings('general')->title }}" class="py-2.5 max-h-20">
                     </a>
                 </div>
-
+                --}}
             </div>
+            -->
 
             {{-- Social media --}}
-            <div>
-                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-full center margin-left-mobile">
+                <div class="flex md:inline-flex items-center space-x-4 mb-2 place-content-center">
 
                     {{-- Facebook --}}
                     @if (settings('footer')->social_facebook)
@@ -305,39 +302,107 @@
 
         </div>
 
-        {{-- Copyrights & Quick links --}}
-        <div class="text-center mt-10">
-                
-            {{-- Copyrights --}}
-            <div class="text-gray-400 dark:text-gray-200 font-normal text-sm mb-2">
-                {!! settings('footer')->copyrights !!}
-            </div>
+    </div>
 
+                {{-- Copyrights & Quick links --}}
+    <div class="text-center footer-second py-2 text-white">
+        <div class="container-fluid mx-auto">    
+                
+            
             {{-- Quick links --}}
             <div class="flex space-x-4 justify-center rtl:space-x-reverse">
 
                 {{-- Contact --}}
-                <a href="{{ url('help/contact') }}" class="text-xs font-medium uppercase text-gray-600 dark:text-gray-400 dark:hover:text-gray-100 hover:underline">{{ __('messages.t_contact_us') }}</a>
+                <a href="{{ url('help/contact') }}" class="text-sm font-semibold uppercase text-white dark:text-white-400 dark:hover:text-white-100 hover:text-white-600">{{ __('messages.t_contact_us') }}</a>
 
                 {{-- Privacy policy --}}
                 @if (settings('footer')->privacy)
-                    <a href="{{ url('page', settings('footer')->privacy->slug) }}" class="text-xs font-medium uppercase text-gray-600 dark:text-gray-400 dark:hover:text-gray-100 hover:underline">{{ __('messages.t_privacy_policy') }}</a>
+                    <a href="{{ url('page', settings('footer')->privacy->slug) }}" class="text-sm font-semibold uppercase text-white dark:text-white-400 dark:hover:text-white-100 hover:text-white-600">{{ __('messages.t_privacy_policy') }}</a>
                 @endif
 
                 {{-- Terms --}}
                 @if (settings('footer')->terms)
-                    <a href="{{ url('page', settings('footer')->terms->slug) }}" class="text-xs font-medium uppercase text-gray-600 dark:text-gray-400 dark:hover:text-gray-100 hover:underline">{{ __('messages.t_terms_of_service') }}</a>
+                    <a href="{{ url('page', settings('footer')->terms->slug) }}" class="text-sm font-semibold uppercase text-white dark:text-white-400 dark:hover:text-white-100 hover:text-white-600">{{ __('messages.t_terms_of_service') }}</a>
                 @endif
 
                 {{-- Blog --}}
                 @if (settings('blog')->enable_blog)
-                    <a href="{{ url('blog') }}" class="text-xs font-medium uppercase text-gray-600 dark:text-gray-400 dark:hover:text-gray-100 hover:underline">{{ __('messages.t_blog') }}</a>
+                    <a href="{{ url('blog') }}" class="text-sm font-semibold uppercase text-white dark:text-white-400 dark:hover:text-white-100 hover:text-white-600">{{ __('messages.t_blog') }}</a>
                 @endif
 
             </div>
+            {{-- Copyrights --}}
+            <div class="text-white-400 dark:text-white-200 font-normal text-sm mb-2">
+                {!! settings('footer')->copyrights !!}
+            </div>
 
         </div>
-
     </div>
 
+    {{-- Languages --}}
+    @if (settings('footer')->is_language_switcher)
+        <div @keydown.window.escape="languages = false" x-show="languages" style="display: none;" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-languages" aria-modal="true" x-cloak>
+            <div class="flex md:items-end justify-center md:min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            
+                <div x-show="languages" style="display: none;" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="languages = false" aria-hidden="true" x-cloak></div>
+    
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+            
+                <div x-show="languages" style="display: none;" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="relative inline-block align-bottom bg-white rounded-sm text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full sm:max-w-lg" x-cloak>
+                
+                    <div class="grid grid-cols-2 gap-2 sm:p-6">
+
+                        @foreach (supported_languages() as $lang)
+                            <div @if ($default_language_code !== $lang->language_code) wire:click="setLocale('{{ $lang->language_code }}')" @endif class="py-2 px-4 rounded-sm inline-flex items-center cursor-pointer justify-between {{ $default_language_code === $lang->language_code ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50' }} focus:outline-none">
+                                <div class="inline-flex items-center">
+                                    <img src="{{ placeholder_img() }}" data-src="{{ url('public/img/flags/rounded/' . $lang->country_code . '.svg') }}" alt="{{ $lang->name }}" class="lazy w-5 ltr:mr-3 rtl:ml-3">
+                                    <span class="font-normal text-xs">{{ $lang->name }}</span>
+                                </div>
+                                @if ($default_language_code === $lang->language_code)
+                                    <div class="block">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                @else
+                                    <div wire:loading wire:target="setLocale('{{ $lang->language_code }}')">
+                                        <svg role="status" class="block w-4 h-4 text-gray-700 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/> <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/> </svg>
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+
+                    </div>
+
+                    {{-- Footer --}}
+                    <div class="bg-gray-50 px-4 py-3 flex justify-center items-center">
+                        <button type="button" class="w-full inline-flex justify-center px-4 py-2 bg-transparent text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 sm:w-auto" @click="languages = false">
+                            {{ __('messages.t_close') }}
+                        </button>
+                    </div>
+                    
+
+                </div>
+                
+            
+            </div>
+        </div>
+    @endif
+
 </footer>
+
+@push('scripts')
+    
+    {{-- AlpineJs --}}
+    <script>
+        function vZeNLeukZPSQcld() {
+            return {
+                languages: false
+            }
+        }
+        window.vZeNLeukZPSQcld = vZeNLeukZPSQcld();
+    </script>
+<script type="text/javascript" src="https://affiliate.skillmonde.com/integration/general_integration"></script>
+<script type="text/javascript">
+ AffTracker.setWebsiteUrl( "https://skillmonde.com/auth/register" );
+ AffTracker.generalClick( "gBCVykmwfM" );
+</script>
+@endpush

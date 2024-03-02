@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('price', 10);
             $table->integer('extra_days')->default(0);
 
-            $table->foreign('item_id')->references('id')->on('order_items')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('item_id')->references('id')->on('order_items');
         });
     }
 

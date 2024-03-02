@@ -235,21 +235,21 @@
 
                                     {{-- Requested --}}
                                     @case('request')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-yellow-50 text-yellow-800 dark:bg-transparent dark:text-amber-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-yellow-50 text-yellow-800 dark:bg-transparent dark:text-amber-400">
                                             {{ __('messages.t_requested') }}
                                         </span>
                                         @break
                                     
                                     {{-- Paid --}}
                                     @case('paid')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-green-50 text-green-800 dark:bg-transparent dark:text-green-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-green-50 text-green-800 dark:bg-transparent dark:text-green-400">
                                             {{ __('messages.t_paid') }}
                                         </span>
                                         @break
 
                                     {{-- Funded --}}
                                     @case('funded')
-                                        <span class="whitespace-nowrap inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-purple-50 text-purple-800 dark:bg-transparent dark:text-purple-400">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-purple-50 text-purple-800 dark:bg-transparent dark:text-purple-400">
                                             {{ __('messages.t_funded') }}
                                         </span>
                                         @break

@@ -15,18 +15,19 @@ use App\Models\OrderItem;
 use YouCan\Pay\YouCanPay;
 use App\Models\GigUpgrade;
 use WireUi\Traits\Actions;
+use App\Models\UserBilling;
 use Illuminate\Support\Str;
 use App\Models\OrderInvoice;
 use GuzzleHttp\Psr7\Request;
 use App\Models\CheckoutWebhook;
 use App\Models\OrderItemUpgrade;
 use Illuminate\Support\Facades\Http;
-use App\Models\OfflinePaymentGateway;
-use App\Models\AutomaticPaymentGateway;
-use App\Utils\Payments\Gateways\EcpayGateway;
+use GuzzleHttp\Exception\RequestException;
+use App\Notifications\User\Buyer\OrderPlaced;
 use App\Notifications\User\Seller\PendingOrder;
 use Paytabscom\Laravel_paytabs\Facades\paypage;
 use App\Notifications\Admin\PendingOfflinePayment;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
 
 class CheckoutComponent extends Component
@@ -34,14 +35,41 @@ class CheckoutComponent extends Component
     use SEOToolsTrait, Actions;
     
     public $cart;
-    public $selected_method;
-    public $subtotal;
-    public $total;
-    public $tax;
-    public $is_third_step          = false;
-    public $fee_value              = 0;
-    public $fee_text               = 0;
-    public $payment_gateway_params = [];
+
+    public $payment_method = null;
+
+    // Billing
+    public $firstname;
+    public $lastname;
+    public $email;
+    public $company;
+    public $address;
+
+    // Stripe
+    public $stripe_intent_secret;
+
+    // Paymob
+    public $paymob_payment_token;
+    public $paymob_phone;
+    public $paymob_firstname;
+    public $paymob_lastname;
+
+    // Razorpay
+    public $razorpay_order_id;
+
+    // NowPayments.io
+    public $nowpayments_pay_address;
+    public $nowpayments_payment_id;
+    public $nowpayments_payment_status;
+    public $nowpayments_price_amount;
+    public $nowpayments_pay_amount;
+
+    // Mercadopago
+    public $mercadopago_preference_id;
+
+    // Errors
+    public $has_error     = false;
+    public $error_message = null;
 
     protected $listeners = ['cart-updated' => 'cartUpdated'];
 
@@ -64,22 +92,33 @@ class CheckoutComponent extends Component
         if (is_array($cart) && count($cart)) {
             
             // Set cart
-            $this->cart     = $cart;
+            $this->cart            = $cart;
 
-            // Calculate subtotal cart amount
-            $this->subtotal = $this->subtotal();
-
-            // Calculate tax
-            $this->tax      = $this->taxes();
-
-            // Calculate total
-            $this->total    = $this->total();
+            // Get user billing
+            $billing               = UserBilling::firstOrCreate(['user_id' => auth()->id()]);
+            
+            // Set billing info
+            $this->firstname       = $billing->firstname;
+            $this->lastname        = $billing->lastname;
+            $this->email           = auth()->user()->email;
+            $this->company         = $billing->company;
+            $this->address         = $billing->address;
 
         } else {
 
             // Cart has no items
             return redirect('cart');
 
+        }
+
+        // Initialize Stripe
+        if (settings('stripe')->is_enabled) {
+            $this->initStripe();
+        }
+
+        // Check if razorpay enabled
+        if (settings('razorpay')->is_enabled) {
+            $this->initRazorpay();
         }
 
     }
@@ -118,170 +157,7 @@ class CheckoutComponent extends Component
         $this->seo()->jsonLd()->setUrl( url()->current() );
         $this->seo()->jsonLd()->setType('WebSite');
 
-        return view('livewire.main.checkout.checkout', [
-            'payment_methods' => $this->payment_methods
-        ])->extends('livewire.main.layout.app')->section('content');
-    }
-
-
-    /**
-     * Get enabled payment gateways
-     *
-     * @return object
-     */
-    public function getPaymentMethodsProperty()
-    {
-        return AutomaticPaymentGateway::where('is_active', true)
-                                        ->oldest('name')
-                                        ->get();
-    }
-
-
-    /**
-     * Calculate fee
-     *
-     * @param object $gateway
-     * @return array
-     */
-    private function fee($gateway)
-    {
-        try {
-            
-            // Set amount to deposit
-            $amount = convertToNumber($this->subtotal) * $gateway?->exchange_rate / settings('currency')->exchange_rate;
-
-            // Remove long decimal
-            $amount = convertToNumber( number_format($amount, 2, '.', '') );
-
-            // Get gigs checkout fixed fee
-            if (isset($gateway->fixed_fee['gigs'])) {
-                
-                // Set fixed fee
-                $fee_fixed = convertToNumber($gateway->fixed_fee['gigs']);
-
-            } else {
-
-                // No fixed fee
-                $fee_fixed = 0;
-
-            }
-
-            // Get gigs checkout percentage fee
-            if (isset($gateway->percentage_fee['gigs'])) {
-                
-                // Set percentage fee
-                $fee_percentage = convertToNumber($gateway->percentage_fee['gigs']);
-
-            } else {
-
-                // No percentage fee
-                $fee_percentage = 0;
-
-            }
-
-            // Calculate percentage of this amount 
-            $fee_percentage_amount = $this->calculateExchangeRate( $fee_percentage * $amount / 100, $gateway->exchange_rate );
-
-            // Calculate exchange rate of this fixed fee
-            $fee_fixed_exchange    = $this->calculateExchangeRate( $fee_fixed,  $gateway->exchange_rate);
-
-            // Set value of the fee
-            $fee_value             = 0;
-
-            // Calculate fee value and visible text
-            if ($fee_fixed > 0 && $fee_percentage > 0) {
-                
-                // Calculate fee value
-                $fee_value = convertToNumber($fee_percentage_amount) + convertToNumber($fee_fixed_exchange);
-
-                // Set visible fee text
-                $fee_txt   = $fee_percentage . "% + " . money( $fee_fixed_exchange, settings('currency')->code, true )->format();
-
-            } else if (!$fee_fixed && $fee_percentage > 0) {
-                
-                // Calculate fee value
-                $fee_value = convertToNumber($fee_percentage_amount);
-
-                // Set visible fee text
-                $fee_txt   = $fee_percentage . "%";
-
-            } else if ($fee_fixed > 0 && !$fee_percentage) {
-
-                // Calculate fee value
-                $fee_value = convertToNumber($fee_fixed_exchange);
-
-                // Set visible fee text
-                $fee_txt   = money( $fee_fixed_exchange, settings('currency')->code, true )->format();
-                
-            } else if (!$fee_percentage && !$fee_fixed) {
-                
-                // Calculate fee value
-                $fee_value = 0;
-
-                // Set visible fee text
-                $fee_txt   = 0;
-
-            }
-
-            // Return values
-            return [
-                'value' => $fee_value,
-                'text'  => $fee_txt
-            ];
-
-        } catch (\Throwable $th) {
-            
-            // Something went wrong
-            return [
-                'value' => 0,
-                'text'  => 0
-            ];
-
-        }
-    }
-
-
-    /**
-     * Calculate exchange rate
-     *
-     * @param mixed $amount
-     * @param mixed $exchange_rate
-     * @param boolean $formatted
-     * @param string $currency
-     * @return mixed
-     */
-    private function calculateExchangeRate($amount, $exchange_rate, $formatted = false, $currency = null)
-    {
-        try {
-
-            // Convert amount to number
-            $amount                = convertToNumber($amount);
-
-            // Get currency settings
-            $currency_settings     = settings('currency');
-
-            // Get default currency exchange rate
-            $default_exchange_rate = convertToNumber($currency_settings->exchange_rate);
-
-            // Get exchanged amount
-            $exchanged_amount      = convertToNumber( $amount *  $default_exchange_rate / $exchange_rate );
-
-            // Check if we have to return a formatted value
-            if ($formatted) {
-                
-                return money( $exchanged_amount, $currency, true )->format();
-
-            }
-
-            // Return exchange rate
-            return convertToNumber(number_format( $exchanged_amount, 2, '.', '' ));
-
-        } catch (\Throwable $th) {
-
-            // Something went wrong
-            return $amount;
-
-        }
+        return view('livewire.main.checkout.checkout')->extends('livewire.main.layout.app')->section('content');
     }
 
 
@@ -290,78 +166,275 @@ class CheckoutComponent extends Component
      *
      * @return void
      */
-    public function updatedSelectedMethod($slug)
+    public function updatedPaymentMethod()
     {
-        try {
+        // Generate payment for NowPayments.io
+        if ($this->payment_method === 'nowpayments' && settings('nowpayments')->is_enabled) {
             
-            // Check if user chose to pay using his wallet
-            if ($slug === 'wallet') {
+            try {
                 
-                // No fee for wallet payment
-                $this->fee_value   = 0;
+                $client  = new Client();
+                $headers = [
+                    'x-api-key'    => config('nowpayments.api_key'),
+                    'Content-Type' => 'application/json'
+                ];
+                // Get payment gateway exchange rate
+                $gateway_currency_exchange = (float) settings('nowpayments')->exchange_rate;
+                
+                // Set total price
+                $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
 
-                // Update total
-                $this->total       = $this->total();
-
-                // Get user available credit
-                $available_balance = convertToNumber(auth()->user()->balance_available);
-
-                // Check if user has amount in his wallet
-                if ($this->total >= $available_balance) {
+                $body = [
+                    "price_amount"      => $total_amount,
+                    "price_currency"    => settings('nowpayments')->currency,
+                    "pay_currency"      => settings('nowpayments')->crypto_currency,
+                    "ipn_callback_url"  => "https://nowpayments.io",
+                    "order_id"          => uid(),
+                    "order_description" => __('messages.t_checkout')
+                ];
+                
+                $request = new Request('POST', config('nowpayments.payment_url'), $headers, json_encode($body));
+                $res     = $client->sendAsync($request)->wait();
+                $data    = json_decode($res->getBody(), true);
+                
+                // Set data
+                if (is_array($data) && isset($data['payment_status']) && $data['payment_status'] === 'waiting') {
                     
-                    // Error
+                    $this->nowpayments_pay_address    = $data['pay_address'];
+                    $this->nowpayments_payment_id     = $data['payment_id'];
+                    $this->nowpayments_payment_status = $data['payment_status'];
+                    $this->nowpayments_price_amount   = $data['price_amount'];
+                    $this->nowpayments_pay_amount     = $data['pay_amount'];
+
+                } else {
+
+                    // Something went wrong
                     $this->notification([
                         'title'       => __('messages.t_error'),
-                        'description' => __('messages.t_insufficient_funds_in_your_account'),
+                        'description' => __('messages.t_toast_something_went_wrong'),
                         'icon'        => 'error'
                     ]);
 
                 }
 
-                // Return 
-                return;
+            } catch (RequestException $e) {
 
-            }
+                // Get response
+                $response = $e->getResponse();
 
-            // Check if offline method
-            if ($slug === "offline") {
+                // Get string response
+                $body     = $response->getBody()->getContents();
+
+                // Convert it to json
+                $to_json  = json_decode($body, true);
                 
-                // Get payment gateway
-                $gateway = payment_gateway($slug, false, true);
+                // Show error message from NowPayments.io
+                if (is_array($to_json) && isset($to_json['message'])) {
+                    
+                    // Error
+                    $this->notification([
+                        'title'       => __('messages.t_error'),
+                        'description' => $to_json['message'],
+                        'icon'        => 'error'
+                    ]);
 
-            } else {
+                } else {
 
-                // Get payment gateway
-                $gateway = payment_gateway($slug);
+                    // Something else wrong
+                    $this->notification([
+                        'title'       => __('messages.t_error'),
+                        'description' => $body,
+                        'icon'        => 'error'
+                    ]);
 
-            }
+                }
 
-            // Check if enabled
-            if ($gateway?->is_active) {
+            } catch (\Throwable $th) {
                 
-                // Calculate fee
-                $fee             = $this->fee($gateway);
-
-                // Set fee value
-                $this->fee_value = convertToNumber($fee['value']);
-
-                // Set fee visible text
-                $this->fee_text  = $fee['text'];
-
-                // Update total
-                $this->total     = $this->total();
+                // Error
+                $this->notification([
+                    'title'       => __('messages.t_error'),
+                    'description' => $th->getMessage(),
+                    'icon'        => 'error'
+                ]);
 
             }
 
-        } catch (\Throwable $th) {
+        }
+
+        // Generate preference for mercadopago
+        if ($this->payment_method === 'mercadopago' && settings('mercadopago')->is_enabled) {
+
+            // Get payment gateway exchange rate
+            $gateway_currency_exchange = (float) settings('mercadopago')->exchange_rate;
+                
+            // Set total price
+            $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+            // Set api secret key
+            \MercadoPago\SDK::setAccessToken(config('mercadopago.access_token'));
+
+            $preference              = new \MercadoPago\Preference();
+
+            // Crear un elemento en la preferencia
+            $item                    = new \MercadoPago\Item();
+            $item->title             = __('messages.t_checkout');
+            $item->quantity          = 1;
+            $item->unit_price        = $total_amount;
+            $preference->items       = array($item);
+            $preference->auto_return = "approved";
+            $preference->purpose     = 'wallet_purchase';
+            $preference->back_urls = [
+                'success' => url('checkout/callback/mercadopago'),
+                'pending' => url('checkout/callback/mercadopago'),
+                'failure' => url('checkout/callback/mercadopago'),
+            ];
+            $preference->save();
             
-            // Error
-            $this->notification([
-                'title'       => __('messages.t_error'),
-                'description' => __('messages.t_toast_something_went_wrong'),
-                'icon'        => 'error'
-            ]);
+            // Set mercadopago preference id
+            $this->mercadopago_preference_id = $preference->id;
 
+        }
+
+        // Xendit
+        if ($this->payment_method === 'xendit' && settings('xendit')->is_enabled) {
+            try {
+                
+                // Get payment gateway exchange rate
+                $gateway_currency_exchange = (float) settings('xendit')->exchange_rate;
+                
+                // Set total price
+                $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+                // Set xendit secret key
+                Xendit::setApiKey(config('xendit.secret_key'));
+    
+                // Set payment parameters
+                $params = [ 
+                    'external_id'          => "CHECKOUT" . uid(),
+                    'amount'               => $total_amount,
+                    'description'          => __('messages.t_checkout'),
+                    'invoice_duration'     => 86400,
+                    'success_redirect_url' => url('checkout/callback/xendit?status=success'),
+                    'failure_redirect_url' => url('checkout/callback/xendit?status=failed'),
+                    'currency'             => settings('xendit')->currency
+                ];
+        
+                // Create invoice
+                $invoice = \Xendit\Invoice::create($params);
+    
+                // Check if invocie created successfully
+                if (isset($invoice['invoice_url'])) {
+                    
+                    // Get payment url
+                    $payment_url = $invoice['invoice_url'];
+
+                    // Get invoice id
+                    $invoice_id  = $invoice['id'];
+
+                    // Set a callback body
+                    $this->checkoutWebhook([ 'payment_id' => $invoice_id, 'payment_method' => 'xendit' ]);
+
+                    // Go to payment url
+                    return redirect($payment_url);
+            
+                } else {
+
+                    // Something went wrong
+                    $this->notification([
+                        'title'       => __('messages.t_error'),
+                        'description' => __('messages.t_toast_something_went_wrong'),
+                        'icon'        => 'error'
+                    ]);
+
+                }
+
+            } catch (\Throwable $th) {
+                
+                // Something went wrong
+                $this->notification([
+                    'title'       => __('messages.t_error'),
+                    'description' => $th->getMessage(),
+                    'icon'        => 'error'
+                ]);
+
+            }
+        }
+
+        // Epoint.az
+        if ($this->payment_method === 'epoint' && settings('epoint')->is_enabled) {
+            try {
+
+                // Get payment gateway exchange rate
+                $gateway_currency_exchange = (float) settings('epoint')->exchange_rate;
+                
+                // Set total price
+                $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+                // Set epoint.az settings
+                $public_key                = config('epoint.public_key');
+                $private_key               = config('epoint.private_key');
+                $requestUrl                = "https://epoint.az/api/1/request";
+                $transaction_id            = uid();
+
+                // Set values
+                $values    = [
+                    "public_key"           => $public_key,
+                    "amount"               => $total_amount,
+                    "currency"             => settings('epoint')->currency,
+                    "language"             => "az",
+                    "order_id"             => $transaction_id,
+                    "description"          => "Order ID: " . $transaction_id,
+                    "success_redirect_url" => url('checkout/callback/epoint/success?order_id=' . $transaction_id),
+                    "error_redirect_url"   => url('checkout/callback/epoint/failed?order_id=' . $transaction_id),
+                ];
+
+                // Encode values
+                $data      = base64_encode(json_encode($values));
+
+                // Generate signature
+                $signature = base64_encode(sha1($private_key . $data . $private_key, 1));
+
+                // Set post fields
+                $fields    = http_build_query(array( 'data' => $data, 'signature' => $signature));
+
+                // Send request
+                $_ch = curl_init();
+                curl_setopt($_ch, CURLOPT_URL, $requestUrl);
+                curl_setopt($_ch, CURLOPT_POSTFIELDS, $fields);
+                curl_setopt($_ch, CURLOPT_RETURNTRANSFER, TRUE);
+                $_response = curl_exec($_ch);
+                
+                // Decode results
+                $results = json_decode($_response, true);
+
+                // Redirect if success
+                if (is_array($results) && isset($results['status']) && $results['status'] === 'success') {
+
+                    // Redirect
+                    return redirect($results['redirect_url']);
+
+                } else {
+
+                    // Error
+                    $this->notification([
+                        'title'       => __('messages.t_error'),
+                        'description' => __('messages.t_toast_something_went_wrong'),
+                        'icon'        => 'error'
+                    ]);
+
+                }
+
+            } catch (\Throwable $th) {
+                
+                // Something went wrong
+                $this->notification([
+                    'title'       => __('messages.t_error'),
+                    'description' => $th->getMessage(),
+                    'icon'        => 'error'
+                ]);
+
+            }
         }
     }
 
@@ -427,22 +500,11 @@ class CheckoutComponent extends Component
      */
     public function subtotal()
     {
-        // Set subtotal empty variable
-        $subtotal = 0;
+        // Calculate subtotal
+        $subtotal = $this->total();
 
-        // Loop through items in cart
-        foreach ($this->cart as $key => $item) {
-            
-            // Update subtotal price
-            $subtotal += convertToNumber($this->itemTotalPrice($item['id']));
-
-        }
-
-        // Set subtotal amount
-        $this->subtotal = $subtotal;
-
-        // Return subtotal price
-        return convertToNumber($subtotal);
+        // Return subtotal
+        return $subtotal;
     }
 
 
@@ -463,33 +525,25 @@ class CheckoutComponent extends Component
             if ($settings->tax_type === 'percentage') {
                 
                 // Get tax amount
-                $tax       = bcmul($this->subtotal(), $settings->tax_value) / 100;
-
-                // Set tax
-                $this->tax = convertToNumber($tax);
+                $tax = bcmul($this->total(), $settings->tax_value) / 100;
 
                 // Return tax amount
-                return $this->tax;
+                return $tax;
 
             } else {
                 
                 // Fixed price
-                $tax       = $settings->tax_value;
-
-                // Set tax
-                $this->tax = convertToNumber($tax);
+                $tax = $settings->tax_value;
 
                 // Return tax
-                return $this->tax;
+                return $tax;
 
             }
 
         } else {
 
             // Taxes not enabled
-            $this->tax = 0;
-
-            return $this->tax;
+            return 0;
 
         }
     }
@@ -503,10 +557,15 @@ class CheckoutComponent extends Component
     public function total()
     {
         // Set total empty variable
-        $total       = convertToNumber($this->subtotal) + convertToNumber($this->tax) + convertToNumber($this->fee_value);
+        $total = 0;
 
-        // Set total amount
-        $this->total = $total;
+        // Loop through items in cart
+        foreach ($this->cart as $key => $item) {
+            
+            // Update total price
+            $total += $this->itemTotalPrice($item['id']);
+
+        }
 
         // Return total price
         return $total;
@@ -543,1648 +602,38 @@ class CheckoutComponent extends Component
 
 
     /**
-     * Confirm checkout
+     * Place order now
      *
-     * @return mixed
+     * @return void
      */
-    public function confirm()
+    public function checkout($options = null)
     {
         try {
-            
-            // Check if user chose to pay using his wallet
-            if ($this->selected_method === 'wallet') {
 
-                // Get user available credit
-                $available_balance = convertToNumber(auth()->user()->balance_available);
+            // Get allowed payment gateways
+            $supported_payment_gateways = [
+                'paypal'      => settings('paypal')->is_enabled,
+                'stripe'      => settings('stripe')->is_enabled,
+                'wallet'      => auth()->user()->balance_available >= $this->total() + $this->taxes(),
+                'offline'     => settings('offline_payment')->is_enabled,
+                'flutterwave' => settings('flutterwave')->is_enabled,
+                'paystack'    => settings('paystack')->is_enabled,
+                'cashfree'    => settings('cashfree')->is_enabled,
+                'mollie'      => settings('mollie')->is_enabled,
+                'mercadopago' => settings('mercadopago')->is_enabled,
+                'vnpay'       => settings('vnpay')->is_enabled,
+                'paymob'      => settings('paymob')->is_enabled,
+                'paytabs'     => settings('paytabs')->is_enabled,
+                'paytr'       => settings('paytr')->is_enabled,
+                'razorpay'    => settings('razorpay')->is_enabled,
+                'jazzcash'    => settings('jazzcash')->is_enabled,
+                'youcanpay'   => settings('youcanpay')->is_enabled,
+                'nowpayments' => settings('nowpayments')->is_enabled,
+            ];
 
-                // Check if user has amount in his wallet
-                if ($this->total >= $available_balance) {
-                    
-                    // Error
-                    $this->notification([
-                        'title'       => __('messages.t_error'),
-                        'description' => __('messages.t_insufficient_funds_in_your_account'),
-                        'icon'        => 'error'
-                    ]);
-
-                } else {
-
-                    // Go to next step
-                    return $this->wallet();
-
-                }
-
-                // Return 
-                return;
-
-            }
-
-            // Check if offline method
-            if ($this->selected_method === 'offline') {
+            // Payment gateway is required
+            if ( !array_key_exists($this->payment_method, $supported_payment_gateways) || !isset($supported_payment_gateways[$this->payment_method]) || !$supported_payment_gateways[$this->payment_method] ) {
                 
-                // Get selected payment gateway
-                $selected = OfflinePaymentGateway::where('is_active', true)
-                                                    ->where('slug', $this->selected_method)
-                                                    ->first();
-
-            } else {
-
-                // Get selected payment gateway
-                $selected = AutomaticPaymentGateway::where('is_active', true)
-                                                    ->where('slug', $this->selected_method)
-                                                    ->first();
-
-            }
-
-            // Check if there is a selected payment gateway
-            if ($selected) {
-                
-                // Get amount
-                $amount = convertToNumber($this->total) * $selected?->exchange_rate / settings('currency')->exchange_rate;
-
-                // Check selected payment gateway
-                switch ($this->selected_method) {
-
-                    // PayPal
-                    case 'paypal':
-                        
-                        // Generate order id
-                        $order_id = "G-" . uid(18);
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $order_id, 'payment_method' => 'paypal']);
-
-                        $this->payment_gateway_params['paypal']['order_id'] = $order_id;
-
-                        // Go to thrid step
-                        $this->is_third_step = true;
-
-                    break;
-
-                    // Asaas
-                    case 'asaas':
-                        
-                        // Get key
-                        $key     = $selected?->settings['api_key'];
-                        
-                        // Set api url
-                        $link    = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'];
-
-                        // Send request
-                        $request = Http::withHeaders([
-                                            'access_token' => $key
-                                        ])->post("$link/paymentLinks", [
-                                            "name"                => auth()->user()->fullname ?? auth()->user()->username,
-                                            "description"         => __('messages.t_checkout'),
-                                            "endDate"             => now()->addDays(2)->format('Y-d-m'),
-                                            "value"               => $amount,
-                                            "billingType"         => "UNDEFINED",
-                                            "chargeType"          => "DETACHED",
-                                            "dueDateLimitDays"    => 10,
-                                            "subscriptionCycle"   => null,
-                                            "maxInstallmentCount" => 1,
-                                            "notificationEnabled" => true,
-                                            "callback"            => [
-                                                "successUrl"   => url('callback/asaas'),
-                                                "autoRedirect" => true
-                                            ]
-                                        ]);
-
-                        // Get response
-                        $response = $request->json();
-                        
-                        // Check if link generated
-                        if ( is_array($response) && isset($response['url']) ) {
-                            
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $response['id'], 'payment_method' => 'asaas']);
-
-                            // Go to payment url
-                            return redirect($response['url']);
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // CampPay
-                    case 'campay':
-                        
-                        // Get credentials
-                        $campay_username = $selected?->settings['app_username'];
-                        $campay_password = $selected?->settings['app_password'];
-                        $campay_link     = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'];
-
-                        // Send request
-                        $request = Http::post("$campay_link/api/token/", [
-                            "username" => $campay_username,
-                            "password" => $campay_password
-                        ]);
-
-                        // Get response
-                        $response = $request->json();
-
-                        // Check if token set
-                        if ( is_array($response) && isset($response['token']) ) {
-                            
-                            // Generate payment id
-                            $payment_id      = "G-" . uid(18);
-
-                            // Send a payment request
-                            $payment_request = Http::withToken($response['token'], 'Token')->post("$campay_link/api/get_payment_link/", [
-
-                                "amount"               => $amount,
-                                "currency"             => $selected->currency,
-                                "description"          => __('messages.t_checkout'),
-                                "external_reference"   => $payment_id,
-                                "redirect_url"         => url('callback/campay/success'),
-                                "failure_redirect_url" => url('callback/campay/failed')
-
-                            ]);
-
-                            // Get payment response
-                            $payment_response = $payment_request->json();
-
-                            // Check if link is set
-                            if ( isset($payment_response['link']) ) {
-                                
-                                // Save webhook details to later response
-                                $this->webhook(['payment_id' => $payment_id, 'payment_method' => 'campay']);
-    
-                                // Go to payment url
-                                return redirect($payment_response['link']);
-
-                            } else {
-
-                                // Something went wrong
-                                $this->notification([
-                                    'title'       => __('messages.t_error'),
-                                    'description' => __('messages.t_toast_something_went_wrong'),
-                                    'icon'        => 'error'
-                                ]);
-
-                                return;
-
-                            }
-
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // Cashfree
-                    case 'cashfree':
-                        
-                        // Get api keys
-                        $cashfree_client_id     = $selected?->settings['app_id'];
-                        $cashfree_client_secret = $selected?->settings['secret_key'];
-                        
-                        // Set api url
-                        $link                   = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'];
-
-                        // Generate payment id
-                        $payment_id              = "G-" . uid(18);
-
-                        // Send request
-                        $request = Http::withHeaders([
-                                            'x-api-version'   => '2022-09-01',
-                                            'x-client-id'     => $cashfree_client_id,
-                                            'x-client-secret' => $cashfree_client_secret,
-                                        ])->post("$link/pg/links", [
-
-                                            "customer_details" => [
-                                                "customer_phone"=> "+919090407368",
-                                                "customer_email"=> auth()->user()->email,
-                                                "customer_name" => auth()->user()->fullname ?? auth()->user()->username
-                                            ],
-                                            "link_notify" => [
-                                                "send_sms"   => false,
-                                                "send_email" => true
-                                            ], 
-                                            "link_meta" => [
-                                                "notify_url" => url('callback/cashfree'),
-                                                "return_url" => url('callback/cashfree?action=G'),
-                                                "upi_intent" => false
-                                            ], 
-                                            "link_id"                     => $payment_id,
-                                            "link_amount"                 => $amount,
-                                            "link_currency"               => $selected->currency,
-                                            "link_purpose"                => __('messages.t_checkout'),
-                                            "link_partial_payments"       => false,
-                                            "link_minimum_partial_amount" => 1,
-                                            "link_expiry_time"            => now()->addDay(),
-                                            "link_auto_reminders"         => true
-
-                                        ]);
-
-                        // Get response
-                        $response = $request->json();
-
-                        // Check if link generated
-                        if ( is_array($response) && isset($response['link_url']) ) {
-                            
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $payment_id, 'payment_method' => 'cashfree']);
-
-                            // Go to payment url
-                            return redirect($response['link_url']);
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // cPay
-                    case 'cpay':
-                        
-                        // Set request params
-                        $globalpay         = $amount;
-                        $arr2              = "G-" . uid(18);
-                        $mult              = $globalpay * 100;
-                        $customer_name     = auth()->user()->username;
-                        $customer_lastname = auth()->user()->username;
-                        $customer_email    = auth()->user()->email;
-                        $customer_address  = "";
-                        $customer_town     = "";
-                        $customer_zip      = "";
-                        $customer_tel      = "";
-                        $AmountToPay       = $mult;
-                        $PayToMerchant     = $selected?->settings['merchant_id'];
-                        $MerchantName      = $selected?->settings['merchant_name'];
-                        $AmountCurrency    = $selected->currency;
-                        $Details1          = __('messages.t_checkout');
-                        $Details2          = $arr2;
-                        $PaymentOKURL      = url('callback/cpay/success');
-                        $PaymentFailURL    = url('callback/cpay/failed');
-                        $FirstName         = $customer_name;
-                        $LastName          = $customer_lastname;
-                        $Address           = $customer_address;
-                        $City              = $customer_town;
-                        $Zip               = $customer_zip;
-                        $Telephone         = $customer_tel;
-                        $Email             = $customer_email;
-                        $OriginalAmount    = $globalpay;
-                        $md5password       = $selected?->settings['password'];
-                        $AmountToPay2      = sprintf("%03d", mb_strlen($AmountToPay, 'UTF-8'));
-                        $PayToMerchant2    = sprintf("%03d", strlen($PayToMerchant));
-                        $MerchantName2     = sprintf("%03d", strlen($MerchantName));
-                        $AmountCurrency2   = sprintf("%03d", strlen($AmountCurrency));
-                        $Details12         = sprintf("%03d", strlen($Details1));
-                        $Details22         = sprintf("%03d", strlen($Details2));
-                        $PaymentOKURL2     = sprintf("%03d", strlen($PaymentOKURL));
-                        $PaymentFailURL2   = sprintf("%03d", strlen($PaymentFailURL));
-                        $FirstName2        = sprintf("%03d", strlen($FirstName));
-                        $LastName2         = sprintf("%03d", strlen($LastName));
-                        $Address2          = sprintf("%03d", strlen($Address));
-                        $City2             = sprintf("%03d", strlen($City));
-                        $Zip2              = sprintf("%03d", strlen($Zip));
-                        $Telephone2        = sprintf("%03d", strlen($Telephone));
-                        $Email2            = sprintf("%03d", strlen($Email));
-                        $OriginalAmount2   = sprintf("%03d", strlen($OriginalAmount));
-                        $CheckSumHeader    = "16AmountToPay,PayToMerchant,MerchantName,AmountCurrency,Details1,Details2,PaymentOKURL,PaymentFailURL,FirstName,LastName,Address,City,Zip,Telephone,Email,OriginalAmount," . $AmountToPay2 . $PayToMerchant2 . $MerchantName2 . $AmountCurrency2 . $Details12 . $Details22 . $PaymentOKURL2 . $PaymentFailURL2 . $FirstName2 . $LastName2 . $Address2 . $City2 . $Zip2 . $Telephone2 . $Email2 . $OriginalAmount2;
-                        $CheckSumHeader2   = $CheckSumHeader . $AmountToPay . $PayToMerchant . $MerchantName . $AmountCurrency . $Details1 . $Details2 . $PaymentOKURL . $PaymentFailURL . $FirstName . $LastName . $Address . $City . $Zip . $Telephone . $Email . $OriginalAmount . $md5password;
-                        $CheckSum          = md5($CheckSumHeader2);
-
-                        // Set payment gateway option
-                        $this->payment_gateway_params['cpay']['AmountToPay']    = $AmountToPay;
-                        $this->payment_gateway_params['cpay']['PayToMerchant']  = $PayToMerchant;
-                        $this->payment_gateway_params['cpay']['MerchantName']   = $MerchantName;
-                        $this->payment_gateway_params['cpay']['AmountCurrency'] = $AmountCurrency;
-                        $this->payment_gateway_params['cpay']['Details1']       = $Details1;
-                        $this->payment_gateway_params['cpay']['Details2']       = $Details2;
-                        $this->payment_gateway_params['cpay']['PaymentOKURL']   = $PaymentOKURL;
-                        $this->payment_gateway_params['cpay']['PaymentFailURL'] = $PaymentFailURL;
-                        $this->payment_gateway_params['cpay']['CheckSumHeader'] = $CheckSumHeader;
-                        $this->payment_gateway_params['cpay']['CheckSum']       = $CheckSum;
-                        $this->payment_gateway_params['cpay']['FirstName']      = $FirstName;
-                        $this->payment_gateway_params['cpay']['LastName']       = $LastName;
-                        $this->payment_gateway_params['cpay']['Address']        = $Address;
-                        $this->payment_gateway_params['cpay']['City']           = $City;
-                        $this->payment_gateway_params['cpay']['Zip']            = $Zip;
-                        $this->payment_gateway_params['cpay']['Telephone']      = $Telephone;
-                        $this->payment_gateway_params['cpay']['Email']          = $Email;
-                        $this->payment_gateway_params['cpay']['OriginalAmount'] = $OriginalAmount;
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $arr2, 'payment_method' => 'cpay']);
-
-                        // Go to next step
-                        $this->is_third_step                  = true;
-
-                    break;
-
-                    // Duitku
-                    case 'duitku':
-                        
-                        // Set request params
-                        $merchantCode     = $selected?->settings['merchant_code'];
-                        $apiKey           = $selected?->settings['api_key'];
-                        $paymentAmount    = $amount;
-                        $paymentMethod    = 'VC';
-                        $merchantOrderId  = "G-" . uid(18);
-                        $productDetails   = __('messages.t_checkout');
-                        $email            = auth()->user()->email;
-                        $phoneNumber      = "";
-                        $additionalParam  = '';
-                        $merchantUserInfo = '';
-                        $customerVaName   = auth()->user()->fullname ?? auth()->user()->username;
-                        $callbackUrl      = url('callback/duitku');
-                        $returnUrl        = url('callback/duitku');
-                        $expiryPeriod     = 10;
-                        $signature        = md5($merchantCode . $merchantOrderId . $paymentAmount . $apiKey);
-                        $firstName        = auth()->user()->fullname ?? auth()->user()->username;
-                        $lastName         = auth()->user()->fullname ?? auth()->user()->username;
-                        $alamat           = "";
-                        $city             = "";
-                        $postalCode       = "";
-                        $countryCode      = "ID";
-                        $address          = array(
-                            'firstName'   => $firstName,
-                            'lastName'    => $lastName,
-                            'address'     => $alamat,
-                            'city'        => $city,
-                            'postalCode'  => $postalCode,
-                            'phone'       => $phoneNumber,
-                            'countryCode' => $countryCode
-                        );
-                        $customerDetail = array(
-                            'firstName'       => $firstName,
-                            'lastName'        => $lastName,
-                            'email'           => $email,
-                            'phoneNumber'     => $phoneNumber,
-                            'billingAddress'  => $address,
-                            'shippingAddress' => $address
-                        );
-                        $item1 = array(
-                            'name'     => __('messages.t_checkout'),
-                            'price'    => $paymentAmount,
-                            'quantity' => 1
-                        );
-                        $itemDetails = array( $item1 );
-                        $params      = array(
-                            'merchantCode'     => $merchantCode,
-                            'paymentAmount'    => $paymentAmount,
-                            'paymentMethod'    => $paymentMethod,
-                            'merchantOrderId'  => $merchantOrderId,
-                            'productDetails'   => $productDetails,
-                            'additionalParam'  => $additionalParam,
-                            'merchantUserInfo' => $merchantUserInfo,
-                            'customerVaName'   => $customerVaName,
-                            'email'            => $email,
-                            'phoneNumber'      => $phoneNumber,
-                            'itemDetails'      => $itemDetails,
-                            'customerDetail'   => $customerDetail,
-                            'callbackUrl'      => $callbackUrl,
-                            'returnUrl'        => $returnUrl,
-                            'signature'        => $signature,
-                            'expiryPeriod'     => $expiryPeriod
-                        );
-                        $params_string = json_encode($params);
-                        
-                        // Get url
-                        if ($selected?->settings['env'] === 'sandbox') {
-                            $url = 'https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry';
-                            
-                        } else {
-                            $url = 'https://passport.duitku.com/webapi/api/merchant/v2/inquiry';
-                        }
-
-                        $ch = curl_init();
-
-                        curl_setopt($ch, CURLOPT_URL, $url); 
-                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, $params_string);                                                                  
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
-                        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-                            'Content-Type: application/json',                                                                                
-                            'Content-Length: ' . strlen($params_string))                                                                       
-                        );   
-                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-                        //execute post
-                        $request  = curl_exec($ch);
-                        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-                        if($httpCode == 200) {
-
-                            // Get results
-                            $results = json_decode($request, true);
-
-                            // Check if succeeded
-                            if (isset($results['statusCode']) && $results['statusCode'] == "00") {
-                                
-                                // Save webhook details to later response
-                                $this->webhook(['payment_id' => $merchantOrderId, 'payment_method' => 'duitku']);
-
-                                // Redirect to payment url
-                                return redirect($results['paymentUrl']);
-
-                            } else {
-
-                                // Error
-                                $this->notification([
-                                    'title'       => __('messages.t_error'),
-                                    'description' => __('messages.t_toast_something_went_wrong'),
-                                    'icon'        => 'error'
-                                ]);
-
-                                return;
-
-                            }
-
-                        } else {
-
-                            $request = json_decode($request);
-
-                            // Error
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => $request->Message,
-                                'icon'        => 'error'
-                            ]);
-
-                        }
-
-                    break;
-
-                    // Ecpay
-                    case 'ecpay':
-                        
-                        // Set params
-                        $ecpay_link        = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'];
-                        $hashKey           = $selected?->settings['hash_key'];
-                        $hashIv            = $selected?->settings['hash_iv'];
-                        $MerchantID        = $selected?->settings['merchant_id'];
-                        $MerchantTradeNo   = "D" . uid(19);
-                        $MerchantTradeDate = date('Y/m/d H:i:s');
-                        $PaymentType       = "aio";
-                        $TotalAmount       = $amount;
-                        $TradeDesc         = EcpayGateway::ecpayUrlEncode('交易描述範例');
-                        $ItemName          = __('messages.t_checkout');
-                        $ReturnURL         = url('callback/ecpay');
-                        $ChoosePayment     = "ALL";
-                        $EncryptType       = 1;
-                        $CheckMacValue     = EcpayGateway::generatMac([
-                            "ChoosePayment"     => $ChoosePayment,
-                            "EncryptType"       => $EncryptType,
-                            "ItemName"          => $ItemName,
-                            "MerchantID"        => $MerchantID,
-                            "MerchantTradeDate" => $MerchantTradeDate,
-                            "MerchantTradeNo"   => $MerchantTradeNo,
-                            "PaymentType"       => $PaymentType,
-                            "ReturnURL"         => $ReturnURL,
-                            "TotalAmount"       => $TotalAmount,
-                            "TradeDesc"         => $TradeDesc
-                        ], $hashKey, $hashIv);
-                        
-                        // Set payment gateway option
-                        $this->payment_gateway_params['ecpay']['link']              = $ecpay_link;
-                        $this->payment_gateway_params['ecpay']['ChoosePayment']     = $ChoosePayment;
-                        $this->payment_gateway_params['ecpay']['EncryptType']       = $EncryptType;
-                        $this->payment_gateway_params['ecpay']['ItemName']          = $ItemName;
-                        $this->payment_gateway_params['ecpay']['MerchantID']        = $MerchantID;
-                        $this->payment_gateway_params['ecpay']['MerchantTradeDate'] = $MerchantTradeDate;
-                        $this->payment_gateway_params['ecpay']['MerchantTradeNo']   = $MerchantTradeNo;
-                        $this->payment_gateway_params['ecpay']['PaymentType']       = $PaymentType;
-                        $this->payment_gateway_params['ecpay']['ReturnURL']         = $ReturnURL;
-                        $this->payment_gateway_params['ecpay']['TotalAmount']       = $TotalAmount;
-                        $this->payment_gateway_params['ecpay']['TradeDesc']         = $TradeDesc;
-                        $this->payment_gateway_params['ecpay']['CheckMacValue']     = $CheckMacValue;
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $MerchantTradeNo, 'payment_method' => 'ecpay']);
-
-                        // Go to next step
-                        $this->is_third_step                  = true;
-
-
-                    break;
-
-                    // Epoint.az
-                    case 'epoint':
-                        
-                        // Set epoint.az settings
-                        $public_key                = $selected?->settings['public_key'];
-                        $private_key               = $selected?->settings['private_key'];
-                        $requestUrl                = "https://epoint.az/api/1/request";
-                        $transaction_id            = "G-" . uid(18);
-
-                        // Set values
-                        $values    = [
-                            "public_key"           => $public_key,
-                            "amount"               => $amount,
-                            "currency"             => $selected->currency,
-                            "language"             => "az",
-                            "order_id"             => $transaction_id,
-                            "description"          => __('messages.t_checkout'),
-                            "success_redirect_url" => url('callback/epoint/success?order_id=' . $transaction_id),
-                            "error_redirect_url"   => url('callback/epoint/failed?order_id=' . $transaction_id),
-                        ];
-
-                        // Encode values
-                        $data      = base64_encode(json_encode($values));
-
-                        // Generate signature
-                        $signature = base64_encode(sha1($private_key . $data . $private_key, 1));
-
-                        // Set post fields
-                        $fields    = http_build_query(array( 'data' => $data, 'signature' => $signature));
-
-                        // Send request
-                        $_ch = curl_init();
-                        curl_setopt($_ch, CURLOPT_URL, $requestUrl);
-                        curl_setopt($_ch, CURLOPT_POSTFIELDS, $fields);
-                        curl_setopt($_ch, CURLOPT_RETURNTRANSFER, TRUE);
-                        $_response = curl_exec($_ch);
-                        
-                        // Decode results
-                        $results = json_decode($_response, true);
-
-                        // Redirect if success
-                        if (is_array($results) && isset($results['status']) && $results['status'] === 'success') {
-
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $transaction_id, 'payment_method' => 'epoint']);
-
-                            // Redirect
-                            return redirect($results['redirect_url']);
-
-                        } else {
-
-                            // Error
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // FastPay
-                    case 'fastpay':
-                    
-                        // Set request params
-                        $post_data                       = array();
-                        $post_data['merchant_mobile_no'] = $selected?->settings['merchant_mobile_no'];
-                        $post_data['store_password']     = $selected?->settings['store_password'];
-                        $post_data['order_id']           = "G-" . uid(18);
-                        $post_data['bill_amount']        = $amount;
-                        $post_data['success_url']        = url('callback/fastpay/success');
-                        $post_data['fail_url']           = url('callback/fastpay/failed');
-                        $post_data['cancel_url']         = url('callback/fastpay/cancel');
-                        $direct_api_url                  = $selected?->settings['env'] === 'sandbox' ? "https://dev.fast-pay.cash/" : "https://secure.fast-pay.cash/";
-
-                        $handle = curl_init();
-                        curl_setopt($handle, CURLOPT_URL, $direct_api_url . "merchant/generate-payment-token" );
-                        curl_setopt($handle, CURLOPT_TIMEOUT, 10);
-                        curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 10);
-                        curl_setopt($handle, CURLOPT_POST, 1 );
-                        curl_setopt($handle, CURLOPT_POSTFIELDS, $post_data);
-                        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-
-                        $content = curl_exec($handle );
-
-                        $code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-                        
-                        if($code == 200 && !( curl_errno($handle))) {
-
-                            curl_close( $handle);
-                            $response = $content;
-
-                        } else {
-
-                            curl_close( $handle);
-                            
-                            // Error
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                        // Decode response
-                        $results = json_decode( $response, true );
-
-                        // Check if token generated
-                        if ( is_array($results) && isset($results['token']) ) {
-                            
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $post_data['order_id'], 'payment_method' => 'fastpay']);
-
-                            // Go to payment url
-                            return redirect($direct_api_url . "merchant/payment?token=" . $results['token']);
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // Flutterwave
-                    case 'flutterwave':
-                    
-                        // Generate order id
-                        $order_id = "G-" . uid(18);
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $order_id, 'payment_method' => 'flutterwave']);
-
-                        $this->payment_gateway_params['flutterwave']['order_id'] = $order_id;
-
-                        // Go to next step
-                        $this->is_third_step = true;
-
-                    break;
-
-                    // Freekassa
-                    case 'freekassa':
-
-                        // Set FreeKassa credentials
-                        $merchant_id        = $selected?->settings['shop_id'];
-                        $secret_key         = $selected?->settings['merchant_password1'];
-                        $pay_url            = $selected?->settings['request_link'];
-
-                        // Set request params
-                        $params             = [];
-                        $params['m']        = $merchant_id;
-                        $params['oa']       = $amount;
-                        $params['o']        = "G-" . uid();
-                        $params['i']        = 1;
-                        $params['currency'] = $selected->currency;
-                        $params['pay']      = 'Оплатить';
-    
-                        // Generate signature
-                        $sign               = md5($merchant_id.':'.$params['oa'].':'.$secret_key.':'.$params['currency'].':'.$params['o']);
-
-                        // Set signature
-                        $params['s']        = $sign;
-                        
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $params['o'], 'payment_method' => 'freekassa']);
-
-                        // Redirect to payment url
-                        return redirect("$pay_url?" . http_build_query($params));
-
-                    break;
-
-                    // Genie business
-                    case 'genie-business':
-                        
-                        // Get credentials 
-                        $app_key      = $selected?->settings['app_key'];
-                        $request_link = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'];
-
-                        // Send request
-                        $request = Http::withHeaders([
-                                            'Accept'        => 'application/json',
-                                            'Authorization' => $app_key,
-                                            'Content-Type'  => 'application/json',
-                                        ])->post("$request_link/public/v2/transactions", [
-                                            "customerReference" => "G-" . uid(18),
-                                            "currency"          => $selected->currency,
-                                            "amount"            => $amount,
-                                            "redirectUrl"       => url('callback/genie?action=G'),
-                                            "webhook"           => url('callback/genie')
-                                        ]);
-
-                        // Get response
-                        $response = $request->json();
-                        
-                        // Check if link generated
-                        if ( is_array($response) && isset($response['url']) ) {
-                            
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $response['customerReference'], 'payment_method' => 'genie-business']);
-
-                            // Go to payment url
-                            return redirect($response['url']);
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-                                        
-                        
-
-                    break;
-
-                    // Iyzico
-                    case 'iyzico':
-                    
-                        // Get iyzico api config
-                        $api_key         = $selected?->settings['api_key'];
-                        $secret_key      = $selected?->settings['secret_key'];
-                        $request_link    = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'];
-                        $conversation_id = "G-" . uid(18);
-
-                        // Set iyzico options
-                        $options = new \Iyzipay\Options();
-                        $options->setApiKey($api_key);
-                        $options->setSecretKey($secret_key);
-                        $options->setBaseUrl($request_link);
-
-                        // Set request details
-                        $request = new \Iyzipay\Request\CreatePayWithIyzicoInitializeRequest();
-                        $request->setLocale(\Iyzipay\Model\Locale::TR);
-                        $request->setConversationId($conversation_id);
-                        $request->setPrice($amount);
-                        $request->setPaidPrice($amount);
-                        $request->setCurrency(\Iyzipay\Model\Currency::TL);
-                        $request->setBasketId(Str::uuid());
-                        $request->setPaymentGroup(\Iyzipay\Model\PaymentGroup::PRODUCT);
-                        $request->setCallbackUrl(url('callback/iyzico?conversation_id=' . $conversation_id));
-                        $request->setEnabledInstallments(array(2, 3, 6, 9));
-
-                        // Set buyer details
-                        $buyer = new \Iyzipay\Model\Buyer();
-                        $buyer->setId(auth()->user()->uid);
-                        $buyer->setName(auth()->user()->fullname ?? auth()->user()->username);
-                        $buyer->setSurname(auth()->user()->fullname ?? auth()->user()->username);
-                        $buyer->setGsmNumber("+905350000000");
-                        $buyer->setEmail(auth()->user()->email);
-                        $buyer->setIdentityNumber("74300864791");
-                        $buyer->setLastLoginDate("2015-10-05 12:43:35");
-                        $buyer->setRegistrationDate("2013-04-21 15:12:09");
-                        $buyer->setRegistrationAddress("Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1");
-                        $buyer->setIp(request()->ip());
-                        $buyer->setCity("Istanbul");
-                        $buyer->setCountry("Turkey");
-                        $buyer->setZipCode("34732");
-                        $request->setBuyer($buyer);
-
-                        // Set shipping address
-                        $shippingAddress = new \Iyzipay\Model\Address();
-                        $shippingAddress->setContactName(auth()->user()->fullname ?? auth()->user()->username);
-                        $shippingAddress->setCity("Istanbul");
-                        $shippingAddress->setCountry("Turkey");
-                        $shippingAddress->setAddress("Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1");
-                        $shippingAddress->setZipCode("34742");
-                        $request->setShippingAddress($shippingAddress);
-
-                        // Set billing address
-                        $billingAddress = new \Iyzipay\Model\Address();
-                        $billingAddress->setContactName(auth()->user()->fullname ?? auth()->user()->username);
-                        $billingAddress->setCity("Istanbul");
-                        $billingAddress->setCountry("Turkey");
-                        $billingAddress->setAddress("Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1");
-                        $billingAddress->setZipCode("34742");
-                        $request->setBillingAddress($billingAddress);
-
-                        // Set items in basket
-                        $basketItems = array();
-                        $firstBasketItem = new \Iyzipay\Model\BasketItem();
-                        $firstBasketItem->setId(Str::uuid());
-                        $firstBasketItem->setName(__('messages.t_checkout'));
-                        $firstBasketItem->setCategory1("Collectibles");
-                        $firstBasketItem->setItemType(\Iyzipay\Model\BasketItemType::VIRTUAL);
-                        $firstBasketItem->setPrice($amount);
-                        $basketItems[0] = $firstBasketItem;
-                        $request->setBasketItems($basketItems);
-
-                        // Send request
-                        $payWithIyzicoInitialize = \Iyzipay\Model\PayWithIyzicoInitialize::create($request, $options);
-                        
-                        // Check if link generated
-                        if ( $payWithIyzicoInitialize?->getPayWithIyzicoPageUrl() ) {
-                            
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $conversation_id, 'payment_method' => 'iyzico']);
-
-                            // Go to payment url
-                            return redirect( $payWithIyzicoInitialize?->getPayWithIyzicoPageUrl() );
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // Jazzcash
-                    case 'jazzcash':
-                    
-                        $jazzcash_env           = $selected?->settings['env'];
-                        $jazzcash_endpoint      = $jazzcash_env === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'] ;
-                        $jazzcash_merchant_id   = $selected?->settings['merchant_id'];
-                        $jazzcash_password      = $selected?->settings['password'];
-                        $jazzcash_salt          = $selected?->settings['integerity_salt'];
-                        $jazzcash_return_url    = url('callback/jazzcash');
-
-                        // Set order details
-                        $pp_amount              = $amount * 100;
-                        $pp_billref             = "G-" . uid(18);
-                        $pp_description         = __('messages.t_checkout');
-                        $pp_language            = "EN";
-                        $pp_merchant_id         = $jazzcash_merchant_id;
-                        $pp_password            = $jazzcash_password;
-                        $pp_return_url          = $jazzcash_return_url;
-                        $pp_txn_currency        = $selected->currency;
-                        $pp_txn_datetime        = date('Y') . date('m') . date('d') . date('H') . date('i') . date('s');
-                        $pp_txn_expiry_datetime = date('Y') . date('m') . date('d', strtotime('tomorrow')) . date('H') . date('i') . date('s');
-                        $pp_txn_ref_no          = Str::uuid()->toString();
-                        $pp_txn_type            = "";
-                        $pp_version             = 1.1;
-                        $pp_ppmpf_1             = 1;
-                        $pp_ppmpf_2             = 2;
-                        $pp_ppmpf_3             = 3;
-                        $pp_ppmpf_4             = 4;
-                        $pp_ppmpf_5             = 5;
-
-                        // Set hash string value
-                        $jazzcash_hash_string   = '';
-                        $jazzcash_hash_string  .= "$jazzcash_salt&";
-                        $jazzcash_hash_string  .= "$pp_amount&";
-                        $jazzcash_hash_string  .= "$pp_billref&";
-                        $jazzcash_hash_string  .= "$pp_description&";
-                        $jazzcash_hash_string  .= "$pp_language&";
-                        $jazzcash_hash_string  .= "$pp_merchant_id&";
-                        $jazzcash_hash_string  .= "$pp_password&";
-                        $jazzcash_hash_string  .= "$pp_return_url&";
-                        $jazzcash_hash_string  .= "$pp_txn_currency&";
-                        $jazzcash_hash_string  .= "$pp_txn_datetime&";
-                        $jazzcash_hash_string  .= "$pp_txn_expiry_datetime&";
-                        $jazzcash_hash_string  .= "$pp_txn_ref_no&";
-                        $jazzcash_hash_string  .= "$pp_version&";
-                        $jazzcash_hash_string  .= "$pp_ppmpf_1&";
-                        $jazzcash_hash_string  .= "$pp_ppmpf_2&";
-                        $jazzcash_hash_string  .= "$pp_ppmpf_3&";
-                        $jazzcash_hash_string  .= "$pp_ppmpf_4&";
-                        $jazzcash_hash_string  .= "$pp_ppmpf_5";
-
-                        // Generate hash string
-                        $jazzcash_signature     = hash_hmac('sha256', $jazzcash_hash_string, $jazzcash_salt);
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $pp_billref, 'payment_method' => 'jazzcash']);
-
-                        // Set payment gateway option
-                        $this->payment_gateway_params['jazzcash']['link']                 = $jazzcash_endpoint;
-                        $this->payment_gateway_params['jazzcash']['pp_Version']           = $pp_version;
-                        $this->payment_gateway_params['jazzcash']['pp_TxnType']           = $pp_txn_type;
-                        $this->payment_gateway_params['jazzcash']['pp_MerchantID']        = $pp_merchant_id;
-                        $this->payment_gateway_params['jazzcash']['pp_Password']          = $pp_password;
-                        $this->payment_gateway_params['jazzcash']['pp_ReturnURL']         = $jazzcash_return_url;
-                        $this->payment_gateway_params['jazzcash']['pp_Language']          = $pp_language;
-                        $this->payment_gateway_params['jazzcash']['pp_TxnRefNo']          = $pp_txn_ref_no;
-                        $this->payment_gateway_params['jazzcash']['pp_Amount']            = $pp_amount;
-                        $this->payment_gateway_params['jazzcash']['pp_TxnCurrency']       = $pp_txn_currency;
-                        $this->payment_gateway_params['jazzcash']['pp_TxnDateTime']       = $pp_txn_datetime;
-                        $this->payment_gateway_params['jazzcash']['pp_TxnExpiryDateTime'] = $pp_txn_expiry_datetime;
-                        $this->payment_gateway_params['jazzcash']['pp_BillReference']     = $pp_billref;
-                        $this->payment_gateway_params['jazzcash']['pp_Description']       = $pp_description;
-                        $this->payment_gateway_params['jazzcash']['pp_SecureHash']        = $jazzcash_signature;
-                        $this->payment_gateway_params['jazzcash']['ppmpf_1']              = $pp_ppmpf_1;
-                        $this->payment_gateway_params['jazzcash']['ppmpf_2']              = $pp_ppmpf_2;
-                        $this->payment_gateway_params['jazzcash']['ppmpf_3']              = $pp_ppmpf_3;
-                        $this->payment_gateway_params['jazzcash']['ppmpf_4']              = $pp_ppmpf_4;
-                        $this->payment_gateway_params['jazzcash']['ppmpf_5']              = $pp_ppmpf_5;
-
-                        // Go to next step
-                        $this->is_third_step = true;
-
-                    break;
-
-                    // Mercadopago
-                    case 'mercadopago':
-                    
-                        // Set api secret key
-                        \MercadoPago\SDK::setAccessToken( $selected?->settings['access_token'] );
-
-                        $preference              = new \MercadoPago\Preference();
- 
-                        // Crear un elemento en la preferencia
-                        $item                    = new \MercadoPago\Item();
-                        $item->title             = __('messages.t_checkout');
-                        $item->quantity          = 1;
-                        $item->unit_price        = $amount;
-                        $preference->items       = array($item);
-                        $preference->auto_return = "approved";
-                        $preference->purpose     = 'wallet_purchase';
-                        $preference->back_urls = [
-                            'success' => url('callback/mercadopago/success'),
-                            'pending' => url('callback/mercadopago/pending'),
-                            'failure' => url('callback/mercadopago/failed'),
-                        ];
-                        $preference->save();
-                        
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $preference->id, 'payment_method' => 'mercadopago']);
-
-                        // Set payment gateway option
-                        $this->payment_gateway_params['mercadopago']['preference_id'] = $preference->id;
-
-                        // Go to next step
-                        $this->is_third_step = true;    
-
-                    break;
-
-                    // Mollie
-                    case 'mollie':
-                    
-                        // Set currency
-                        $currency        = $selected->currency;
-
-                        // Set amount
-                        $amount          = number_format( $amount, 2, '.', '' );
-
-                        // Generate mollie order id
-                        $mollie_order_id = "G-" . uid(18);
-
-                        // Set mollie client
-                        $mollie          = new \Mollie\Api\MollieApiClient();
-
-                        // Set api key
-                        $mollie->setApiKey( $selected?->settings['key'] );
-
-                        // Create a payment request
-                        $payment  = $mollie->payments->create([
-                            "amount" => [
-                                "currency" => "$currency",
-                                "value"    => "$amount"
-                            ],
-                            "method"      => ["applepay", "bancontact", "banktransfer", "belfius", "creditcard", "directdebit", "eps", "giftcard", "giropay", "ideal", "kbc", "mybank", "paypal", "paysafecard", "przelewy24", "sofort"],
-                            "description" => $mollie_order_id,
-                            "redirectUrl" => url("callback/mollie?action=G"),
-                            "webhookUrl"  => url('callback/mollie')
-                        ]);
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $mollie_order_id, 'payment_method' => 'mollie']);
-
-                        // Redirect to payment link
-                        return redirect($payment->getCheckoutUrl());
-
-                    break;
-
-                    // Nowpayment.io
-                    case 'nowpayments':
-
-                        // Set new client request
-                        $client  = new Client();
-                        
-                        // Set headers
-                        $headers = [
-                            'x-api-key'    => $selected?->settings['api_key'],
-                            'Content-Type' => 'application/json'
-                        ];
-
-                        // Set order id
-                        $order_id = "G-" . uid(18);
-
-                        // Set request link
-                        $request_link = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'] ;
-        
-                        // Set request body
-                        $body = [
-                            "price_amount"      => $amount,
-                            "price_currency"    => strtolower(settings('currency')->code),
-                            "order_id"          => $order_id,
-                            "order_description" => __('messages.t_checkout'),
-                            // "ipn_callback_url"  => url('callback/nowpayments/ipn'),
-                            "success_url"       => url('callback/nowpayments/success'),
-                            "cancel_url"        => url('callback/nowpayments/cancel')
-                        ];
-                        
-                        // Send request
-                        $request = new Request('POST', $request_link . "invoice", $headers, json_encode($body));
-
-                        // Get response
-                        $res     = $client->sendAsync($request)->wait();
-
-                        // Get resutls
-                        $data    = json_decode($res->getBody(), true);
-
-                        // Check if link generated
-                        if ( is_array($data) && isset($data['invoice_url']) ) {
-                            
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $data['order_id'], 'payment_method' => 'nowpayments']);
-
-                            // Go to payment url
-                            return redirect($data['invoice_url']);
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // Paymob
-                    case 'paymob':
-                        
-                        // Get auth token
-                        $auth    = Http::acceptJson()->post('https://accept.paymob.com/api/auth/tokens', [
-                                        'api_key' => $selected?->settings['api_key'],
-                                    ])->json();
-
-                        // Check if token is set
-                        if (isset($auth['token'])) {
-                            
-                            // Create order
-                            $order   = Http::acceptJson()->post('https://accept.paymob.com/api/ecommerce/orders', [
-                                            'auth_token'      => $auth['token'],
-                                            'delivery_needed' => false,
-                                            'amount_cents'    => $amount * 100,
-                                            'items'           => []
-                                        ])->json();
-
-                            // Check if order created
-                            if (isset($order['id'])) {
-                                
-                                // Make payment
-                                $payment = Http::acceptJson()->post('https://accept.paymob.com/api/acceptance/payment_keys', [
-                                                'auth_token'     => $auth['token'],
-                                                'amount_cents'   => $amount * 100,
-                                                'expiration'     => 3600,
-                                                'order_id'       => $order['id'],
-                                                'billing_data'   => [
-                                                    "first_name"     => auth()->user()->fullname ?? auth()->user()->username,
-                                                    "last_name"      => auth()->user()->fullname ?? auth()->user()->username,
-                                                    "email"          => auth()->user()->email,
-                                                    "phone_number"   => "+2087513693",
-                                                    "apartment"      => "NA",
-                                                    "floor"          => "NA",
-                                                    "street"         => "NA",
-                                                    "building"       => "NA",
-                                                    "shipping_method"=> "D",
-                                                    "postal_code"    => "NA",
-                                                    "city"           => "NA",
-                                                    "country"        => "NA",
-                                                    "state"          => "NA"
-                                                ],
-                                                'currency'       => $selected?->currency,
-                                                'integration_id' => $selected?->settings['integration_id']
-                                            ])->json();
-
-                                // Save webhook details to later response
-                                $this->webhook(['payment_id' => "G-" . $order['id'], 'payment_method' => 'paymob']);
-                                            
-                                // Set payment token
-                                $this->payment_gateway_params['paymob']['token'] = $payment['token'];
-
-                                // Go to next step
-                                $this->is_third_step = true;
-
-                            } else {
-
-                                // Something went wrong
-                                $this->notification([
-                                    'title'       => __('messages.t_error'),
-                                    'description' => __('messages.t_toast_something_went_wrong'),
-                                    'icon'        => 'error'
-                                ]);
-
-                            }
-                            
-                        } else {
-
-                            // Something went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                        }
-
-                    break;
-
-                    // Paymob PK
-                    case 'paymob-pk':
-                    
-                        // Get auth token
-                        $auth    = Http::acceptJson()->post('https://pakistan.paymob.com/api/auth/tokens', [
-                            'api_key' => $selected?->settings['api_key'],
-                        ])->json();
-
-                        // Check if token is set
-                        if (isset($auth['token'])) {
-                            
-                            // Create order
-                            $order   = Http::acceptJson()->post('https://pakistan.paymob.com/api/ecommerce/orders', [
-                                            'auth_token'      => $auth['token'],
-                                            'delivery_needed' => false,
-                                            'amount_cents'    => $amount * 100,
-                                            'items'           => []
-                                        ])->json();
-
-                            // Check if order created
-                            if (isset($order['id'])) {
-                                
-                                // Make payment
-                                $payment = Http::acceptJson()->post('https://pakistan.paymob.com/api/acceptance/payment_keys', [
-                                                'auth_token'     => $auth['token'],
-                                                'amount_cents'   => $amount * 100,
-                                                'expiration'     => 3600,
-                                                'order_id'       => $order['id'],
-                                                'billing_data'   => [
-                                                    "first_name"     => auth()->user()->fullname ?? auth()->user()->username,
-                                                    "last_name"      => auth()->user()->fullname ?? auth()->user()->username,
-                                                    "email"          => auth()->user()->email,
-                                                    "phone_number"   => "+86(8)9135210487",
-                                                    "apartment"      => "NA",
-                                                    "floor"          => "NA",
-                                                    "street"         => "NA",
-                                                    "building"       => "NA",
-                                                    "shipping_method"=> "D",
-                                                    "postal_code"    => "NA",
-                                                    "city"           => "NA",
-                                                    "country"        => "NA",
-                                                    "state"          => "NA"
-                                                ],
-                                                'currency'       => $selected?->currency,
-                                                'integration_id' => $selected?->settings['integration_id']
-                                            ])->json();
-
-                                // Save webhook details to later response
-                                $this->webhook(['payment_id' => $order['id'], 'payment_method' => 'paymob-pk']);
-                                            
-                                // Set payment token
-                                $this->payment_gateway_params['paymob-pk']['token'] = $payment['token'];
-
-                                // Go to next step
-                                $this->is_third_step = true;
-
-                            } else {
-
-                                // Something went wrong
-                                $this->notification([
-                                    'title'       => __('messages.t_error'),
-                                    'description' => __('messages.t_toast_something_went_wrong'),
-                                    'icon'        => 'error'
-                                ]);
-
-                            }
-                            
-                        } else {
-
-                            // Something went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                        }
-
-                    break;
-
-                    // Paystack
-                    case 'paystack':
-                    
-                        // Generate order id
-                        $order_id                                          = "G-" . uid(18);
-                        
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $order_id, 'payment_method' => 'paystack']);
-
-                        // Save order id
-                        $this->payment_gateway_params['paystack']['order'] = $order_id;
-
-                        // Go to next step
-                        $this->is_third_step                               = true;
-                        
-                    break;
-
-                    // Paytabs
-                    case 'paytabs':
-                        
-                        // Generate order id
-                        $order_id = "G-" . uid(18);
-
-                        // Send payment request
-                        $payment  = paypage::sendPaymentCode('all')
-                                            ->sendTransaction('Auth')
-                                            ->sendCart( $order_id, $amount, __('messages.t_checkout') )
-                                            ->sendCustomerDetails(
-                                                auth()->user()->fullname ?? auth()->user()->username, 
-                                                auth()->user()->email, 
-                                                'NA', 
-                                                'NA', 
-                                                'NA', 
-                                                'NA', 
-                                                'NA', 
-                                                'NA',
-                                                request()->ip()
-                                            )
-                                            ->sendHideShipping(true)
-                                            ->sendURLs( url('callback/paytabs'), url('callback/paytabs') )
-                                            ->sendLanguage('en')
-                                            ->create_pay_page();
-
-                        // Redirect
-                        if ($payment) {
-
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $order_id, 'payment_method' => 'paytabs']);
-
-                            // Redirect
-                            return $payment;
-
-                        } else {
-
-                            // Something went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-                        }
-
-                    break;
-
-                    // Paytr
-                    case 'paytr':
-                    
-                        // Generate order id
-                        $merchant_oid = "G-" . uid(18);
-
-                        // Set amount
-                        $amount       = $amount;
-
-                        // Set currency
-                        $currency     = $selected?->currency === 'TRY' ? 'TL' : $selected->currency;
-        
-                        // Start new payment
-                        $paytr        = new \App\Utils\PayTR\PayTR(); 
-
-                        // Set payment gateway api keys
-                        $paytr->setMerchantId( $selected?->settings['merchant_id'] );
-                        $paytr->setMerchantKey( $selected?->settings['merchant_key'] );
-                        $paytr->setMerchantSalt( $selected?->settings['merchant_salt'] );
-                        $paytr->setMerchantOrderId($merchant_oid);
-
-                        // Set order details
-                        $paytr->setEmail(auth()->user()->email);
-                        $paytr->setPaymentAmount($amount);
-                        $paytr->setUserName(auth()->user()->username);
-                        $paytr->setAddress('N/A');
-                        $paytr->setPhone('5205000000');
-                        $paytr->setBasket([[ "name" => __('messages.t_checkout'), "price" => $amount , "currency" => $currency ]]);
-                        $paytr->setCurrency($currency);
-                        $paytr->setSuccessUrl(url('callback/paytr/success?action=G'));
-                        $paytr->setFailUrl(url('callback/paytr/failed?action=G'));
-                        $paytr->initialize();
-
-                        // Check if token generated
-                        if ( $paytr?->token ) {
-                            
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $merchant_oid, 'payment_method' => 'paytr']);
-
-                            // Set token
-                            $this->payment_gateway_params['paytr']['token'] = $paytr->token;
-
-                            // Go to next step
-                            $this->is_third_step = true;
-
-                        } else {
-
-                            // Somthing went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-
-                        }
-
-                    break;
-
-                    // Razorpay
-                    case 'razorpay':
-                    
-                        // Send a request
-                        $request = new Api( $selected?->settings['key_id'], $selected?->settings['key_secret'] );
-
-                        // Create order
-                        $order   = $request->order->create([
-                            'amount'   => $amount * 100,
-                            'currency' => $selected->currency,
-                        ]);
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $order->id, 'payment_method' => 'razorpay']);
-
-                        // Set order id
-                        $this->payment_gateway_params['razorpay']['id'] = $order->id;
-
-                        // Go to next step
-                        $this->is_third_step = true;
-
-                    break;
-
-                    // Robokassa
-                    case 'robokassa':
-  
-                        // Set request params
-                        $mrh_login = $selected?->settings['mrh_login'];
-                        $mrh_pass1 = $selected?->settings['mrh_pass1'];
-                        $inv_id    = "G-" . uid(18);
-                        $inv_desc  = __('messages.t_checkout');
-                        $out_summ  = $amount;
-
-                        // build CRC value
-                        $crc       = md5("$mrh_login:$out_summ:$inv_id:$mrh_pass1");
-        
-                        // build URL
-                        $url       = "https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=$mrh_login&" . "OutSum=$out_summ&InvId=$inv_id&Description=$inv_desc&SignatureValue=$crc";
-        
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $inv_id, 'payment_method' => 'robokassa']);
-
-                        // Redirect to payment link
-                        return redirect($url);
-
-                    break;
-
-                    // Stripe
-                    case 'stripe':
-                    
-                        // Set your secret key. Remember to switch to your live secret key in production.
-                        $stripe = new \Stripe\StripeClient( $selected?->settings['secret_key'] );
-
-                        // Create payment intent
-                        $intent = $stripe->paymentIntents->create(
-                            [
-                                'amount'               => $amount * 100,
-                                'currency'             => $selected->currency,
-                                'payment_method_types' => ['card']
-                            ]
-                        );
-
-                        // Set intent
-                        $this->payment_gateway_params['stripe']['client_secret'] = $intent->client_secret;
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $intent->client_secret, 'payment_method' => 'stripe']);
-
-                        // Go to next step
-                        $this->is_third_step = true;
-                        
-                    break;
-
-                    // Vnpay
-                    case 'vnpay':
-                    
-                        // Set timezone
-                        $tz                        = 'Asia/Ho_Chi_Minh';
-                        $timestamp                 = time();
-                        $dt                        = new DateTime("now", new DateTimeZone($tz));
-                        $dt->setTimestamp($timestamp);
-                        $startTime                 = $dt->format('YmdHis');
-
-                        // Set payment gateway settings
-                        $vnp_TmnCode               = $selected?->settings['tmn_code'];
-                        $vnp_HashSecret            = $selected?->settings['hash_secret'];
-                        $vnp_Url                   = $selected?->settings['env'] === 'sandbox' ? $selected?->settings['sandbox_link'] : $selected?->settings['production_link'];
-                        $vnp_Returnurl             = url('callback/vnpay');
-
-                        // Set order details
-                        $vnp_TxnRef                = "G-" . uid(18);
-                        $vnp_OrderInfo             = __('messages.t_checkout');
-                        $vnp_OrderType             = "other";
-                        $vnp_Amount                = $amount * 100;
-                        $vnp_Locale                = app()->getLocale() == 'en' ? "en" : "vn";
-                        $vnp_IpAddr                = request()->ip();
-                        $vnp_ExpireDate            = date('YmdHis',strtotime('+15 minutes',strtotime($startTime)));
-
-                        // Set data
-                        $inputData                 = array(
-                            "vnp_Version"        => "2.1.0",
-                            "vnp_TmnCode"        => $vnp_TmnCode,
-                            "vnp_Amount"         => $vnp_Amount,
-                            "vnp_Command"        => "pay",
-                            "vnp_CreateDate"     => date('YmdHis'),
-                            "vnp_CurrCode"       => settings('vnpay')->currency,
-                            "vnp_IpAddr"         => $vnp_IpAddr,
-                            "vnp_Locale"         => $vnp_Locale,
-                            "vnp_OrderInfo"      => $vnp_OrderInfo,
-                            "vnp_OrderType"      => $vnp_OrderType,
-                            "vnp_ReturnUrl"      => $vnp_Returnurl,
-                            "vnp_TxnRef"         => $vnp_TxnRef,
-                            "vnp_ExpireDate"     => $vnp_ExpireDate
-                        );
-
-                        ksort($inputData);
-                        $query    = "";
-                        $i        = 0;
-                        $hashdata = "";
-
-                        foreach ($inputData as $key => $value) {
-                            if ($i == 1) {
-                                $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
-                            } else {
-                                $hashdata .= urlencode($key) . "=" . urlencode($value);
-                                $i = 1;
-                            }
-                            $query .= urlencode($key) . "=" . urlencode($value) . '&';
-                        }
-
-                        // Set payment url
-                        $vnp_Url = $vnp_Url . "?" . $query;
-
-                        // Generate secure hash
-                        if (isset($vnp_HashSecret)) {
-                            $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//  
-                            $vnp_Url      .= 'vnp_SecureHash=' . $vnpSecureHash;
-                        }
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $vnp_TxnRef, 'payment_method' => 'vnpay']);
-
-                        // Go to payment url
-                        return redirect($vnp_Url);
-                        
-                    break;
-
-                    // Xendit
-                    case 'xendit':
-                    
-                        // Set xendit secret key
-                        Xendit::setApiKey( $selected?->settings['secret_key'] );
-                
-                        // Set payment parameters
-                        $params = [ 
-                            'external_id'          => "G-" . uid(18),
-                            'amount'               => $amount,
-                            'description'          => __('messages.t_checkout'),
-                            'invoice_duration'     => 86400,
-                            'success_redirect_url' => url('callback/xendit/success?action=G'),
-                            'failure_redirect_url' => url('callback/xendit/failed?action=G'),
-                            'currency'             => $selected?->currency
-                        ];
-                
-                        // Create invoice
-                        $invoice = \Xendit\Invoice::create($params);
-            
-                        // Check if invocie created successfully
-                        if (isset($invoice['invoice_url'])) {
-                            
-                            // Get payment url
-                            $payment_url = $invoice['invoice_url'];
-        
-                            // Get invoice id
-                            $invoice_id  = $invoice['id'];
-        
-                            // Save webhook details to later response
-                            $this->webhook(['payment_id' => $invoice_id, 'payment_method' => 'xendit']);
-        
-                            // Go to payment url
-                            return redirect($payment_url);
-                    
-                        } else {
-        
-                            // Something went wrong
-                            $this->notification([
-                                'title'       => __('messages.t_error'),
-                                'description' => __('messages.t_toast_something_went_wrong'),
-                                'icon'        => 'error'
-                            ]);
-
-                            return;
-        
-                        }
-
-                    break;
-
-                    // Youcanpay
-                    case 'youcanpay':
-                    
-                        // Get payment gateways keys
-                        $public_key  = $selected?->settings['public_key'];
-                        $private_key = $selected?->settings['private_key'];
-                        $order_id    = "G-" . uid(18);
-
-                        // Enable sandbox mode?
-                        if (Str::of( $public_key )->startsWith('pub_sandbox')) {
-                            YouCanPay::setIsSandboxMode(true);
-                        }
-
-                        // Create a YouCan Pay instance
-                        $youcanpay    = YouCanPay::instance()->useKeys($private_key, $public_key);
-
-                        // Data of the customer who wishes to make this purchase
-                        $customerInfo = [
-                            'name'         => auth()->user()->fullname ?? auth()->user()->username,
-                            'address'      => '',
-                            'zip_code'     => '',
-                            'city'         => '',
-                            'state'        => '',
-                            'country_code' => '',
-                            'phone'        => '',
-                            'email'        => auth()->user()->email,
-                        ];
-
-                        // Create the order you want to be paid
-                        $token        = $youcanpay->token->create(
-                            $order_id,
-                            $amount * $selected?->exchange_rate * 100,
-                            $selected?->currency,
-                            request()->ip(),
-                            url('callback/youcanpay'),
-                            url('callback/youcanpay'),
-                            $customerInfo,
-                            []
-                        );
-
-                        // Save webhook details to later response
-                        $this->webhook(['payment_id' => $order_id, 'payment_method' => 'youcanpay']);
-
-                        // Redirect to payment gateway
-                        return redirect($token->getPaymentURL(app()->getLocale()));               
-
-                    break;
-
-                    // Offline method
-                    case 'offline':
-                        
-                        // Go to next step
-                        $this->is_third_step = true;
-
-                    break;
-
-                }
-
-            } else {
-
                 // Error
                 $this->notification([
                     'title'       => __('messages.t_error'),
@@ -2192,405 +641,430 @@ class CheckoutComponent extends Component
                     'icon'        => 'error'
                 ]);
 
+                // Return
                 return;
 
             }
 
-        } catch (\Throwable $th) {
-            
-            // Something went wrong
-            $this->notification([
-                'title'       => __('messages.t_error'),
-                'description' => __('messages.t_toast_something_went_wrong'),
-                'icon'        => 'error'
-            ]);
+            // Check selected payment gateway
+            switch ($this->payment_method) {
 
-        }
-    }
-
-
-    /**
-     * Handle offline payment
-     *
-     * @return void
-     */
-    public function offline()
-    {
-        try {
-
-            // Get payment gateway settings
-            $gateway = payment_gateway('offline', false, true);
-
-            // Check if payment gateway enabled
-            if (!$gateway?->is_active && $this->selected_method != 'offline') {
-                
-                // Not enabled or selected
-                return;
-
-            }
-
-            // Get commission settings
-            $commission_settings   = settings('commission');
-        
-            // Get user billing address
-            $billing_info          = auth()->user()->billing;
-
-            // Set unique id for this order
-            $uid                   = uid();
-
-            // Get buyer id
-            $buyer_id              = auth()->id();
-
-            // Save order
-            $order                 = new Order();
-            $order->uid            = $uid;
-            $order->buyer_id       = $buyer_id;
-            $order->total_value    = $this->total;
-            $order->subtotal_value = $this->subtotal;
-            $order->taxes_value    = $this->tax;
-            $order->save();
-
-            // Loop through items in cart
-            foreach ($this->cart as $key => $item) {
+                // Paypal
+                case 'paypal':
                     
-                // Get gig
-                $gig = Gig::where('uid', $item['id'])->with('owner')->active()->first();
+                    // Get response
+                    $response = $this->paypal($options);
 
-                // Check if gig exists
-                if ($gig) {
+                    break;
+
+                // Wallet
+                case 'wallet':
                     
-                    // Set quantity
-                    $quantity        = isset($item['quantity']) ? convertToNumber($item['quantity']) : 1;
+                    // Get response
+                    $response = $this->wallet();
 
-                    // Set gig upgrades
-                    $upgrades        = isset($item['upgrades']) && is_array($item['upgrades']) && count($item['upgrades']) ? $item['upgrades'] : [];
+                    break;
 
-                    // Set empty variable
-                    $upgrades_amount = 0;
+                // Offline
+                case 'offline':
+                    
+                    // Set response
+                    $response = [
+                        'success'     => true,
+                        'transaction' => [
+                            'payment_id'     => uid(),
+                            'payment_method' => 'offline',
+                            'payment_status' => 'pending'
+                        ]
+                    ];
 
-                    // Loop through upgrades
-                    foreach ($upgrades as $index => $upgrade) {
-                        
-                        // Check if upgrade is selected
-                        if ( isset($upgrade['checked']) && $upgrade['checked'] == 1 ) {
-                            
-                            $upgrades_amount += convertToNumber($upgrade['price']) * $quantity;
+                    break;
 
-                        }
+                // Paystack
+                case 'paystack':
+                    
+                    // Get response
+                    $response = $this->paystack($options);
 
-                    }
+                    break;
 
-                    // Set item total price
-                    $item_total = $upgrades_amount + ( convertToNumber($item['gig']['price']) * $quantity );
+                // Cashfree
+                case 'cashfree':
+                    
+                    // Get response
+                    $response = $this->cashfree($options);
 
-                    // Calculate commission first
-                    if ($commission_settings->commission_from === 'orders') {
-                        
-                        // Check commission type
-                        if ($commission_settings->commission_type === 'percentage') {
-                            
-                            // Calculate commission
-                            $commission = convertToNumber($commission_settings->commission_value) * $item_total / 100;
-    
+                    break;
+
+                // Mollie
+                case 'mollie':
+
+                    // Get payment gateway exchange rate
+                    $gateway_currency_exchange = (float)settings('mollie')->exchange_rate;
+
+                    // Get payment gateway currency
+                    $gateway_currency_code     = settings('mollie')->currency;
+
+                    // Get total amount
+                    $total_amount              = number_format( $this->calculateExchangeAmount($gateway_currency_exchange), 2, '.', '' );
+
+                    // Generate mollie order id
+                    $mollie_order_id           = uid();
+
+                    // Set mollie client
+                    $mollie                    = new \Mollie\Api\MollieApiClient();
+
+                    // Set api key
+                    $mollie->setApiKey(config('mollie.key'));
+
+                    // Create a payment request
+                    $payment  = $mollie->payments->create([
+                        "amount" => [
+                            "currency" => "$gateway_currency_code",
+                            "value"    => "$total_amount"
+                        ],
+                        "method"      => ["applepay", "bancontact", "banktransfer", "belfius", "creditcard", "directdebit", "eps", "giftcard", "giropay", "ideal", "kbc", "mybank", "paypal", "paysafecard", "przelewy24", "sofort"],
+                        "description" => $mollie_order_id,
+                        "redirectUrl" => url("checkout/callback/mollie/$mollie_order_id"),
+                        "webhookUrl"  => url('callback/mollie/checkout')
+                    ]);
+
+                    // Redirect to payment link
+                    return redirect($payment->getCheckoutUrl());
+
+                    break;
+
+                // Vnpay
+                case 'vnpay':
+
+                    // Set timezone
+                    $tz                        = 'Asia/Ho_Chi_Minh';
+                    $timestamp                 = time();
+                    $dt                        = new DateTime("now", new DateTimeZone($tz));
+                    $dt->setTimestamp($timestamp);
+                    $startTime                 = $dt->format('YmdHis');
+
+                    // Get payment gateway exchange rate
+                    $gateway_currency_exchange = (float)settings('vnpay')->exchange_rate;
+
+                    // Set payment gateway settings
+                    $vnp_TmnCode               = config('vnpay.tmn_code');
+                    $vnp_HashSecret            = config('vnpay.hash_secret');
+                    $vnp_Url                   = config('vnpay.api_url');
+                    $vnp_Returnurl             = url('checkout/callback/vnpay');
+
+                    // Set order details
+                    $vnp_TxnRef                = uid();
+                    $vnp_OrderInfo             = __('messages.t_checkout');
+                    $vnp_OrderType             = "other";
+                    $vnp_Amount                = $this->calculateExchangeAmount($gateway_currency_exchange) * 100;
+                    $vnp_Locale                = app()->getLocale() == 'en' ? "en" : "vn";
+                    $vnp_IpAddr                = request()->ip();
+                    $vnp_ExpireDate            = date('YmdHis',strtotime('+15 minutes',strtotime($startTime)));
+
+                    // Set data
+                    $inputData                 = array(
+                        "vnp_Version"        => "2.1.0",
+                        "vnp_TmnCode"        => $vnp_TmnCode,
+                        "vnp_Amount"         => $vnp_Amount,
+                        "vnp_Command"        => "pay",
+                        "vnp_CreateDate"     => date('YmdHis'),
+                        "vnp_CurrCode"       => settings('vnpay')->currency,
+                        "vnp_IpAddr"         => $vnp_IpAddr,
+                        "vnp_Locale"         => $vnp_Locale,
+                        "vnp_OrderInfo"      => $vnp_OrderInfo,
+                        "vnp_OrderType"      => $vnp_OrderType,
+                        "vnp_ReturnUrl"      => $vnp_Returnurl,
+                        "vnp_TxnRef"         => $vnp_TxnRef,
+                        "vnp_ExpireDate"     => $vnp_ExpireDate
+                    );
+
+                    ksort($inputData);
+                    $query    = "";
+                    $i        = 0;
+                    $hashdata = "";
+
+                    foreach ($inputData as $key => $value) {
+                        if ($i == 1) {
+                            $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
                         } else {
-    
-                            // Fixed amount
-                            $commission = convertToNumber($commission_settings->commission_value);
-    
+                            $hashdata .= urlencode($key) . "=" . urlencode($value);
+                            $i = 1;
                         }
-
-                    } else {
-                        
-                        // No commission
-                        $commission = 0;
-
+                        $query .= urlencode($key) . "=" . urlencode($value) . '&';
                     }
 
-                    // Save order item
-                    $order_item                         = new OrderItem();
-                    $order_item->uid                    = uid();
-                    $order_item->order_id               = $order->id;
-                    $order_item->gig_id                 = $gig->id;
-                    $order_item->owner_id               = $gig->user_id;
-                    $order_item->quantity               = $quantity;
-                    $order_item->has_upgrades           = count($upgrades) ? true : false;
-                    $order_item->total_value            = $item_total;
-                    $order_item->profit_value           = $item_total - $commission;
-                    $order_item->commission_value       = $commission;
-                    $order_item->save();
+                    // Set payment url
+                    $vnp_Url = $vnp_Url . "?" . $query;
 
-                    // Loop through upgrades again
-                    foreach ($upgrades as $index => $value) {
+                    // Generate secure hash
+                    if (isset($vnp_HashSecret)) {
+                        $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//  
+                        $vnp_Url      .= 'vnp_SecureHash=' . $vnpSecureHash;
+                    }
+
+                    // Go to payment url
+                    return redirect($vnp_Url);
+                    
+                    break;
+
+                // Paytabs
+                case 'paytabs':
+
+                    // Get payment gateway exchange rate
+                    $gateway_currency_exchange = (float)settings('paytabs')->exchange_rate;
+
+                    // Get total amount
+                    $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+                    // Redirect
+                    $pay = paypage::sendPaymentCode('all')
+                            ->sendTransaction('sale')
+                            ->sendCart( uid(42), $total_amount, __('messages.t_checkout') )
+                            ->sendCustomerDetails(
+                                auth()->user()->username, 
+                                auth()->user()->email, 
+                                'NA', 
+                                'NA', 
+                                'NA', 
+                                'NA', 
+                                'NA', 
+                                'NA',
+                                request()->ip()
+                            )
+                            ->sendHideShipping(true)
+                            ->sendURLs(url('checkout/callback/paytabs'), url("checkout/callback/paytabs"))
+                            ->sendLanguage('en')
+                            ->create_pay_page();
+
+                    // Reirect
+                    return $pay;
+
+                    break;
+
+                // Razorpay
+                case 'razorpay':
+                    
+                    // Get response
+                    $response = $this->razorpay($options);
+
+                    break;
+
+                // Nowpayments
+                case 'nowpayments':
+                    
+                    // Get response
+                    $response = $this->nowpayments();
+
+                    break;
+                
+                default:
+                    
+                    // Nothing selected
+                    return;
+
+                    break;
+            }
+
+            // Check if response succeeded
+            if (isset($response['success']) && $response['success'] === true) {
+
+                // Get user billing info
+                $billing_info          = auth()->user()->billing;
+
+                // Get commission settings
+                $commission_settings   = settings('commission');
+
+                // Set unique id for this order
+                $uid                   = uid();
+
+                // Get buyer id
+                $buyer_id              = auth()->id();
+
+                // Count taxes amount
+                $taxes                 = $this->taxes();
+
+                // Count subtotal amount
+                $subtotal              = $this->subtotal();
+
+                // Count total amount
+                $total                 = $this->total() + $taxes;
+
+                // Save order
+                $order                 = new Order();
+                $order->uid            = $uid;
+                $order->buyer_id       = $buyer_id;
+                $order->total_value    = $total;
+                $order->subtotal_value = $subtotal;
+                $order->taxes_value    = $taxes;
+                $order->save();
+
+                // Now let's loop through items in this cart and save them
+                foreach ($this->cart as $key => $item) {
+                    
+                    // Get gig
+                    $gig = Gig::where('uid', $item['id'])->active()->first();
+
+                    // Check if gig exists
+                    if ($gig) {
                         
-                        // Check if upgrade is selected
-                        if ( isset($upgrade['checked']) && $upgrade['checked'] == 1 ) {
-                        
-                            // Get upgrade
-                            $upgrade = GigUpgrade::where('uid', $value['id'])->where('gig_id', $gig->id)->first();
-    
-                            // Check if upgrade exists
-                            if ($upgrade) {
+                        // Get item total price
+                        $item_total_price                   = $this->itemTotalPrice($item['id']);
+
+                        // Calculate commission first
+                        $commisssion                        = $commission_settings->commission_from === 'orders' ? $this->commission($item_total_price) : 0;
+
+                        // Save order item
+                        $order_item                         = new OrderItem();
+                        $order_item->uid                    = uid();
+                        $order_item->order_id               = $order->id;
+                        $order_item->gig_id                 = $gig->id;
+                        $order_item->owner_id               = $gig->user_id;
+                        $order_item->quantity               = (int) $item['quantity'];
+                        $order_item->has_upgrades           = is_array($item['upgrades']) && count($item['upgrades']) ? true : false;
+                        $order_item->total_value            = $item_total_price;
+                        $order_item->profit_value           = $item_total_price - $commisssion;
+                        $order_item->commission_value       = $commisssion;
+                        $order_item->save();
+
+                        // Check if this item has upgrades
+                        if ( is_array($item['upgrades']) && count($item['upgrades']) ) {
+                            
+                            // Loop through upgrades
+                            foreach ($item['upgrades'] as $index => $upg) {
                                 
-                                // Save item upgrade
-                                $order_item_upgrade             = new OrderItemUpgrade();
-                                $order_item_upgrade->item_id    = $order_item->id;
-                                $order_item_upgrade->title      = $upgrade->title;
-                                $order_item_upgrade->price      = $upgrade->price;
-                                $order_item_upgrade->extra_days = $upgrade->extra_days;
-                                $order_item_upgrade->save();
-    
+                                // Get upgrade
+                                $upgrade = GigUpgrade::where('uid', $upg['id'])->where('gig_id', $gig->id)->first();
+
+                                // Check if upgrade exists
+                                if ($upgrade) {
+                                    
+                                    // Save item upgrade
+                                    $order_item_upgrade             = new OrderItemUpgrade();
+                                    $order_item_upgrade->item_id    = $order_item->id;
+                                    $order_item_upgrade->title      = $upgrade->title;
+                                    $order_item_upgrade->price      = $upgrade->price;
+                                    $order_item_upgrade->extra_days = $upgrade->extra_days;
+                                    $order_item_upgrade->save();
+
+                                }
+                                
                             }
 
                         }
-                        
+
+                        // Only if not offline payment
+                        if ($this->payment_method !== 'offline') {
+                            
+                            // Update seller pending balance
+                            $gig->owner()->update([
+                                'balance_pending' => $gig->owner->balance_pending + $order_item->profit_value
+                            ]);
+
+                            // Increment orders in queue
+                            $gig->increment('orders_in_queue');
+
+                            // Order item placed successfully
+                            // Let's notify the seller about new order
+                            $gig->owner->notify( (new PendingOrder($order_item))->locale(config('app.locale')) );
+
+                            // Send notification
+                            notification([
+                                'text'    => 't_u_received_new_order_seller',
+                                'action'  => url('seller/orders/details', $order_item->uid),
+                                'user_id' => $order_item->owner_id
+                            ]);
+
+                        }
+
                     }
 
                 }
 
-            }
+                // Save invoice
+                $invoice                 = new OrderInvoice();
+                $invoice->order_id       = $order->id;
+                $invoice->payment_method = $response['transaction']['payment_method'];
+                $invoice->payment_id     = $response['transaction']['payment_id'];
+                $invoice->firstname      = $billing_info->firstname ? $billing_info->firstname : auth()->user()->username;
+                $invoice->lastname       = $billing_info->lastname ? $billing_info->lastname : auth()->user()->username;
+                $invoice->email          = auth()->user()->email;
+                $invoice->company        = $billing_info->company ? clean($billing_info->company) : null;
+                $invoice->address        = clean($billing_info->address);
+                $invoice->status         = $response['transaction']['payment_status'];
+                $invoice->save();
 
-            // Save invoice
-            $invoice                 = new OrderInvoice();
-            $invoice->order_id       = $order->id;
-            $invoice->payment_method = "offline";
-            $invoice->payment_id     = uid();
-            $invoice->firstname      = $billing_info->firstname ?? auth()->user()->username;
-            $invoice->lastname       = $billing_info->lastname ?? auth()->user()->username;
-            $invoice->email          = auth()->user()->email;
-            $invoice->company        = !empty($billing_info->company) ? clean($billing_info->company) : null;
-            $invoice->address        = !empty($billing_info->address) ? clean($billing_info->address) : "NA";
-            $invoice->status         = 'pending';
-            $invoice->save();
-
-            // If invoice not paid yet
-            if ($invoice->status === 'pending') {
+                // If invoice not paid yet
+                if ($invoice->status === 'pending') {
                     
-                // Send notification to admin
-                Admin::first()->notify(new PendingOfflinePayment($order, $invoice));
+                    // Send notification to admin
+                    Admin::first()->notify(new PendingOfflinePayment($order, $invoice));
 
-            }
+                } else {
 
-            // Now everything succeeded
-            // Let's empty the cart
-            session()->forget('cart');
+                    // Check if user paid from wallet
+                    if ($this->payment_method !== 'wallet') {
+                        
+                        // Update balance
+                        auth()->user()->update([
+                            'balance_purchases' => convertToNumber(auth()->user()->balance_purchases) + convertToNumber($total)
+                        ]);
 
-            return redirect('account/orders')->with('message', __('messages.t_order_placed_waiting_offline_payment'));
+                    }
 
-        } catch (\Throwable $th) {
-            
-            // Something went wrong
-            $this->notification([
-                'title'       => __('messages.t_error'),
-                'description' => __('messages.t_toast_something_went_wrong'),
-                'icon'        => 'error'
-            ]);
+                }
 
-        }
-    }
+                // Now everything succeeded
+                // Let's empty the cart
+                session()->forget('cart');
 
+                // Now let's notify the buyer that his order has been placed
+                auth()->user()->notify( (new OrderPlaced($order, $total))->locale(config('app.locale')) );
 
-    /**
-     * Handle payment from wallet
-     *
-     * @return void
-     */
-    public function wallet()
-    {
-        try {
+                // After that the buyer has to send the seller the required form to start
+                if ($invoice->status === 'pending') {
+                    
+                    // Waiting for payment
+                    return redirect('account/orders')->with('message', __('messages.t_order_placed_waiting_offline_payment'));
 
-            // Get user available credit
-            $available_balance = convertToNumber(auth()->user()->balance_available);
+                } else {
+                    
+                    // Submit required files
+                    return redirect('account/orders')->with('message', __('messages.t_u_have_send_reqs_asap_to_seller'));
 
-            // Check if user has amount in his wallet
-            if ($this->total >= $available_balance) {
-                
+                }
+
+            } else {
+
                 // Error
-                $this->notification([
-                    'title'       => __('messages.t_error'),
-                    'description' => __('messages.t_insufficient_funds_in_your_account'),
-                    'icon'        => 'error'
-                ]);
+                $this->has_error     = true;
+                $this->error_message = $response['message'];
 
+                // Scroll up
+                $this->dispatchBrowserEvent('scrollUp');
+
+                // Return
                 return;
 
             }
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
 
-            // Get commission settings
-            $commission_settings   = settings('commission');
-        
-            // Get user billing address
-            $billing_info          = auth()->user()->billing;
-
-            // Set unique id for this order
-            $uid                   = uid();
-
-            // Get buyer id
-            $buyer_id              = auth()->id();
-
-            // Save order
-            $order                 = new Order();
-            $order->uid            = $uid;
-            $order->buyer_id       = $buyer_id;
-            $order->total_value    = $this->total;
-            $order->subtotal_value = $this->subtotal;
-            $order->taxes_value    = $this->tax;
-            $order->save();
-
-            // Loop through items in cart
-            foreach ($this->cart as $key => $item) {
-                    
-                // Get gig
-                $gig = Gig::where('uid', $item['id'])->with('owner')->active()->first();
-
-                // Check if gig exists
-                if ($gig) {
-                    
-                    // Set quantity
-                    $quantity        = isset($item['quantity']) ? convertToNumber($item['quantity']) : 1;
-
-                    // Set gig upgrades
-                    $upgrades        = isset($item['upgrades']) && is_array($item['upgrades']) && count($item['upgrades']) ? $item['upgrades'] : [];
-
-                    // Set empty variable
-                    $upgrades_amount = 0;
-
-                    // Loop through upgrades
-                    foreach ($upgrades as $index => $upgrade) {
-                        
-                        // Check if upgrade is selected
-                        if ( isset($upgrade['checked']) && $upgrade['checked'] == 1 ) {
-                            
-                            $upgrades_amount += convertToNumber($upgrade['price']) * $quantity;
-
-                        }
-
-                    }
-
-                    // Set item total price
-                    $item_total = $upgrades_amount + ( convertToNumber($item['gig']['price']) * $quantity );
-
-                    // Calculate commission first
-                    if ($commission_settings->commission_from === 'orders') {
-                        
-                        // Check commission type
-                        if ($commission_settings->commission_type === 'percentage') {
-                            
-                            // Calculate commission
-                            $commission = convertToNumber($commission_settings->commission_value) * $item_total / 100;
-    
-                        } else {
-    
-                            // Fixed amount
-                            $commission = convertToNumber($commission_settings->commission_value);
-    
-                        }
-
-                    } else {
-                        
-                        // No commission
-                        $commission = 0;
-
-                    }
-
-                    // Save order item
-                    $order_item                         = new OrderItem();
-                    $order_item->uid                    = uid();
-                    $order_item->order_id               = $order->id;
-                    $order_item->gig_id                 = $gig->id;
-                    $order_item->owner_id               = $gig->user_id;
-                    $order_item->quantity               = $quantity;
-                    $order_item->has_upgrades           = count($upgrades) ? true : false;
-                    $order_item->total_value            = $item_total;
-                    $order_item->profit_value           = $item_total - $commission;
-                    $order_item->commission_value       = $commission;
-                    $order_item->save();
-
-                    // Loop through upgrades again
-                    foreach ($upgrades as $index => $value) {
-                        
-                        // Check if upgrade is selected
-                        if ( isset($upgrade['checked']) && $upgrade['checked'] == 1 ) {
-                        
-                            // Get upgrade
-                            $upgrade = GigUpgrade::where('uid', $value['id'])->where('gig_id', $gig->id)->first();
-    
-                            // Check if upgrade exists
-                            if ($upgrade) {
-                                
-                                // Save item upgrade
-                                $order_item_upgrade             = new OrderItemUpgrade();
-                                $order_item_upgrade->item_id    = $order_item->id;
-                                $order_item_upgrade->title      = $upgrade->title;
-                                $order_item_upgrade->price      = $upgrade->price;
-                                $order_item_upgrade->extra_days = $upgrade->extra_days;
-                                $order_item_upgrade->save();
-    
-                            }
-
-                        }
-                        
-                    }
-
-                    // Update seller pending balance
-                    $gig->owner()->update([
-                        'balance_pending' => convertToNumber($gig->owner->balance_pending) + convertToNumber($order_item->profit_value)
-                    ]);
-
-                    // Increment orders in queue
-                    $gig->increment('orders_in_queue');
-
-                    // Order item placed successfully
-                    // Let's notify the seller about new order
-                    $gig->owner->notify( (new PendingOrder($order_item))->locale(config('app.locale')) );
-
-                    // Check user's level
-                    check_user_level($buyer_id);
-
-                    // Send notification
-                    notification([
-                        'text'    => 't_u_received_new_order_seller',
-                        'action'  => url('seller/orders/details', $order_item->uid),
-                        'user_id' => $order_item->owner_id
-                    ]);
-
-                }
-
-            }
-
-            // Save invoice
-            $invoice                 = new OrderInvoice();
-            $invoice->order_id       = $order->id;
-            $invoice->payment_method = "wallet";
-            $invoice->payment_id     = uid();
-            $invoice->firstname      = $billing_info->firstname ?? auth()->user()->username;
-            $invoice->lastname       = $billing_info->lastname ?? auth()->user()->username;
-            $invoice->email          = auth()->user()->email;
-            $invoice->company        = !empty($billing_info->company) ? clean($billing_info->company) : null;
-            $invoice->address        = !empty($billing_info->address) ? clean($billing_info->address) : "NA";
-            $invoice->status         = 'paid';
-            $invoice->save();
-
-            // Let's take money from buyer's wallet
-            auth()->user()->update([
-                'balance_purchases' => convertToNumber(auth()->user()->balance_purchases) + convertToNumber($this->total),
-                'balance_available' => $available_balance - $this->total
+            // Validation error
+            $this->notification([
+                'title'       => __('messages.t_error'),
+                'description' => __('messages.t_toast_form_validation_error'),
+                'icon'        => 'error'
             ]);
 
-            // Check user level
-            check_user_level();
-
-            // Now everything succeeded
-            // Let's empty the cart
-            session()->forget('cart');
-
-            return redirect('account/orders')->with('message', __('messages.t_submit_ur_info_now_seller_start_order'));
+            throw $e;
 
         } catch (\Throwable $th) {
             
-            // Something went wrong
+            // Validation error
             $this->notification([
                 'title'       => __('messages.t_error'),
-                'description' => __('messages.t_toast_something_went_wrong'),
+                'description' => $th->getMessage(),
                 'icon'        => 'error'
             ]);
 
@@ -2664,12 +1138,848 @@ class CheckoutComponent extends Component
 
 
     /**
+     * Initialize Stripe payment gateway
+     *
+     * @return void
+     */
+    private function initStripe()
+    {
+        // Set your secret key. Remember to switch to your live secret key in production.
+        $stripe = new \Stripe\StripeClient(config('stripe.secret_key'));
+
+        $intent = $stripe->paymentIntents->create(
+            [
+                'amount'                    => $this->calculateExchangeAmount(settings('stripe')->exchange_rate) * 100,
+                'currency'                  => settings('stripe')->currency,
+                'automatic_payment_methods' => ['enabled' => true],
+            ]
+        );
+
+        $this->stripe_intent_secret = $intent->client_secret;
+    }
+
+    
+    /**
+     * Init razorpay
+     *
+     * @return void
+     */
+    protected function initRazorpay()
+    {
+        // Generate order id
+        $razorpay_api              = new Api(config('razorpay.key_id'), config('razorpay.key_secret'));
+
+        // Get payment gateway exchange rate
+        $gateway_currency_exchange = (float)settings('razorpay')->exchange_rate;
+
+        // Get total amount
+        $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+        $razorpay_order = $razorpay_api->order->create([
+            'amount'   => $total_amount * 100,
+            'currency' => settings('razorpay')->currency,
+        ]);
+
+        // Set order id
+        $this->razorpay_order_id = $razorpay_order->id;
+    }
+
+
+    /**
+     * Handle paypal payment
+     *
+     * @param string $order_id
+     * @return array
+     */
+    protected function paypal($order_id)
+    {
+        try {
+
+            // Get default currency exchange rate
+            $default_currency_exchange = (float)settings('currency')->exchange_rate;
+
+            // Get payment gateway exchange rate
+            $gateway_currency_exchange = (float)settings('paypal')->exchange_rate;
+
+            // Get total amount
+            $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+            // Set paypal provider and config
+            $client                    = new PayPalClient();
+    
+            // Get paypal access token
+            $client->getAccessToken();
+
+            // Capture this order
+            $order                     = $client->capturePaymentOrder($order_id);
+
+            // Let's see if payment suuceeded
+            if ( is_array($order) && isset($order['status']) && $order['status'] === 'COMPLETED' ) {
+                
+                // Get paid amount
+                $amount   = $order['purchase_units'][0]['payments']['captures'][0]['amount']['value'];
+
+                // Get currency
+                $currency = $order['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'];
+
+                // Check currency
+                if (strtolower($currency) != strtolower(config('paypal.currency'))) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_checkout_currency_invalid')
+                    ];
+
+                    return $response;
+
+                }
+
+                // This amount must equals amount in order
+                if ($amount != $total_amount) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_amount_in_cart_not_equals_received')
+                    ];
+
+                    return $response;
+
+                }
+
+                // Payment succeeded
+                $response = [
+                    'success'     => true,
+                    'transaction' => [
+                        'payment_id'     => $order['id'],
+                        'payment_method' => 'paypal',
+                        'payment_status' => 'paid'
+                    ]
+                ];
+
+                // Return response
+                return $response;
+
+            } else {
+
+                // We couldn't handle your payment
+                $response = [
+                    'success'  => false,
+                    'message'  => __('messages.t_we_could_not_handle_ur_payment')
+                ];
+
+                // Return response
+                return $response;
+
+            }
+
+        } catch (\Throwable $th) {
+            
+            // Something went wrong
+            $response = [
+                'success'  => false,
+                'message'  => $th->getMessage()
+            ];
+
+            // Return response
+            return $response;
+
+        }
+    }
+
+
+    /**
+     * Handle wallet payment
+     *
+     * @return array
+     */
+    protected function wallet()
+    {
+        try {
+
+            // Get total amount
+            $total_amount = $this->calculateExchangeAmount();
+
+            // Check if user has enough money
+            if (auth()->user()->balance_available < $total_amount) {
+                    
+                // You don't have enough money
+                $response = [
+                    'success'  => false,
+                    'message'  => __('messages.t_u_dont_have_enough_money_to_checkout')
+                ];
+
+                return $response;
+
+            } else {
+
+                // Let's take money from buyer's wallet
+                auth()->user()->update([
+                    'balance_purchases' => convertToNumber(auth()->user()->balance_purchases) + convertToNumber($total_amount),
+                    'balance_available' => auth()->user()->balance_available - $total_amount
+                ]);
+
+                // Payment succeeded
+                $response = [
+                    'success'     => true,
+                    'transaction' => [
+                        'payment_id'     => uid(),
+                        'payment_method' => 'wallet',
+                        'payment_status' => 'paid'
+                    ]
+                ];
+
+                // Return response
+                return $response;
+
+
+            }
+
+        } catch (\Throwable $th) {
+            
+            // Something went wrong
+            $response = [
+                'success'  => false,
+                'message'  => $th->getMessage()
+            ];
+
+            // Return response
+            return $response;
+
+        }
+    }
+
+
+    /**
+     * Handle paystack payment
+     *
+     * @param string $reference_id
+     * @return array
+     */
+    protected function paystack($reference_id)
+    {
+        try {
+
+            // Get payment gateway exchange rate
+            $gateway_currency_exchange = (float)settings('paystack')->exchange_rate;
+
+            // Get total amount
+            $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+            // Get paystack secret key
+            $paystack_secret_key       = config('paystack.secretKey');
+
+            // Send request
+            $client                    = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $paystack_secret_key,
+                'Accept'        => 'application/json',
+            ])->get("https://api.paystack.co/transaction/verify/$reference_id");
+
+            // Convert to json
+            $payment                    = $client->json();
+
+            // Let's see if payment suuceeded
+            if ( is_array($payment) && isset($payment['status']) && $payment['status'] === true && isset($payment['data']) ) {
+                
+                // Get paid amount
+                $amount   = $payment['data']['amount'] / 100;
+
+                // Get currency
+                $currency = $payment['data']['currency'];
+
+                // Check currency
+                if (strtolower($currency) != strtolower(settings('paystack')->currency)) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_checkout_currency_invalid')
+                    ];
+
+                    return $response;
+
+                }
+
+                // This amount must equals amount in order
+                if ($amount != $total_amount) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_amount_in_cart_not_equals_received')
+                    ];
+
+                    return $response;
+
+                }
+
+                // Payment succeeded
+                $response = [
+                    'success'     => true,
+                    'transaction' => [
+                        'payment_id'     => $payment['data']['id'],
+                        'payment_method' => 'paystack',
+                        'payment_status' => 'paid'
+                    ]
+                ];
+
+                // Return response
+                return $response;
+
+            } else {
+
+                // We couldn't handle your payment
+                $response = [
+                    'success'  => false,
+                    'message'  => __('messages.t_we_could_not_handle_ur_payment')
+                ];
+
+                // Return response
+                return $response;
+
+            }
+
+        } catch (\Throwable $th) {
+            
+            // Something went wrong
+            $response = [
+                'success'  => false,
+                'message'  => $th->getMessage()
+            ];
+
+            // Return response
+            return $response;
+
+        }
+    }
+
+
+    /**
+     * Handle cashfree payment
+     *
+     * @param string $order_id
+     * @return array
+     */
+    protected function cashfree($order_id)
+    {
+        try {
+
+            // Get payment gateway exchange rate
+            $gateway_currency_exchange = (float)settings('cashfree')->exchange_rate;
+
+            // Get total amount
+            $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+            // Set api url
+            $api_url                   = config('cashfree.isLive') ? "https://api.cashfree.com/pg/orders/$order_id" : "https://sandbox.cashfree.com/pg/orders/$order_id";
+
+            // Set client id
+            $client_id                 = config('cashfree.appID');
+
+            // Set client secret
+            $client_secret             = config('cashfree.secretKey');
+            
+            // Init curl request
+            $curl                      = curl_init();
+
+            // Set config
+            curl_setopt_array($curl, [
+                CURLOPT_URL            => $api_url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING       => "",
+                CURLOPT_MAXREDIRS      => 10,
+                CURLOPT_TIMEOUT        => 30,
+                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST  => "GET",
+                CURLOPT_HTTPHEADER     => [
+                    "Accept: application/json",
+                    "Content-Type: application/json",
+                    "x-api-version: 2022-01-01",
+                    "x-client-id: $client_id",
+                    "x-client-secret: $client_secret"
+                ],
+            ]);
+
+            // Get response
+            $response = curl_exec($curl);
+
+            // Get error
+            $error    = curl_error($curl);
+
+            // Close connection
+            curl_close($curl);
+            
+            // Check if request has error
+            if ($error) {
+            
+                // Error
+                $response = [
+                    'success'  => false,
+                    'message'  => $error
+                ];
+
+                // Return response
+                return $response;
+
+            } else {
+
+                // Decode results
+                $payment                     = json_decode($response, true);
+
+                // Let's see if payment suuceeded
+                if ( is_array($payment) && isset($payment['order_status']) && $payment['order_status'] === 'PAID' ) {
+
+                    // Get paid amount
+                    $amount   = $payment['order_amount'];
+
+                    // Get currency
+                    $currency = $payment['order_currency'];
+
+                    // Check currency
+                    if (strtolower($currency) != strtolower(settings('cashfree')->currency)) {
+                        
+                        // Error
+                        $response = [
+                            'success'  => false,
+                            'message'  => __('messages.t_checkout_currency_invalid')
+                        ];
+
+                        return $response;
+
+                    }
+
+                    // This amount must equals amount in order
+                    if ($amount != $total_amount) {
+                        
+                        // Error
+                        $response = [
+                            'success'  => false,
+                            'message'  => __('messages.t_amount_in_cart_not_equals_received')
+                        ];
+
+                        return $response;
+
+                    }
+
+                    // Payment succeeded
+                    $response = [
+                        'success'     => true,
+                        'transaction' => [
+                            'payment_id'     => $payment['cf_order_id'],
+                            'payment_method' => 'cashfree',
+                            'payment_status' => 'paid'
+                        ]
+                    ];
+
+                    // Return response
+                    return $response;
+
+                } else {
+
+                    // We couldn't handle your payment
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_we_could_not_handle_ur_payment')
+                    ];
+
+                    // Return response
+                    return $response;
+
+                }
+
+            }
+
+        } catch (\Throwable $th) {
+            
+            // Something went wrong
+            $response = [
+                'success'  => false,
+                'message'  => $th->getMessage()
+            ];
+
+            // Return response
+            return $response;
+
+        }
+    }
+
+    /**
+     * Handle razorpay payment
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function razorpay($data)
+    {
+        try {
+
+            // Get payment gateway exchange rate
+            $gateway_currency_exchange = (float) settings('razorpay')->exchange_rate;
+
+            // Get total amount
+            $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+            // Get payment id
+            $razorpay_payment_id       = $data['razorpay_payment_id'];
+
+            // Get order id
+            $razorpay_order_id         = $data['razorpay_order_id'];
+
+            // Get signature
+            $razorpay_signature        = $data['razorpay_signature'];
+
+            // Set api
+            $api                       = new Api(config('razorpay.key_id'), config('razorpay.key_secret'));
+
+            // Let's verify first the signature
+            $api->utility->verifyPaymentSignature([
+                'razorpay_signature'  => $razorpay_signature,
+                'razorpay_payment_id' => $razorpay_payment_id,
+                'razorpay_order_id'   => $razorpay_order_id
+            ]);
+
+            // Fetch this payment
+            $fetch_payment             = $api->payment->fetch($razorpay_payment_id);
+
+            // Check if payment authorized
+            if ($fetch_payment->status === 'authorized') {
+                
+                // Let capture this payment
+                $payment = $api->payment->fetch($razorpay_payment_id)->capture([
+                    'amount'   => $total_amount * 100,
+                    'currency' => settings('razorpay')->currency
+                ]);
+
+            } else if ($fetch_payment->status === 'captured') {
+                
+                // Set payment
+                $payment = $fetch_payment;
+
+            } else {
+
+                // Payment failed
+                $response = [
+                    'success'  => false,
+                    'message'  => __('messages.t_we_could_not_handle_ur_payment')
+                ];
+
+                // Return response
+                return $response;
+
+            }
+
+            // Let's see if payment suuceeded
+            if ( $payment && $payment->status === 'captured' ) {
+
+                // Get paid amount
+                $amount   = $payment->amount / 100;
+
+                // Get currency
+                $currency = $payment->currency;
+
+                // Check currency
+                if (strtolower($currency) != strtolower(settings('razorpay')->currency)) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_checkout_currency_invalid')
+                    ];
+
+                    return $response;
+
+                }
+
+                // This amount must equals amount in order
+                if ($amount != $total_amount) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_amount_in_cart_not_equals_received')
+                    ];
+
+                    return $response;
+
+                }
+
+                // Payment succeeded
+                $response = [
+                    'success'     => true,
+                    'transaction' => [
+                        'payment_id'     => $payment->id,
+                        'payment_method' => 'razorpay',
+                        'payment_status' => 'paid'
+                    ]
+                ];
+
+                // Return response
+                return $response;
+
+            } else {
+
+                // We couldn't handle your payment
+                $response = [
+                    'success'  => false,
+                    'message'  => __('messages.t_we_could_not_handle_ur_payment')
+                ];
+
+                // Return response
+                return $response;
+
+            }
+
+        } catch (\Throwable $th) {
+            
+            // Something went wrong
+            $response = [
+                'success'  => false,
+                'message'  => $th->getMessage()
+            ];
+
+            // Return response
+            return $response;
+
+        }
+    }
+
+
+    /**
+     * Handle nowpayments payment
+     *
+     * @return array
+     */
+    protected function nowpayments()
+    {
+        try {
+
+            // Get payment gateway exchange rate
+            $gateway_currency_exchange = (float) settings('nowpayments')->exchange_rate;
+
+            // Get total amount
+            $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+            $client  = new Client();
+            $headers = [
+                'x-api-key'    => config('nowpayments.api_key'),
+                'Content-Type' => 'application/json'
+            ];
+            $request = new Request('GET', config('nowpayments.payment_url') . '/' . $this->nowpayments_payment_id, $headers);
+            $res     = $client->sendAsync($request)->wait();
+            $data    = json_decode($res->getBody(), true);
+
+            // Let's see if payment suuceeded
+            if ( is_array($data) && isset($data['payment_status']) && $data['payment_status'] == 'finished' ) {
+
+                // Get paid amount
+                $amount          = $data['price_amount'];
+
+                // Get currency
+                $currency        = $data['price_currency'];
+
+                // Get crypto currency
+                $crypto_currency = $data['pay_currency'];
+
+                // Check currency
+                if (strtolower($currency) != strtolower(settings('nowpayments')->currency) || strtolower($crypto_currency) != settings('nowpayments')->crypto_currency) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_checkout_currency_invalid')
+                    ];
+
+                    return $response;
+
+                }
+
+                // This amount must equals amount in order
+                if ($amount != $total_amount) {
+                    
+                    // Error
+                    $response = [
+                        'success'  => false,
+                        'message'  => __('messages.t_amount_in_cart_not_equals_received')
+                    ];
+
+                    return $response;
+
+                }
+
+                // Payment succeeded
+                $response = [
+                    'success'     => true,
+                    'transaction' => [
+                        'payment_id'     => $data['payment_id'],
+                        'payment_method' => 'nowpayments',
+                        'payment_status' => 'paid'
+                    ]
+                ];
+
+                // Return response
+                return $response;
+
+            } else {
+
+                // We couldn't handle your payment
+                $response = [
+                    'success'  => false,
+                    'message'  => __('messages.t_we_could_not_handle_ur_payment')
+                ];
+
+                // Return response
+                return $response;
+
+            }
+
+        } catch (\Throwable $th) {
+            
+            // Something went wrong
+            $response = [
+                'success'  => false,
+                'message'  => $th->getMessage()
+            ];
+
+            // Return response
+            return $response;
+
+        }
+    }
+
+
+    /**
+     * Calculate exchange rate
+     *
+     * @param float $amount
+     * @param float $gateway_exchange_rate
+     * @return mixed
+     */
+    protected function calculateExchangeAmount($gateway_exchange_rate = null)
+    {
+        try {
+            
+            // Get total amount
+            $amount                = $this->total() + $this->taxes();
+
+            // Get default currency exchange rate
+            $default_exchange_rate = (float) settings('currency')->exchange_rate;
+
+            // Set gateway exchange rate
+            $gateway_exchange_rate = is_null($gateway_exchange_rate) ? $default_exchange_rate : (float) $gateway_exchange_rate;
+            
+            // Check if same exchange rate
+            if ($default_exchange_rate == $gateway_exchange_rate) {
+                
+                // No need to calculate amount
+                return $amount;
+
+            } else {
+
+                // Return new amount
+                return (float)number_format( $amount * $gateway_exchange_rate / $default_exchange_rate, 2, '.', '');
+
+            }
+
+        } catch (\Throwable $th) {
+            return $amount;
+        }
+    }
+
+
+    /**
+     * Get paymob payment token
+     *
+     * @return array
+     */
+    public function getPayMobPaymentKey()
+    {
+        try {
+            
+            // Validate form
+            if (!$this->paymob_firstname || !$this->paymob_lastname || !$this->paymob_phone) {
+                
+                // Error
+                $this->notification([
+                    'title'       => __('messages.t_error'),
+                    'description' => __('messages.t_toast_form_validation_error'),
+                    'icon'        => 'error'
+                ]);
+
+                return;
+
+            }
+
+            // Get payment gateway exchange rate
+            $gateway_currency_exchange = (float) settings('paymob')->exchange_rate;
+
+            // Get total amount
+            $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+            // Get auth token
+            $auth    = Http::acceptJson()->post('https://accept.paymob.com/api/auth/tokens', [
+                                'api_key' => config('paymob.api_key'),
+                            ])->json();
+        
+            // Create order
+            $order   = Http::acceptJson()->post('https://accept.paymob.com/api/ecommerce/orders', [
+                                'auth_token'      => $auth['token'],
+                                'delivery_needed' => false,
+                                'amount_cents'    => $total_amount * 100,
+                                'items'           => []
+                            ])->json();
+        
+            // Make payment
+            $payment = Http::acceptJson()->post('https://accept.paymob.com/api/acceptance/payment_keys', [
+                                'auth_token'     => $auth['token'],
+                                'amount_cents'   => $total_amount * 100,
+                                'expiration'     => 3600,
+                                'order_id'       => $order['id'],
+                                'billing_data'   => [
+                                    "first_name"     => $this->paymob_firstname,
+                                    "last_name"      => $this->paymob_lastname,
+                                    "email"          => auth()->user()->email,
+                                    "phone_number"   => $this->paymob_phone,
+                                    "apartment"      => "NA",
+                                    "floor"          => "NA",
+                                    "street"         => "NA",
+                                    "building"       => "NA",
+                                    "shipping_method"=> "NA",
+                                    "postal_code"    => "NA",
+                                    "city"           => "NA",
+                                    "country"        => "NA",
+                                    "state"          => "NA"
+                                ],
+                                'currency'       => settings('paymob')->currency,
+                                'integration_id' => config('paymob.integration_id')
+                            ])->json();
+        
+            // Set session
+            session()->put('paymob_callback', 'checkout');
+
+            // Set payment token
+            $this->paymob_payment_token = $payment['token'];
+
+        } catch (\Throwable $th) {
+            
+            // Error
+            $this->notification([
+                'title'       => __('messages.t_error'),
+                'description' => __('messages.t_toast_something_went_wrong'),
+                'icon'        => 'error'
+            ]);
+
+        }
+    }
+
+
+    /**
      * Save checkout for webhook callback
      *
      * @param array $data
      * @return void
      */
-    protected function webhook($data)
+    protected function checkoutWebhook($data)
     {
         try {
             
@@ -2695,6 +2005,75 @@ class CheckoutComponent extends Component
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+
+    /**
+     * Generate YouCanPay payment link
+     *
+     * @return string
+     */
+    private function generateYoucanpayUrl()
+    {
+        // Get youcanpay settings
+        $settings = settings('youcanpay');
+
+        // Enable sandbox mode?
+        if (Str::of(config('youcanpay.public_key'))->startsWith('pub_sandbox')) {
+            YouCanPay::setIsSandboxMode(true);
+        }
+
+        // Get payment gateway exchange rate
+        $gateway_currency_exchange = $settings->exchange_rate;
+
+        // Get total amount
+        $total_amount              = $this->calculateExchangeAmount($gateway_currency_exchange);
+
+        // Create a YouCan Pay instance, to retrieve your private and public keys login to your YouCan Pay account
+        // and go to Settings and open API Keys.
+        $youCanPay = YouCanPay::instance()->useKeys(config('youcanpay.private_key'), config('youcanpay.public_key'));
+
+        // Data of the customer who wishes to make this purchase.
+        // Please keep these keys.
+        $customerInfo = [
+            'name'         => '',
+            'address'      => '',
+            'zip_code'     => '',
+            'city'         => '',
+            'state'        => '',
+            'country_code' => '',
+            'phone'        => '',
+            'email'        => '',
+        ];
+
+        // You can use it to send data to retrieve after the response or in the webhook.
+        $metadata = [
+            // Can you insert what you want here...
+            //'key' => 'value'
+        ];
+
+        // Create the order you want to be paid
+        $token = $youCanPay->token->create(
+            // String orderId (required): Identifier of the order you want to be paid.
+            uid(),
+            // Integer amount (required): The amount, Example: 25 USD is 2500.
+            $total_amount * 100,
+            // String currency (required): Uppercase currency.
+            $settings->currency,
+            // String customerIP (required): Customer Address IP.
+            request()->ip(),
+            // String successUrl (required): This URL is returned when the payment is successfully processed.
+            url('checkout/callback/youcanpay'),
+            // String errorUrl (required): This URL is returned when payment is invalid.
+            url('checkout/callback/youcanpay'),
+            // Array customerInfo (optional): Data of the customer who wishes to make this purchase.
+            $customerInfo,
+            // Array metadata (optional): You can use it to send data to retrieve after the response or in the webhook.
+            $metadata
+        );
+
+        // Redirect to payment gateway
+        return $token->getPaymentURL(app()->getLocale());
     }
     
 }

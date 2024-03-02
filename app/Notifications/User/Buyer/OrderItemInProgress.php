@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Buyer;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class OrderItemInProgress extends Notification implements ShouldQueue
 {
@@ -44,12 +43,12 @@ class OrderItemInProgress extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_buyer_order_item_in_progress');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_buyer_order_item_in_progress');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_buyer_item_in_progress')))
+                    ->line(__('messages.t_notification_buyer_item_in_progress'))
                     ->action(__('messages.t_my_orders'), url('account/orders'));
     }
 

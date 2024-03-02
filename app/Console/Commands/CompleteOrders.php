@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
 use App\Models\OrderItem;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class CompleteOrders extends Command
@@ -34,7 +34,7 @@ class CompleteOrders extends Command
                             ->where('is_finished', false)
                             ->where('delivered_at', '>=', now()->subWeeks(2))
                             ->whereDoesntHave('refund', function($query) {
-                                return $query->whereNotIn('status', ['pending', 'rejected_by_seller']);
+                                return $query->where('status', '!=', 'pending');
                             })
                             ->get();
 
@@ -43,15 +43,14 @@ class CompleteOrders extends Command
             
             // We have to give seller his money
             User::where('id', $item->owner_id)->update([
-                'balance_pending'   => convertToNumber($item->owner->balance_pending) - convertToNumber($item->profit_value),
-                'balance_available' => convertToNumber($item->owner->balance_available) + convertToNumber($item->profit_value),
+                'balance_pending'   => $item->owner->balance_pending - $item->profit_value,
+                'balance_available' => $item->owner->balance_available + $item->profit_value,
             ]);
 
             // Remove item from queue list and success sales
-            if ($item->gig->total_orders_in_queue() > 0) {
+            if ($item->gig->orders_in_queue > 0) {
                 $item->gig()->decrement('orders_in_queue');
             }
-
             $item->gig()->increment('counter_sales');
 
             // Update item

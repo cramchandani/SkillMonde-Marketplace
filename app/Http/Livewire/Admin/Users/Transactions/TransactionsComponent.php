@@ -40,7 +40,7 @@ class TransactionsComponent extends Component
      */
     public function getTransactionsProperty()
     {
-        return DepositTransaction::whereHas('user')->latest()->paginate(42);
+        return DepositTransaction::latest()->paginate(42);
     }
 
 

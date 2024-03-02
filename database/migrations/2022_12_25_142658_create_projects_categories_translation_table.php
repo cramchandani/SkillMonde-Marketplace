@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('language_code', 5);
             $table->string('language_value', 100);
 
-            $table->foreign('projects_category_id')->references('id')->on('projects_categories')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('projects_category_id')->references('id')->on('projects_categories');
         });
     }
 

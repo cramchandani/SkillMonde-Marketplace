@@ -18,6 +18,7 @@ use App\Notifications\User\Everyone\NewBidReceived;
 use App\Http\Validators\Main\Project\ReportValidator;
 use App\Jobs\Main\Project\Track;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
+use App\Models\CurrencyConversion;
 
 class ProjectComponent extends Component
 {
@@ -41,6 +42,9 @@ class ProjectComponent extends Component
     // Report form
     public $report_reason;
     public $report_description;
+    
+    //Currenct Conversion
+    public $conversionRate;
 
 
     /**
@@ -105,6 +109,8 @@ class ProjectComponent extends Component
 
         // Check if user already submitted a proposal for this project
         $this->checkIfAlreadySubmittedBid();
+        
+        $this->fetchConversionRate();
     }
 
 
@@ -115,6 +121,10 @@ class ProjectComponent extends Component
      */
     public function render()
     {
+        // Calculate the converted budget values
+        $minBudgetUSD = $this->project->budget_min * $this->conversionRate;
+        $maxBudgetUSD = $this->project->budget_max * $this->conversionRate;
+        
         // SEO
         $separator   = settings('general')->separator;
         $title       = $this->project->title . " $separator " . settings('general')->title;
@@ -143,7 +153,9 @@ class ProjectComponent extends Component
 
         return view('livewire.main.project.project', [
             'plans' => $this->plans,
-            'bids'  => $this->bids
+            'bids'  => $this->bids,
+            'minBudgetUSD' => $minBudgetUSD,
+            'maxBudgetUSD' => $maxBudgetUSD,
         ])->extends('livewire.main.layout.app')->section('content');
     }
 
@@ -940,6 +952,12 @@ class ProjectComponent extends Component
             $this->already_submitted_proposal = false;
 
         }
+    }
+
+    // Currency Conversion
+    public function fetchConversionRate()
+    {
+        $this->conversionRate = CurrencyConversion::getConversionRate('INR', 'USD');
     }
     
 }

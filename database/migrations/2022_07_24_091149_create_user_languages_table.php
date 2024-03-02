@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name', 100)->index();
             $table->enum('level', ['basic', 'conversational', 'fluent', 'native']);
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

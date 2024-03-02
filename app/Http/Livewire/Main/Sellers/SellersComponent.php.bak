@@ -1,0 +1,281 @@
+<?php
+
+namespace App\Http\Livewire\Main\Sellers;
+
+use App\Models\User;
+use App\Models\Country;
+use Livewire\Component;
+use Livewire\WithPagination;
+use Illuminate\Support\Arr;
+use App\Models\Language;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
+use Illuminate\Http\Request;
+use App\Models\ProjectCategory;
+use App\Models\ProjectSkill;
+use WireUi\Traits\Actions;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+
+class SellersComponent extends Component
+{
+    use WithPagination, SEOToolsTrait;
+
+    // filters
+    public $sort_by;
+    public $budget_min;
+    public $budget_max;
+
+    public $countries;
+    public $skills;
+    public $languages;
+    public $country;
+    public $projectskills;
+    public $projectcategories;
+    public $countriesCount = [];
+    
+    public $selectedSkills = [];
+    public $selectedCountries = [];
+   // public $showAllCountries = false;
+    public $maxSelectedCountries;
+
+
+    
+
+    /**
+     * Init component
+     *
+     * @return void
+     */
+    public function mount()
+    {
+        $this->countries = Country::get();
+        
+        $this->projectcategories = ProjectCategory::with('skills')
+        ->orderBy('name') // Add this line to order by name
+        ->get();
+        $this->projectskills = ProjectSkill::get();
+    }
+    
+    /**
+     * Render component
+     *
+     * @return Illuminate\View\View
+     */
+    public function render()
+    {
+        // SEO
+        $separator   = settings('general')->separator;
+        $title       = __('messages.t_sellers') . " $separator " . settings('general')->title;
+        $description = settings('seo')->description;
+        $ogimage     = src( settings('seo')->ogimage );
+
+        $this->seo()->setTitle( $title );
+        $this->seo()->setDescription( $description );
+        $this->seo()->setCanonical( url()->current() );
+        $this->seo()->opengraph()->setTitle( $title );
+        $this->seo()->opengraph()->setDescription( $description );
+        $this->seo()->opengraph()->setUrl( url()->current() );
+        $this->seo()->opengraph()->setType('website');
+        $this->seo()->opengraph()->addImage( $ogimage );
+        $this->seo()->twitter()->setImage( $ogimage );
+        $this->seo()->twitter()->setUrl( url()->current() );
+        $this->seo()->twitter()->setSite( "@" . settings('seo')->twitter_username );
+        $this->seo()->twitter()->addValue('card', 'summary_large_image');
+        $this->seo()->metatags()->addMeta('fb:page_id', settings('seo')->facebook_page_id, 'property');
+        $this->seo()->metatags()->addMeta('fb:app_id', settings('seo')->facebook_app_id, 'property');
+        $this->seo()->metatags()->addMeta('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1', 'name');
+        $this->seo()->jsonLd()->setTitle( $title );
+        $this->seo()->jsonLd()->setDescription( $description );
+        $this->seo()->jsonLd()->setUrl( url()->current() );
+        $this->seo()->jsonLd()->setType('WebSite');
+        
+        return view('livewire.main.sellers.sellers', [
+        'sellers' => $this->sellers,
+        'countries' => $this->countries,
+        'skills'  => $this->skills,
+        'languages'  => $this->languages,
+        'budget_min' => request('budget_min'),
+        'budget_max' => request('budget_max'),
+        'country_id' => request('country_id'),
+        ])->extends('livewire.main.layout.app')->section('content');
+    
+    }
+
+
+    /**
+     * Get sellers
+     *
+     * @return object
+     */
+    public function getSellersProperty()
+    {
+        $perPage = 20;
+        $currentPage = request()->input('page') ?? 1;
+        $offset = ($currentPage - 1) * $perPage;
+    
+        $sellers = User::with('country', 'skills', 'languages')
+            ->where('account_type', 'seller')
+            ->whereIn('status', ['verified', 'active'])
+            ->orderByRaw("FIELD(status, 'verified') DESC, RAND()")
+            ->whereHas('country')
+            ->whereHas('languages')
+            ->whereHas('skills')
+            ->skip($offset)
+            ->take($perPage)
+            ->get();
+    
+        return new LengthAwarePaginator(
+            $sellers,
+            User::where('account_type', 'seller')
+                ->whereIn('status', ['verified', 'active'])
+                ->whereHas('country')
+                ->whereHas('languages')
+                ->whereHas('skills')
+                ->count(),
+            $perPage,
+            $currentPage,
+            ['path' => route('sellers')] // Adjust the route name as needed
+        );
+    }
+
+    public function languages()
+    {
+        return $this->hasMany(UserLanguage::class);
+    }
+    
+    /**
+     * Apply filters and fetch sellers based on selected skills.
+     */
+    public function applyFilters()
+    {
+        $query = User::query();
+
+        // Filter by selected skills
+        if (!empty($this->selectedSkills)) {
+            $query->whereHas('skills', function ($query) {
+                $query->whereIn('id', $this->selectedSkills);
+            });
+        }
+        
+       \Log::info('Selected Skills: ' . implode(', ', $this->selectedSkills));
+
+        $sellers = $query
+        ->whereIn('status', ['verified', 'active']) // Adjust the status filter as needed
+        ->where('account_type', 'seller')
+        ->paginate(20);
+
+        return view('livewire.main.sellers.sellers', [
+            'sellers' => $sellers,
+            'countries' => $this->countries,
+            'skills' => $this->skills,
+            'languages' => $this->languages,
+            'budget_min' => request('budget_min'),
+            'budget_max' => request('budget_max'),
+            'country_id' => request('country_id'),
+        ])->extends('livewire.main.layout.app')->section('content');
+    }
+    
+    
+    //Countries
+    public function calculateCountryUserCounts()
+    {
+        $countries = Country::all();
+    
+        $countriesCount = [];
+    
+        foreach ($countries as $country) {
+            $usersCount = User::where('country_id', $country->id)
+                ->whereIn('status', ['status', 'verified'])
+                ->where('account_type', 'seller')
+                ->count();
+    
+            $countriesCount[$country->id] = $usersCount;
+        }
+    
+        arsort($countriesCount);
+    
+        return $countriesCount;
+    }
+    
+    // Rename one of the applyCountries methods to applyCountriesFilter or any other suitable name
+    public function applyCountriesFilter()
+    {
+        \Log::info('Selected Countries: ' . implode(', ', $this->selectedCountries)); // Debugging line
+        $query = User::query();
+    
+        // Filter by selected countries
+        if (!empty($this->selectedCountries)) {
+            $query->whereIn('country_id', $this->selectedCountries);
+        }
+    
+        \Log::info('Query: ' . $query->toSql()); // Log the SQL query
+    
+        // Apply additional filters if needed
+        $query->whereIn('status', ['verified', 'active']) // Adjust the status filter as needed
+              ->where('account_type', 'seller');
+    
+        // Paginate the filtered results
+        $sellers = $query->paginate(20);
+    
+        return view('livewire.main.sellers.sellers', [
+            'sellers' => $sellers,
+            'countries' => $this->countries,
+            'skills' => $this->skills,
+            'languages' => $this->languages,
+            'budget_min' => request('budget_min'),
+            'budget_max' => request('budget_max'),
+            'country_id' => request('country_id'),
+        ])->extends('livewire.main.layout.app')->section('content');
+    }
+    
+    //Budget
+    public function applyBudget()
+    {
+        // Validate the input fields
+        $validator = Validator::make(
+            [
+                'budget_min' => $this->budget_min,
+                'budget_max' => $this->budget_max,
+            ],
+            [
+                'budget_min' => 'nullable|numeric|min:0',
+                'budget_max' => 'nullable|numeric|min:' . $this->budget_min,
+            ]
+        );
+    
+        if ($validator->fails()) {
+            // Validation failed
+            $this->addError('budget_min', 'Invalid minimum budget value.');
+            $this->addError('budget_max', 'Invalid maximum budget value.');
+            return;
+        }
+    
+        // Validation passed, proceed with filtering logic
+        $query = User::query();
+    
+        // ... (other filters)
+    
+        if ($this->budget_min && $this->budget_max) {
+            $query->whereBetween('budget_max', [$this->budget_min, $this->budget_max]);
+        }
+    
+        $sellers = $query
+        ->whereIn('status', ['verified', 'active']) // Adjust the status filter as needed
+        ->where('account_type', 'seller')
+        ->paginate(20);
+    
+        return view('livewire.main.sellers.sellers', [
+            'sellers' => $sellers,
+            'countries' => $this->countries,
+            'skills' => $this->skills,
+            'languages' => $this->languages,
+            'budget_min' => request('budget_min'),
+            'budget_max' => request('budget_max'),
+            'country_id' => request('country_id'),
+        ])->extends('livewire.main.layout.app')->section('content');
+    }
+
+    
+
+}

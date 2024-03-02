@@ -25,9 +25,7 @@ class EditValidator
                 'email'    => ['required', 'max:60', 'min:6', Rule::unique('users')->ignore(auth()->id())],
                 'fullname' => 'nullable|max:60',
                 'country'  => 'nullable|exists:countries,id',
-                'password' => 'nullable|max:60',
-                'city'     => 'nullable|max:60',
-                'timezone' => 'required|max:60'
+              //  'password' => 'nullable|max:60'
             ];
 
             // Set errors messages
@@ -42,10 +40,7 @@ class EditValidator
                 'email.unique'      => __('messages.t_validator_unique'),
                 'fullname.max'      => __('messages.t_validator_max', ['max' => 60]),
                 'country.exists'    => __('messages.t_validator_exists'),
-                'password.max'      => __('messages.t_validator_max', ['max' => 60]),
-                'city.max'          => __('messages.t_validator_max', ['max' => 60]),
-                'timezone.max'      => __('messages.t_validator_max', ['max' => 60]),
-                'timezone.required' => __('messages.t_validator_required'),
+              //  'password.max'      => __('messages.t_validator_max', ['max' => 60]),
 
             ];
 
@@ -55,9 +50,7 @@ class EditValidator
                 'username' => $request->username,
                 'fullname' => $request->fullname,
                 'country'  => $request->country,
-                'password' => $request->password,
-                'city'     => $request->city,
-                'timezone' => $request->timezone
+              //  'password' => $request->password
             ];
 
             // Validate data

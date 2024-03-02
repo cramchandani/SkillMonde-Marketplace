@@ -35,7 +35,7 @@
                         :label="__('messages.t_content')"
                         :placeholder="__('messages.t_enter_page_content')"
                         model="content"
-                        old="{!! str_replace(['&amp;nbsp;', '&nbsp;'], ' ', $page->content) !!}"
+                        old="{!! str_replace('&amp;nbsp;', ' ', $page->content) !!}"
                         target="edit-page-action-btn" />
                 </div>
 

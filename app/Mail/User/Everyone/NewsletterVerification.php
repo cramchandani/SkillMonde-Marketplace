@@ -31,7 +31,7 @@ class NewsletterVerification extends Mailable implements ShouldQueue
     public function build()
     {
         // Set subject
-        $subject = __('messages.t_verify_ur_email');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_verify_ur_email');
 
         return $this->markdown('mail.user.everyone.newsletter_verification')->subject($subject);
     }

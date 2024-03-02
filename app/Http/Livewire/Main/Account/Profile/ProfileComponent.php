@@ -20,6 +20,8 @@ use App\Http\Validators\Main\Account\Profile\HeadlineValidator;
 use App\Http\Validators\Main\Account\Profile\AddLanguageValidator;
 use App\Http\Validators\Main\Account\Profile\DescriptionValidator;
 use App\Http\Validators\Main\Account\Profile\AvailabilityValidator;
+use App\Http\Validators\Main\Account\Profile\BudgetValidator;
+use App\Models\ProjectSkill;
 
 class ProfileComponent extends Component
 {
@@ -40,6 +42,7 @@ class ProfileComponent extends Component
     public $vimeo_profile;
 
     // Skills
+    public $projects_skills;
     public $skills;
     public $add_skill;
 
@@ -51,6 +54,10 @@ class ProfileComponent extends Component
     public $availability;
     public $availability_date;
     public $availability_message;
+    
+    //Budget
+    public $budget_min;
+    public $budget_max;
 
     /**
      * Init component
@@ -65,6 +72,9 @@ class ProfileComponent extends Component
         // Get linked accounts
         $linked_accounts    = UserLinkedAccount::firstOrCreate(['user_id' => auth()->id()]);
 
+        // Initialize the projects_skills property
+        $this->projects_skills = ProjectSkill::orderBy('name', 'asc')->get();
+
         // Set user skills
         $this->skills       = auth()->user()->skills()->orderBy('id', 'desc')->get();
 
@@ -73,6 +83,11 @@ class ProfileComponent extends Component
 
         // Set user availability
         $this->availability = auth()->user()->availability()->first();
+        
+        if ($user) {
+            $this->budget_min = $user->budget_min;
+            $this->budget_max = $user->budget_max;
+        }
 
         // Set linked accounts
         $this->fill([
@@ -245,31 +260,26 @@ class ProfileComponent extends Component
     {
         try {
 
-            // Check if social media accounts enabled
-            if (settings('security')->is_social_media_accounts) {
-                
-                // Validate form
-                SocialValidator::validate($this);
-    
-                // Update user headline
-                UserLinkedAccount::where('user_id', auth()->id())->update([
-                    'facebook_profile'      => clean($this->facebook_profile),
-                    'twitter_profile'       => clean($this->twitter_profile),
-                    'dribbble_profile'      => clean($this->dribbble_profile),
-                    'stackoverflow_profile' => clean($this->stackoverflow_profile),
-                    'github_profile'        => clean($this->github_profile),
-                    'youtube_profile'       => clean($this->youtube_profile),
-                    'vimeo_profile'         => clean($this->vimeo_profile)
-                ]);
-    
-                // Success
-                $this->notification([
-                    'title'       => __('messages.t_success'),
-                    'description' => __('messages.t_linked_accounts_has_been_updated'),
-                    'icon'        => 'success'
-                ]);
+            // Validate form
+            SocialValidator::validate($this);
 
-            }
+            // Update user headline
+            UserLinkedAccount::where('user_id', auth()->id())->update([
+                'facebook_profile'      => clean($this->facebook_profile),
+                'twitter_profile'       => clean($this->twitter_profile),
+                'dribbble_profile'      => clean($this->dribbble_profile),
+                'stackoverflow_profile' => clean($this->stackoverflow_profile),
+                'github_profile'        => clean($this->github_profile),
+                'youtube_profile'       => clean($this->youtube_profile),
+                'vimeo_profile'         => clean($this->vimeo_profile)
+            ]);
+
+            // Success
+            $this->notification([
+                'title'       => __('messages.t_success'),
+                'description' => __('messages.t_linked_accounts_has_been_updated'),
+                'icon'        => 'success'
+            ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
 
@@ -905,5 +915,61 @@ class ProfileComponent extends Component
             $this->dispatchBrowserEvent('refresh');
         }
     }
+    
+    /**
+     * Update budget
+     *
+     * @return void
+     */
+    public function updateBudget()
+    {
+        try {
+
+            // Validate form
+            BudgetValidator::validate($this);
+           
+           // Update user budget
+            auth()->user()->update([
+                'budget_min' => clean($this->budget_min),
+                'budget_max' => clean($this->budget_max)
+            ]);
+
+            // Success
+            $this->notification([
+                'title'       => __('messages.t_success'),
+                'description' => __('messages.t_budget_updated_successfully'),
+                'icon'        => 'success'
+            ]);
+
+            // Profile updated
+            $this->dispatchBrowserEvent('profile-budget-updated');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            // Validation error
+            $this->notification([
+                'title'       => __('messages.t_error'),
+                'description' => __('messages.t_toast_form_validation_error'),
+                'icon'        => 'error'
+            ]);
+
+            throw $e;
+            \Log::error('Error updating budget: ' . $e->getMessage());
+
+        } catch (\Throwable $th) {
+
+            // Error
+            $this->notification([
+                'title'       => __('messages.t_error'),
+                'description' => __('messages.t_toast_something_went_wrong'),
+                'icon'        => 'error'
+            ]);
+
+            throw $th;
+
+        }
+    }
+    
+    
     
 }

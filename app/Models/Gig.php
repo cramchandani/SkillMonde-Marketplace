@@ -38,7 +38,6 @@ class Gig extends Model implements Sitemapable
         'image_medium_id',
         'image_large_id',
         'status',
-        'rejection_reason',
         'counter_visits',
         'counter_impressions',
         'counter_sales',
@@ -225,36 +224,6 @@ class Gig extends Model implements Sitemapable
     public function reviews()
     {
         return $this->hasMany(Review::class, 'gig_id');
-    }
-
-    /**
-     * Get orders for this gig
-     *
-     * @return object
-     */
-    public function orders()
-    {
-        return $this->hasMany(OrderItem::class, 'gig_id');
-    }
-
-    /**
-     * Calculate orders in queue
-     *
-     * @return int
-     */
-    public function total_orders_in_queue()
-    {
-        try {
-            
-            // Calculate total orders in queue
-            return $this->orders()->where('status', 'proceeded')->count();
-
-        } catch (\Throwable $th) {
-            
-            // Something went wrong
-            return $this->orders_in_queue;
-
-        }
     }
 
 }

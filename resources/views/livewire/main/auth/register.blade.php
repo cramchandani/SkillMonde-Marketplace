@@ -3,7 +3,7 @@
 	{{-- Welcome back message --}}
 	<div class="text-center">
 		<div class="mt-4">
-			<h2 class="text-xl font-bold text-zinc-700 dark:text-white">
+			<h2 class="text-xl font-bold text-zinc-700 dark:text-navy-100">
 				@lang('messages.t_welcome_to_app_name', ['name' => config('app.name')])
 			</h2>
 			<p class="text-zinc-400 dark:text-gray-300">
@@ -14,6 +14,7 @@
 			</a>
 		</div>
 	</div>
+	
 
 	{{-- Form --}}
 	<div class="mt-8">
@@ -39,6 +40,30 @@
 			{{-- Register form --}}
 			<div class="mt-6">
 				<form x-data="window.UcZWcDFfVKBjfgP" x-on:submit.prevent="register" class="grid grid-cols-12 md:gap-x-6 gap-y-6">
+				    
+				     {{-- Role --}}
+                    <div class="col-span-12">
+                        <div class="relative w-full shadow-sm rounded-md">
+                            <select x-model="form.account_type" name="account_type" x-on:change="form.account_type = $event.target.value" class="{{ $errors->first('account_type') ? 'focus:ring-red-600 focus:border-red-600 border-red-500' : 'focus:ring-primary-600 focus:border-primary-600 border-gray-300' }} border text-gray-900 text-sm rounded-md font-medium block w-full ltr:pr-12 rtl:pl-12 p-4 placeholder:font-normal dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                                <option value="">{{ __('messages.t_select_role') }}</option>
+                                <option value="seller">{{ __('messages.t_freelancer') }}</option>
+                                <option value="buyer">{{ __('messages.t_client') }}</option>
+                            </select>
+                    
+                            {{-- Icon --}}
+                            <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
+                                <svg class="w-5 h-5 text-gray-400" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-4.546-5.084A5.986 5.986 0 004 10a5.986 5.986 0 001.454 3.916A5 5 0 0110 13a5 5 0 015 5 5 5 0 01-4.546-2.916A5.986 5.986 0 0010 16a5.986 5.986 0 00-1.454-3.916z" clip-rule="evenodd"></path></svg>
+                            </div>
+                    
+                        </div>
+                    
+                        {{-- Error --}}
+                        @error('account_type')
+                            <p class="mt-1.5 text-[13px] tracking-wide text-red-600 font-medium ltr:pl-1 rtl:pr-1">
+                                {{ $errors->first('account_type') }}
+                            </p>
+                        @enderror
+                    </div>
 
 					{{-- Fullname --}}
 					<div class="col-span-12">
@@ -85,7 +110,7 @@
 						@enderror
 
 					</div>
-
+                <?php /* ?>
                     {{-- Username --}}
                     <div class="col-span-12">
 						<div class="relative w-full shadow-sm rounded-md">
@@ -108,13 +133,14 @@
 						@enderror
 
 					</div>
+					<?php */ ?>
 
 					{{-- Password --}}
 					<div class="col-span-12">
 						<div class="relative w-full shadow-sm rounded-md">
 
 							{{-- Input --}}
-							<input type="password" x-model="form.password" class="{{ $errors->first('password') ? 'focus:ring-red-600 focus:border-red-600 border-red-500' : 'focus:ring-primary-600 focus:border-primary-600 border-gray-300' }} border text-gray-900 text-sm rounded-md font-medium block w-full ltr:pr-12 rtl:pl-12 p-4 placeholder:font-normal  dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="{{ __('messages.t_enter_password') }}">
+							<input type="password" x-model="form.password" pattern=".{6,60}" class="{{ $errors->first('password') ? 'focus:ring-red-600 focus:border-red-600 border-red-500' : 'focus:ring-primary-600 focus:border-primary-600 border-gray-300' }} border text-gray-900 text-sm rounded-md font-medium block w-full ltr:pr-12 rtl:pl-12 p-4 placeholder:font-normal  dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="{{ __('messages.t_enter_password') }}">
 
 							{{-- Icon --}}
 							<div class="absolute inset-y-0 ltr:right-0 rtl:left-0 flex items-center ltr:pr-3 rtl:pl-3">
@@ -131,36 +157,56 @@
 						@enderror
 
 					</div>
+					
+					<div class="col-span-12">
+						<div class="relative w-full shadow-sm rounded-md">
+                            <input type="text" x-model="form.referrerUsername" class="border text-gray-900 text-sm rounded-md font-medium block w-full ltr:pr-12 rtl:pl-12 p-4 placeholder:font-normal dark:bg-zinc-700 dark:border-zinc-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" id="referrerUsername" placeholder="Referrer. Optional field">
+						</div>
+					</div>
 
-                    {{-- Accept terms --}}
+                    {{-- Accept terms 
                     <div class="col-span-12">
-                        <div class="flex items-start space-x-2 rtl:space-x-reverse">
-                            <svg class="w-6 h-6 text-gray-400 flex-shrink-0" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                            <span class="text-sm text-gray-500 dark:text-zinc-300">@lang('messages.t_by_signup_u_agree_to_terms_privacy')</span>
+                        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                            <svg class="w-6 h-6 text-gray-400" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <span class="text-xs tracking-wider text-gray-500">@lang('messages.t_by_signup_u_agree_to_terms_privacy')</span>
                         </div>
                     </div>
-
+                    --}}
+                    
+                    <div class="col-span-12">
+                        {{-- Checkbox for agreeing to terms --}}
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" wire:model="agreeToTerms" checked>
+                            <span class="text-gray-700" style="color: #4C3494;"><a href="{{ url('page', settings('footer')->terms->slug) }}" target="_blank">@lang('messages.t_by_signup_u_agree_to_terms_privacy')</a></span>
+                        </label>
+                    </div>
+                    
 					{{-- reCaptcha --}}
 					@if (settings('security')->is_recaptcha)
 						<div class="col-span-12" wire:ignore>
-							<div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}" data-theme="{{ current_theme() }}"></div>
+							<div class="g-recaptcha" data-sitekey="{{ config('recaptcha.site_key') }}"></div>
 						</div>
 					@endif
-
+					
+                    
+                    
 					{{-- Register --}}
 					<div class="col-span-12">
-						<button type="submit" wire:loading.attr="disabled" wire:target="register" :disabled="!form.email || !form.password || !form.fullname || !form.username" class="w-full bg-primary-600 enabled:hover:bg-primary-700 text-white py-4.5 px-4 rounded-md text-[13px] font-semibold tracking-wide disabled:bg-zinc-200 disabled:text-zinc-500 dark:disabled:bg-zinc-500 dark:disabled:text-zinc-300 disabled:cursor-not-allowed">
+						<button type="submit" wire:loading.attr="disabled" wire:target="register" :disabled="!form.email || !form.password || !form.fullname" class="w-full bg-primary-600 enabled:hover:bg-primary-700 text-white py-4.5 px-4 rounded-md text-[13px] font-semibold tracking-wide disabled:bg-zinc-200 disabled:text-zinc-500">
 							
 							{{-- Loading indicator --}}
+							{{--
 							<div wire:loading wire:target="register">
 								<svg role="status" class="inline w-4 h-4 text-gray-700 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
 									<path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
 								</svg>
 							</div>
+							--}}
+							
 
 							{{-- Button text --}}
-							<div wire:loading.remove wire:target="register">
+							<div wire:loading.remove wire:target="register" :disabled="!agreeToTerms">
 								@lang('messages.t_create_account')
 							</div>
 							
@@ -236,18 +282,18 @@
 
 			{{-- Action links --}}
 			<div class="mt-6">
-				<ul class="list-disc list-inside text-slate-500 text-[13px] space-y-2 dark:text-gray-300">
+				<ul class="list-disc list-inside text-slate-500 text-[13px] space-y-2">
 
 					{{-- Login --}}
 					<li>
-						<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('auth/login') }}">
+						<a class="hover:text-slate-600 hover:underline" href="{{ url('auth/login') }}">
 							@lang('messages.t_already_have_account') @lang('messages.t_login')
 						</a>
 					</li>
 
 					{{-- Resend activation url --}}
 					<li>
-						<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('auth/request') }}">
+						<a class="hover:text-slate-600 hover:underline" href="{{ url('auth/request') }}">
 							@lang('messages.t_resend_verification_email')	
 						</a>
 					</li>
@@ -257,12 +303,12 @@
 
 						{{-- Privacy --}}
 						<li>
-							<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('page', settings('footer')->privacy->slug) }}">{{ settings('footer')->privacy->title }}</a>
+							<a class="hover:text-slate-600 hover:underline" href="{{ url('page', settings('footer')->privacy->slug) }}">{{ settings('footer')->privacy->title }}</a>
 						</li>
 
 						{{-- Terms --}}
 						<li>
-							<a class="hover:text-slate-600 dark:hover:text-zinc-100 hover:underline" href="{{ url('page', settings('footer')->terms->slug) }}">{{ settings('footer')->terms->title }}</a>
+							<a class="hover:text-slate-600 hover:underline" href="{{ url('page', settings('footer')->terms->slug) }}">{{ settings('footer')->terms->title }}</a>
 						</li>
 					@endif
 
@@ -297,7 +343,8 @@
 					email   : null,
 					password: null,
 					fullname: null,
-					username: null
+					account_type: null
+					//referrerUsername:null
 				},
 
 				// Register
@@ -305,7 +352,7 @@
 					var _this = this;
 
 					// Is recapctah enabled
-					if (_this.recaptcha && document.getElementById('g-recaptcha-response')) {
+					if (_this.recaptcha) {
 
 						// Get recaptcha response
 						var recaptcha_token = document.getElementById('g-recaptcha-response').value;
@@ -332,7 +379,8 @@
 					}
 
 					// Validate form
-					if (!_this.form.email || !_this.form.password || !_this.form.fullname || !_this.form.username) {
+				//	if (!_this.form.email || !_this.form.password || !_this.form.fullname || !_this.form.username) {
+					if (!_this.form.email || !_this.form.password || !_this.form.fullname ) {    
                         
 						// Error
 						window.$wireui.notify({
@@ -349,8 +397,9 @@
 					@this.register({
 						'email'          : _this.form.email,
 						'password'       : _this.form.password,
-						'username'       : _this.form.username,
 						'fullname'       : _this.form.fullname,
+						'account_type'   : _this.form.account_type,
+						'referrerUsername' : _this.form.referrerUsername,
 						'recaptcha_token': recaptcha_token
 					});
 
@@ -360,4 +409,11 @@
 		}
 		window.UcZWcDFfVKBjfgP = UcZWcDFfVKBjfgP();
 	</script>
+	    <script>
+        Livewire.on('registrationSuccessful', () => {
+            // Reset the checkbox after successful registration
+            Livewire.find('register').set('agreeToTerms', false);
+        });
+    </script>
+
 @endpush

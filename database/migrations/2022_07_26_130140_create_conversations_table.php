@@ -23,8 +23,8 @@ return new class extends Migration
             $table->timestamp('last_message_at')->nullable();
             $table->timestamp('created_at');
 
-            $table->foreign('from_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('to_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('from_id')->references('id')->on('users');
+            $table->foreign('to_id')->references('id')->on('users');
         });
     }
 

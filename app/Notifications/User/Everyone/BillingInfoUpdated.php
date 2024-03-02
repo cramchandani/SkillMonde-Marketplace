@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class BillingInfoUpdated extends Notification implements ShouldQueue
 {
@@ -42,12 +41,12 @@ class BillingInfoUpdated extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_billing_info_updated');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_billing_info_updated');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_billing_info_updated')))
+                    ->line(__('messages.t_notification_billing_info_updated'))
                     ->action(__('messages.t_billing_information'), url('account/billing'));
     }
 

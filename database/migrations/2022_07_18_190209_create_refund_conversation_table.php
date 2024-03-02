@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('message');
             $table->timestamp('created_at');
 
-            $table->foreign('refund_id')->references('id')->on('refunds')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('refund_id')->references('id')->on('refunds');
 
         });
     }

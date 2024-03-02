@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('image_id');
 
-            $table->foreign('project_id')->references('id')->on('user_portfolio')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('image_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('project_id')->references('id')->on('user_portfolio');
+            $table->foreign('image_id')->references('id')->on('file_manager');
         });
     }
 

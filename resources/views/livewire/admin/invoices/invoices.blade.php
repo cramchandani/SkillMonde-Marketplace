@@ -1,247 +1,182 @@
 <div class="w-full">
 
-    {{-- Loading --}}
-    <x-forms.loading />
-    
-    {{-- Heading --}}
-    <div class="mb-16">
-        <div class="mx-auto max-w-7xl">
-            <div class="lg:flex lg:items-center lg:justify-between">
-    
-                <div class="min-w-0 flex-1">
-    
-                    {{-- Section heading --}}
-                    <h2 class="text-lg font-bold leading-7 text-zinc-700 dark:text-gray-50 sm:truncate sm:text-xl sm:tracking-tight">
-                        @lang('messages.t_invoices')
-                    </h2>
-    
-                    {{-- Breadcrumbs --}}
-                    <div class="mt-3 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6 rtl:space-x-reverse">
-                        <ol class="inline-flex items-center mb-3 space-x-1 md:space-x-3 md:rtl:space-x-reverse sm:mb-0">
-
-                            {{-- Main home --}}
-                            <li>
-                                <div class="flex items-center">
-                                    <a href="{{ url('/') }}" class="text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-zinc-300 dark:hover:text-white">
-                                        @lang('messages.t_home')
-                                    </a>
-                                </div>
-                            </li>
-            
-                            {{-- dashboard --}}
-                            <li aria-current="page">
-                                <div class="flex items-center">
-                                    <svg aria-hidden="true" class="w-4 h-4 text-gray-400 rtl:rotate-180" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                                    <a href="{{ admin_url('/') }}" class="ltr:ml-1 rtl:mr-1 text-sm font-medium text-gray-700 hover:text-primary-600 md:ltr:ml-2 md:rtl:mr-2 dark:text-zinc-300 dark:hover:text-white">
-                                        @lang('messages.t_dashboard')
-                                    </a>
-                                </div>
-                            </li>
-            
-                            {{-- Invoices --}}
-                            <li aria-current="page">
-                                <div class="flex items-center">
-                                    <svg aria-hidden="true" class="w-4 h-4 text-gray-400 rtl:rotate-180" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                                    <span class="mx-1 text-sm font-medium text-gray-400 md:mx-2 dark:text-zinc-400">
-                                        @lang('messages.t_invoices')
-                                    </span>
-                                </div>
-                            </li>
-            
-                        </ol>
-                    </div>
-                    
-                </div>
-    
-                {{-- Actions --}}
-                <div class="mt-5 flex lg:mt-0 lg:ltr::ml-4 lg:rtl:mr-4">
-        
-                </div>
-    
-            </div>
+    {{-- Section title --}}
+    <div class="px-4 md:px-3 py-4 md:py-5 bg-white border !border-b-0 dark:bg-gray-700 rounded-tl-lg rounded-tr-lg">
+        <div class="sm:flex items-center justify-between">
+            <p class="text-sm font-bold leading-wide text-gray-800">
+                {{ __('messages.t_invoices') }}
+            </p>
         </div>
     </div>
 
-    {{-- Content --}}
-    <div class="w-full">
-        <div class="mt-8 overflow-x-auto overflow-y-hidden sm:mt-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-zinc-800 dark:scrollbar-track-zinc-600">
-            <table class="w-full text-left border-spacing-y-[10px] border-separate -mt-2">
-                <thead class="">
-                    <tr class="bg-slate-200 dark:bg-zinc-600">
+    {{-- Section content --}}
+    <div class="bg-white dark:bg-zinc-800 overflow-y-auto border !border-t-0 !border-b-0 dark:border-zinc-600">
+        <table class="w-full whitespace-nowrap old-tables">
+            <thead class="bg-gray-200">
+                <tr tabindex="0" class="focus:outline-none h-16 w-full text-sm leading-none text-gray-800 dark:text-white ">
+                    <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider ltr:text-left ltr:pl-4 rtl:text-right rtl:pr-4">{{ __('messages.t_buyer') }}</th>
+                    <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider ltr:text-left ltr:pl-4 rtl:text-right rtl:pr-4">{{ __('messages.t_payment') }}</th>
+                    <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_total_amount') }}</th>
+                    <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_status') }}</th>
+                    <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_date') }}</th>
+                    <th class="font-bold text-[10px] text-slate-500 dark:text-gray-300 uppercase tracking-wider text-center">{{ __('messages.t_options') }}</th>
+                </tr>
+            </thead>
+            <tbody class="w-full">
 
-                        {{-- Buyer --}}
-                        <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md rtl:text-right">@lang('messages.t_buyer')</th>
-
-                        {{-- Payment method --}}
-                        <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md rtl:text-right">@lang('messages.t_payment_method')</th>
-
-                        {{-- Amount --}}
-                        <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 text-center border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md">@lang('messages.t_amount')</th>
-
-                        {{-- Date --}}
-                        <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 text-center border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md">@lang('messages.t_date')</th>
-
-                        {{-- Status --}}
-                        <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 text-center border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md">@lang('messages.t_status')</th>
-                        
-                        {{-- Options --}}
-                        <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 text-center border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md">@lang('messages.t_options')</th>
-                        
-                    </tr>
-                </thead>
-                <thead>
-                    @forelse ($invoices as $i)
-
-                        <tr class="intro-x shadow-sm bg-white dark:bg-zinc-800 rounded-md h-16" wire:key="admin-invoices-{{ $i->uid }}">
+                @foreach ($invoices as $invoice)
+                    @if ($invoice->order->buyer)
+                        <tr class="focus:outline-none h-20 text-sm leading-none text-gray-800 bg-white dark:bg-zinc-600 hover:bg-gray-100 dark:hover:bg-zinc-700 border-b border-t border-gray-100 dark:border-zinc-700/40" wire:key="invoices-{{ $invoice->id }}">
 
                             {{-- Buyer --}}
-                            <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md w-64 rtl:text-right">
-                                <div class="flex items-center space-x-3 rtl:space-x-reverse w-64">
-
-                                    {{-- Avatar --}}
-                                    <a href="{{ url('profile', $i->order->buyer->username) }}" target="_blank" class="h-10 w-10 flex-shrink-0">
-                                        <img class="w-full h-full rounded-md object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src($i->order->buyer->avatar) }}" alt="{{ $i->order->buyer->username }}">
-                                    </a>
-
-                                    {{-- Details --}}
-                                    <div>
-                                        
-                                        {{-- Name --}}
-                                        <div class="font-medium whitespace-nowrap truncate block hover:text-primary-600 dark:text-white text-sm max-w-[240px]">
-                                            {{ $i->order->buyer->fullname ?? $i->order->buyer->username }}
-                                        </div>
-
-                                        {{-- Email --}}
-                                        <div class="text-slate-500 text-xs whitespace-nowrap mt-2 max-w-[240px] truncate block">
-                                            {{ $i->order->buyer->email }}
-                                        </div>
-
+                            <td class="ltr:pl-4 rtl:pr-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8">
+                                        <img class="w-full h-full rounded object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src($invoice->order->buyer->avatar) }}" alt="{{ $invoice->order->buyer->username }}" />
                                     </div>
-
+                                    <div class="ltr:pl-4 rtl:pr-4">
+                                        <a href="{{ admin_url('users/details/' . $invoice->order->buyer->uid) }}" target="_blank" class="font-medium text-xs hover:text-primary-600 truncate pb-1.5 block max-w-xs">{{ $invoice->order->buyer->username }}</a>
+                                        <div class="flex items-center text-[11px] font-normal text-gray-400">
+                                            {{ $invoice->firstname }} {{ $invoice->lastname }}
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
 
-                            {{-- Payment method --}}
-                            <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md rtl:text-right">
-                                <div class="flex flex-col">
+                            {{-- Payment --}}
+                            <td class="ltr:pl-4 rtl:pr-4">
+                                <div class="flex items-center">
+                                    <div class="">
+                                        <div class="font-medium text-xs hover:text-primary-600 truncate pb-1.5 block max-w-xs">
+                                            @switch($invoice->payment_method)
 
-                                    {{-- Name --}}
-                                    <div class="font-normal whitespace-nowrap truncate block dark:text-zinc-200 text-[13px] text-gray-600">
+                                                {{-- Stripe --}}
+                                                @case('stripe')
+                                                    {{ __('messages.t_stripe') }}
+                                                    @break
+
+                                                {{-- Paypal --}}
+                                                @case('paypal')
+                                                    {{ __('messages.t_paypal') }}
+                                                    @break
+
+                                                {{-- Balance --}}
+                                                @case('balance')
+                                                    {{ __('messages.t_user_credit') }}
+                                                    @break
+
+                                                {{-- Offline --}}
+                                                @case('offline')
+                                                    {{ settings('offline_payment')->name }}
+                                                    @break
+
+                                                {{-- Paystack --}}
+                                                @case('paystack')
+                                                    {{ settings('paystack')->name }}
+                                                    @break
+
+                                                {{-- Cashfree --}}
+                                                @case('cashfree')
+                                                    {{ settings('cashfree')->name }}
+                                                    @break
+
+                                                {{-- Xendit --}}
+                                                @case('xendit')
+                                                    {{ settings('xendit')->name }}
+                                                    @break
+
+                                                @default
                                                     
-                                        {{-- Check payment gateway --}}
-                                        @if ($i->payment_method === "offline")
-                            
-                                            {{-- Check if offline payment has a name --}}
-                                            @if ( !empty(payment_gateway($i->payment_method, false, true)->name) )
-                                                
-                                                {{-- Offline method --}}
-                                                {{ payment_gateway($i->payment_method, false, true)?->name }}
-    
-                                            @else
-    
-                                                {{-- Not available --}}
-                                                -
-    
-                                            @endif
-    
-                                        @elseif ( !empty(payment_gateway($i->payment_method)->name) )
-    
-                                            {{-- Method name --}}
-                                            {{ payment_gateway($i->payment_method)?->name }}
-    
-                                        @elseif ($i->payment_method === "wallet")
-
-                                            @lang('messages.t_wallet')
-
-                                        @else
-    
-                                            -
-    
-                                        @endif
-    
+                                            @endswitch
+                                        </div>
+                                        <div class="flex items-center text-[11px] font-normal text-gray-400">
+                                            {{ $invoice->payment_id }}
+                                        </div>
                                     </div>
-
-                                    {{-- Transaction id --}}
-                                    <span class="text-xs tracking-wide text-gray-400 mt-1">{{ $i->payment_id }}</span>
-
                                 </div>
                             </td>
 
-                            {{-- Amount --}}
-                            <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md text-center">
-                                <span class="text-sm font-bold text-zinc-900 tracking-wide">@money($i->order->total_value, settings('currency')->code, true)</span>
-                            </td>
-
-                            {{-- Date --}}
-                            <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md text-center">
-                                <div class="text-gray-500 dark:text-gray-100 text-[13px] font-normal whitespace-nowrap">
-                                    {{ format_date($i->created_at) }}
-                                </div>
+                            {{-- Total --}}
+                            <td class="text-center">
+                                <span class="text-xs font-black ">@money($invoice->order->total_value, settings('currency')->code, true)</span>
                             </td>
 
                             {{-- Status --}}
-                            <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md text-center">
-                                @switch($i->status)
+                            <td class="text-center">
 
-                                    {{-- Paid --}}
-                                    @case('paid')
-                                        <span class="bg-emerald-100 text-emerald-700 px-4 py-2 inline-block rounded-3xl font-medium text-xs whitespace-nowrap">
-                                            @lang('messages.t_paid')
-                                        </span>
-                                    @break
+                                {{-- Paid --}}
+                                @if ($invoice->status === 'paid')
+                                    <span class="px-4 py-1 text-xs rounded-2xl font-semibold text-green-500 bg-green-50">
+                                        {{ __('messages.t_paid') }}
+                                    </span>
+                                @else
+                                    <span class="px-4 py-1 text-xs rounded-2xl font-semibold text-amber-500 bg-amber-50">
+                                        {{ __('messages.t_pending') }}
+                                    </span>
+                                @endif
 
-                                    {{-- Pending --}}
-                                    @case('pending')
-                                        <span class="bg-amber-100 text-amber-700 px-4 py-2 inline-block rounded-3xl font-medium text-xs whitespace-nowrap">
-                                            @lang('messages.t_pending')
-                                        </span>
-                                    @break
-                                        
-                                @endswitch
+                            </td>
+
+                            {{-- Placed at --}}
+                            <td class="text-center">
+                                <span class="text-xs font-medium text-gray-500">{{ format_date($invoice->created_at, 'ago') }}</span>
                             </td>
 
                             {{-- Options --}}
-                            <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md text-center">
-                                <div class="flex items-center justify-center space-x-3 rtl:space-x-reverse">
-
-                                    {{-- Order details --}}
+                            <td class="text-center">
+                                <div class="relative inline-block text-left">
                                     <div>
-                                        <a href="{{ admin_url('orders/details/' . $i->order->uid) }}" data-tooltip-target="tooltip-actions-details-{{ $i->id }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/> <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"/> <path d="M9 12h6"/> <path d="M9 16h6"/></svg>
-                                        </a>
-                                        <x-forms.tooltip id="tooltip-actions-details-{{ $i->id }}" :text="__('messages.t_order_details')" />
+                                        <button data-dropdown-toggle="table-options-dropdown-{{ $invoice->id }}" type="button" class="inline-flex justify-center items-center rounded-full h-8 w-8 bg-white dark:bg-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-0" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-400" viewBox="0 0 20 20" fill="currentColor"> <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                                        </button>
                                     </div>
+                                    <div id="table-options-dropdown-{{ $invoice->id }}" class="hidden z-40 origin-top-right absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white dark:bg-zinc-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-zinc-700 focus:outline-none" role="menu"  aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                        <div class="py-1" role="none">
 
-                                    {{-- Check if payment pending --}}
-                                    @if ($i->status === 'pending' && $i->payment_method === "offline")
-                                        <div>
-                                            <button x-on:click="confirm('{{ __('messages.t_are_u_sure_u_received_invocie_payment') }}') ? $wire.paid('{{ $i->id }}') : ''" wire:loading.attr="disabled" wire:target="paid('{{ $i->id }}')" type="button" data-tooltip-target="tooltip-actions-received-{{ $i->id }}" class="inline-flex justify-center items-center border font-semibold focus:outline-none w-8 h-8 leading-5 text-sm rounded border-gray-300 bg-white text-gray-800 shadow-sm hover:text-gray-800 hover:bg-gray-100 hover:border-gray-300 hover:shadow focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-white active:border-white active:shadow-none dark:bg-zinc-700 dark:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:border-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12"/> <path d="M20 12v4h-4a2 2 0 0 1 0 -4h4"/></svg>
-                                            </button>
-                                            <x-forms.tooltip id="tooltip-actions-received-{{ $i->id }}" :text="__('messages.t_payment_received')" />
+                                            {{-- Order details --}}
+                                            <a href="{{ admin_url('orders/details/' . $invoice->order->uid) }}" target="_blank" class="text-gray-800 dark:text-gray-300 group flex items-center px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="ltr:mr-3 rtl:ml-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                                                <span class="text-xs font-medium">{{ __('messages.t_order_details') }}</span>
+                                            </a>
+
+                                            {{-- Invoice paid --}}
+                                            @if ($invoice->status === 'pending')
+                                                <button x-on:click="confirm('{{ __('messages.t_are_u_sure_u_received_invocie_payment') }}') ? $wire.paid('{{ $invoice->id }}') : ''" wire:loading.attr="disabled" wire:target="paid('{{ $invoice->id }}')" type="button" class="text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 group flex items-center px-4 py-2 text-sm" role="menuitem" tabindex="-1" >
+
+                                                    {{-- Loading indicator --}}
+                                                    <div wire:loading wire:target="paid('{{ $invoice->id }}')">
+                                                        <svg role="status" class="ltr:mr-3 rtl:ml-3 inline w-5 h-5 text-gray-500 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
+                                                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
+                                                        </svg>
+                                                    </div>
+
+                                                    {{-- Icon --}}
+                                                    <div wire:loading.remove wire:target="paid('{{ $invoice->id }}')">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="ltr:mr-3 rtl:ml-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                    </div>
+
+                                                    <span class="text-xs font-medium">{{ __('messages.t_payment_received') }}</span>
+
+                                                </button>
+                                            @endif
+
                                         </div>
-                                    @endif
-
+                                    </div>
                                 </div>
                             </td>
 
                         </tr>
-
-                    @empty
-                        <tr>
-                            <td colspan="6" class="py-4.5 font-light text-sm text-gray-400 dark:text-zinc-200 text-center tracking-wide shadow-sm bg-white dark:bg-zinc-800 rounded-md">
-                                @lang('messages.t_no_results_found')
-                            </td>
-                        </tr>
-                    @endforelse
-                </thead>
-            </table>
-        </div>
+                    @endif
+                @endforeach
+                
+            </tbody>
+        </table>
     </div>
 
-    {{-- Pages --}}
+    {{-- Pagination --}}
     @if ($invoices->hasPages())
-        <div class="flex justify-center pt-12">
+        <div class="bg-gray-100 px-4 py-5 sm:px-6 rounded-bl-lg rounded-br-lg flex justify-center border-t-0 border-r border-l border-b">
             {!! $invoices->links('pagination::tailwind') !!}
         </div>
     @endif

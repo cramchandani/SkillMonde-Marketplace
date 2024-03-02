@@ -17,8 +17,6 @@ module.exports = {
     ],
 	content: [
 		"./resources/**/*.blade.php",
-		"./resources/views/vendor/Chatify/layouts/*.blade.php",
-		"./resources/views/vendor/Chatify/pages/*.blade.php",
 		"./resources/**/*.js",
 		"./resources/**/*.vue",
 		"./node_modules/@themesberg/flowbite/**/*.js",
@@ -50,6 +48,7 @@ module.exports = {
 		require('flowbite/plugin'),
 		require('@tailwindcss/aspect-ratio'),
 		require('@tailwindcss/typography'),
-		require('tailwind-scrollbar')
+		require('tailwind-scrollbar'),
+		require('@tailwindcss/line-clamp')
 	],
 }

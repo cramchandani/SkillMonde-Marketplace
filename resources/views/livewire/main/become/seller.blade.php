@@ -1,94 +1,13 @@
-<div class="w-full">
-
-	{{-- a message for admin --}}
-	@auth('admin')
-		<div class="mb-12 container xl:max-w-7xl mx-auto px-4 lg:px-8 mt-8">
-			<div class="p-4 md:p-5 rounded text-slate-700 bg-slate-100">
-				<div class="flex items-center mb-2">
-					<svg class="nline-block w-5 h-5 mr-3 flex-none text-slate-500" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm48 226h-88a16 16 0 010-32h28v-88h-16a16 16 0 010-32h32a16 16 0 0116 16v104h28a16 16 0 010 32z"></path></svg>
-					<h3 class="font-semibold">How can I edit this page?</h3>
-				</div>
-				<ul class="list-inside ltr:ml-8 rtl:mr-8 space-y-6 text-sm flex flex-col">
-
-					<li class="inline-flex">
-						<svg class="hi-solid hi-arrow-narrow-right inline-block w-4 h-4 flex-none ltr:mr-4 rtl:ml-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-						<div>
-							Replace pictures inside this folder 
-						<kbd class="flex font-semibold items-center py-1.5 rounded rtl:space-x-reverse space-x-3 text-gray-800 text-xs">
-							<div class="flex items-center space-x-1 rtl:space-x-reverse">
-								<svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1" viewBox="0 0 48 48" enable-background="new 0 0 48 48" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path fill="#FFA000" d="M38,12H22l-4-4H8c-2.2,0-4,1.8-4,4v24c0,2.2,1.8,4,4,4h31c1.7,0,3-1.3,3-3V16C42,13.8,40.2,12,38,12z"></path><path fill="#FFCA28" d="M42.2,18H15.3c-1.9,0-3.6,1.4-3.9,3.3L8,40h31.7c1.9,0,3.6-1.4,3.9-3.3l2.5-14C46.6,20.3,44.7,18,42.2,18z"></path></svg>
-								<span>public</span>
-							</div>
-	
-							<span>/</span>
-	
-							<div class="flex items-center space-x-1 rtl:space-x-reverse">
-								<svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1" viewBox="0 0 48 48" enable-background="new 0 0 48 48" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path fill="#FFA000" d="M38,12H22l-4-4H8c-2.2,0-4,1.8-4,4v24c0,2.2,1.8,4,4,4h31c1.7,0,3-1.3,3-3V16C42,13.8,40.2,12,38,12z"></path><path fill="#FFCA28" d="M42.2,18H15.3c-1.9,0-3.6,1.4-3.9,3.3L8,40h31.7c1.9,0,3.6-1.4,3.9-3.3l2.5-14C46.6,20.3,44.7,18,42.2,18z"></path></svg>
-								<span>img</span>
-							</div>
-	
-							<span>/</span>
-	
-							<div class="flex items-center space-x-1 rtl:space-x-reverse">
-								<svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1" viewBox="0 0 48 48" enable-background="new 0 0 48 48" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path fill="#FFA000" d="M38,12H22l-4-4H8c-2.2,0-4,1.8-4,4v24c0,2.2,1.8,4,4,4h31c1.7,0,3-1.3,3-3V16C42,13.8,40.2,12,38,12z"></path><path fill="#FFCA28" d="M42.2,18H15.3c-1.9,0-3.6,1.4-3.9,3.3L8,40h31.7c1.9,0,3.6-1.4,3.9-3.3l2.5-14C46.6,20.3,44.7,18,42.2,18z"></path></svg>
-								<span>start_selling</span>
-							</div>
-						</kbd>
-						Use same name and extension for the images ( 1.jpg | 2.jpg | 3.jpg ... )
-						</div>
-					</li>
-
-					<li class="inline-flex">
-						<svg class="hi-solid hi-arrow-narrow-right inline-block w-4 h-4 flex-none ltr:mr-4 rtl:ml-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-						After that clear your browser cache to see the new pictures ( SHIFT + CTRL + R )
-					</li>
-
-					<li class="inline-flex">
-						<svg class="hi-solid hi-arrow-narrow-right inline-block w-4 h-4 flex-none ltr:mr-4 rtl:ml-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-						<div>
-							And for the content (texts), you have 2 options: you can change that from this file
-							<kbd class="flex font-semibold items-center py-1.5 rounded rtl:space-x-reverse space-x-3 text-gray-800 text-xs">
-								<div class="flex items-center space-x-1 rtl:space-x-reverse">
-									<svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1" viewBox="0 0 48 48" enable-background="new 0 0 48 48" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path fill="#FFA000" d="M38,12H22l-4-4H8c-2.2,0-4,1.8-4,4v24c0,2.2,1.8,4,4,4h31c1.7,0,3-1.3,3-3V16C42,13.8,40.2,12,38,12z"></path><path fill="#FFCA28" d="M42.2,18H15.3c-1.9,0-3.6,1.4-3.9,3.3L8,40h31.7c1.9,0,3.6-1.4,3.9-3.3l2.5-14C46.6,20.3,44.7,18,42.2,18z"></path></svg>
-									<span>lang</span>
-								</div>
-
-								<span>/</span>
-
-								<div class="flex items-center space-x-1 rtl:space-x-reverse">
-									<svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1" viewBox="0 0 48 48" enable-background="new 0 0 48 48" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path fill="#FFA000" d="M38,12H22l-4-4H8c-2.2,0-4,1.8-4,4v24c0,2.2,1.8,4,4,4h31c1.7,0,3-1.3,3-3V16C42,13.8,40.2,12,38,12z"></path><path fill="#FFCA28" d="M42.2,18H15.3c-1.9,0-3.6,1.4-3.9,3.3L8,40h31.7c1.9,0,3.6-1.4,3.9-3.3l2.5-14C46.6,20.3,44.7,18,42.2,18z"></path></svg>
-									<span>en</span>
-								</div>
-
-								<span>/</span>
-
-								<div class="flex items-center space-x-1 rtl:space-x-reverse">
-										<svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1" viewBox="0 0 48 48" enable-background="new 0 0 48 48" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><polygon fill="#90CAF9" points="40,45 8,45 8,3 30,3 40,13"></polygon><polygon fill="#E1F5FE" points="38.5,14 29,14 29,4.5"></polygon></svg>
-									<span>messages.php</span>
-								</div>
-							</kbd>
-							Or go to dashboard => languages => edit translation
-						</div>
-					</li>
-
-					<li class="inline-flex">
-						<svg class="hi-solid hi-arrow-narrow-right inline-block w-4 h-4 flex-none ltr:mr-4 rtl:ml-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-						This message is visible only for you as the owner of this website.
-					</li>
-					
-				</ul>
-			</div>
-		</div>
-	@endauth
+<div class="w-full" style="max-width:96%;">
 
 	{{-- Become seller header --}}
 	<div class="mb-24 container xl:max-w-7xl mx-auto px-4 lg:px-8 mt-8">
-		<div class="relative bg-zinc-900 rounded-lg">
+		<div class="relative bg-gray-50 rounded-lg">
 			<div class="h-80 w-full absolute bottom-0 xl:inset-0 xl:h-full">
 				<div class="h-full w-full xl:grid xl:grid-cols-2">
 					<div class="h-full xl:relative xl:col-start-2">
-						<img class="h-full w-full object-cover opacity-25 xl:absolute xl:inset-0 ltr:rounded-r-lg rtl:rounded-l-lg lazy" src="{{ placeholder_img() }}" data-src="{{ url('public/img/start_selling/1.jpg') }}" alt="{{ __('messages.t_u_bring_the_skill_make_earn_easy') }}">
-						<div aria-hidden="true" class="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-zinc-900 xl:inset-y-0 ltr:xl:left-0 rtl:xl:right-0 xl:h-full xl:w-32 xl:bg-gradient-to-r rtl:rotate-180"></div>
+						<img class="h-full w-full object-cover opacity-75 xl:absolute xl:inset-0 ltr:rounded-r-lg rtl:rounded-l-lg lazy" src="{{ placeholder_img() }}" data-src="{{ url('public/img/start_selling/selling.png') }}" alt="{{ __('messages.t_u_bring_the_skill_make_earn_easy') }}">
+						<div aria-hidden="true" class="absolute inset-x-0 top-0 h-32 xl:inset-y-0 ltr:xl:left-0 rtl:xl:right-0 xl:h-full xl:w-32"></div>
 					</div>
 				</div>
 			</div>
@@ -98,36 +17,54 @@
 					<h2 class="text-sm font-semibold text-primary-300 tracking-wide uppercase">
 						@lang('messages.t_work_ur_way')
 					</h2>
-					<p class="mt-3 text-3xl font-extrabold text-white">
-						@lang('messages.t_u_bring_the_skill_make_earn_easy')
+					<p class="mt-3 text-3xl font-extrabold text-black">
+						Monetize Your Skill and Liberate your Life with Freelancing.
 					</p>
+					
+							{{-- Join us --}}
+		@guest
+			<div class="text-left mt-4">
+				<a href="{{ url('auth/register') }}" class="inline-flex justify-center items-center space-x-2 rtl:space-x-reverse border font-semibold focus:outline-none px-6 py-4 leading-6 rounded border-primary-700 bg-primary-700 text-white hover:text-white hover:bg-primary-800 hover:border-primary-800 focus:ring focus:ring-primary-500 focus:ring-opacity-50 active:bg-primary-700 active:border-primary-700">
+
+					{{-- LTR --}}
+					<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="opacity-50 hi-solid hi-arrow-right hidden ltr:inline-block w-5 h-5"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+
+					{{-- RTL --}}
+					<svg xmlns="http://www.w3.org/2000/svg" class="opacity-50 hi-solid hi-arrow-right hidden rtl:inline-block w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+					</svg>
+
+					<span>@lang('messages.t_lets_get_started')</span>
+				</a>
+			</div>
+		@endguest
 					
 					<div class="mt-12 grid grid-cols-1 gap-y-12 gap-x-6 sm:grid-cols-2">
 	
 						{{-- 4 sec --}}
 						<p>
-							<span class="block text-xl font-bold text-white uppercase">{{ __('messages.t_4_sec') }}</span>
-							<span class="mt-1 block text-base text-gray-300">{{ __('messages.t_a_gig_is_bought_every') }}</span>
+							<span class="block text-xl font-bold text-gray-600 uppercase">0</span>
+							<span class="mt-1 block text-base text-black">Registration Fee</span>
 						</p>
 				
 						{{-- Transactions --}}
 						<p>
-							<span class="block text-xl font-bold text-white uppercase">{{ __('messages.t_50_m_plus') }}</span>
-							<span class="mt-1 block text-base text-gray-300">{{ __('messages.t_transactions') }}</span>
+							<span class="block text-xl font-bold text-gray-600 uppercase">%</span>
+							<span class="mt-1 block text-base text-black">Lowest Commissions</span>
 						</p>
 				
 						{{-- Price range --}}
 						<p>
-							<span class="block text-xl font-bold text-white uppercase">
-								@money(5, settings('currency')->code, true) - @money(10000, settings('currency')->code, true)
+							<span class="block text-xl font-bold text-gray-600 uppercase">
+								@money(50, settings('currency')->code, true) - @money(100000, settings('currency')->code, true)
 							</span>
-							<span class="mt-1 block text-base text-gray-300">{{ __('messages.t_price_range') }}</span>
+							<span class="mt-1 block text-base text-black">{{ __('messages.t_price_range') }}</span>
 						</p>
 				
 						{{-- Monthly visitors --}}
 						<p>
-							<span class="block text-xl font-bold text-white uppercase">{{ __('messages.t_5_million') }}</span>
-							<span class="mt-1 block text-base text-gray-300">{{ __('messages.t_active_monthly_visits') }}</span>
+							<span class="block text-xl font-bold text-gray-600 uppercase">1K+</span>
+							<span class="mt-1 block text-base text-black">Daily Site Visits</span>
 						</p>
 	
 					</div>
@@ -136,6 +73,9 @@
 			</div>
 		</div>
 	</div>
+
+
+<?php /* ?>
 
 	{{-- Join community --}}
 	<div class="mb-24 container xl:max-w-7xl mx-auto px-4 lg:px-8">
@@ -199,7 +139,8 @@
 		</div>
 
 	</div>
-
+    <?php */ ?>
+    
 	{{-- How does it work --}}
 	<div class="mb-24 container xl:max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="bg-primary-600 shadow rounded-2xl py-16 sm:p-16">
@@ -208,8 +149,9 @@
 					<h2 class="text-2xl font-extrabold tracking-tight text-gray-100">
 						@lang('messages.t_how_it_works')
 					</h2>
+					<h4 class="text-xl font-semibold tracking-tight text-gray-100">Multipronged Earning Opportunities at SkillMonde: Single Sign On</h4>
 				</div>
-				  <div class="mt-12 max-w-sm mx-auto grid grid-cols-1 gap-y-10 gap-x-8 sm:max-w-none lg:grid-cols-3">
+				  <div class="mt-12 max-w-sm mx-auto grid grid-cols-1 gap-y-10 gap-x-8 sm:max-w-none lg:grid-cols-4">
 	
 					{{-- Create a gig --}}
 					<div class="text-center sm:flex sm:text-left lg:block lg:text-center">
@@ -219,8 +161,8 @@
 							</div>
 						</div>
 						<div class="mt-3 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-							<h3 class="text-base font-extrabold text-white">{{ __('messages.t_create_a_gig') }}</h3>
-							<p class="mt-2 text-sm text-primary-100">{{ __('messages.t_start_selling_t_create_a_gig_subtitle') }}</p>
+							<h3 class="text-base font-extrabold text-white">1.	Sell your Gigs and Receive Orders</h3>
+							
 						</div>
 					</div>
 	
@@ -232,8 +174,8 @@
 							</div>
 						</div>
 						<div class="mt-3 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-							<h3 class="text-base font-extrabold text-white">{{ __('messages.t_deliver_great_work') }}</h3>
-							<p class="mt-2 text-sm text-primary-100">{{ __('messages.t_deliver_great_work_subtitle') }}</p>
+							<h3 class="text-base font-extrabold text-white">2.	Bid for Live Client Projects</h3>
+							
 						</div>
 					</div>
 	
@@ -245,8 +187,19 @@
 							</div>
 						</div>
 						<div class="mt-3 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
-							<h3 class="text-base font-extrabold text-white">{{ __('messages.t_get_paid') }}</h3>
-							<p class="mt-2 text-sm text-primary-100">{{ __('messages.t_get_paid_subtitle') }}</p>
+							<h3 class="text-base font-extrabold text-white">3.	Get reached directly by Clients for custom projects</h3>
+						</div>
+					</div>
+					
+					{{-- Managed Services --}}
+					<div class="text-center sm:flex sm:text-left lg:block lg:text-center">
+						<div class="sm:flex-shrink-0">
+							<div class="flow-root">
+								<svg class="w-16 h-16 mx-auto text-primary-200" stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="opacity-50 hi-solid hi-arrow-right hidden ltr:inline-block w-5 h-5"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+							</div>
+						</div>
+						<div class="mt-3 sm:mt-0 sm:ml-6 lg:mt-6 lg:ml-0">
+							<h3 class="text-base font-extrabold text-white">4.	Empanelled for SkillMonde Managed Services</h3>
 						</div>
 					</div>
 					
@@ -274,7 +227,7 @@
 					<div class="px-4 pt-14 pb-6 sm:px-6 sm:pb-6 relative">
 						<blockquote>
 							<p class="leading-7 mb-5 dark:text-gray-400 font-medium">
-								@lang('messages.t_buyer_story_1')
+								SkillMonde is an amazing resource for anyone in the startup space
 							</p>
 							<footer class="flex items-center space-x-4 rtl:space-x-reverse">
 								<div class="flex-none rounded-full overflow-hidden w-12 h-12 transform transition ease-out duration-150 dark:hover:bg-zinc-700 hover:shadow-md hover:scale-125 active:shadow-sm active:scale-110">
@@ -282,7 +235,7 @@
 								</div>
 								<div>
 									<div class="font-semibold text-primary-600 hover:text-primary-400">
-										{{ __('messages.t_fake_name_alex_saunders') }}
+										Amit K. (Shree Tech Solutions)
 									</div>
 									<p class="text-gray-500 font-medium text-sm">
 										{{ __('messages.t_entrepreneur') }}
@@ -299,7 +252,7 @@
 				<div class="px-4 pt-14 pb-6 sm:px-6 sm:pb-6 relative">
 					<blockquote>
 						<p class="leading-7 mb-5 dark:text-gray-400 font-medium">
-							@lang('messages.t_buyer_story_2')
+							People love our designs and we definitely love SkillMonde
 						</p>
 						<footer class="flex items-center space-x-4 rtl:space-x-reverse">
 							<div class="flex-none rounded-full overflow-hidden w-12 h-12 transform transition ease-out duration-150 dark:hover:bg-zinc-700 hover:shadow-md hover:scale-125 active:shadow-sm active:scale-110">
@@ -307,7 +260,7 @@
 							</div>
 							<div>
 								<div class="font-semibold text-primary-600 hover:text-primary-400">
-									{{ __('messages.t_fake_name_ricky_jones') }}
+									Nidhi
 								</div>
 								<p class="text-gray-500 font-medium text-sm">
 									{{ __('messages.t_graphic_designer') }}
@@ -324,7 +277,7 @@
 				<div class="px-4 pt-14 pb-6 sm:px-6 sm:pb-6 relative">
 					<blockquote>
 						<p class="leading-7 mb-5 dark:text-gray-400 font-medium">
-							@lang('messages.t_buyer_story_3')
+							I got UX UI projects on SkillMonde platform and client rated us 5* for our services
 						</p>
 						<footer class="flex items-center space-x-4 rtl:space-x-reverse">
 							<div class="flex-none rounded-full overflow-hidden w-12 h-12 transform transition ease-out duration-150 dark:hover:bg-zinc-700 hover:shadow-md hover:scale-125 active:shadow-sm active:scale-110">
@@ -332,10 +285,10 @@
 							</div>
 							<div>
 								<div class="font-semibold text-primary-600 hover:text-primary-400">
-									{{ __('messages.t_fake_name_melissa_ross') }}
+									Akhil
 								</div>
 								<p class="text-gray-500 font-medium text-sm">
-									{{ __('messages.t_music_producer') }}
+									{{ __('messages.t_entrepreneur') }}
 								</p>
 							</div>
 						</footer>
@@ -346,17 +299,178 @@
 		</div>
 
 	</div>
+	
+		{{-- Join community --}}
+	<div class="mb-24 container xl:max-w-7xl mx-auto px-4 lg:px-8">
+	    <div class="bg-green-100 shadow rounded-2xl py-16 sm:p-16" style="background-color: #8ec740;">
+    		{{-- Section heading --}}
+    		<div class="text-center mb-12">
+    			<h2 class="text-xl md:text-2xl font-extrabold mb-4 text-gray-100 dark:text-gray-100">
+    				Join our Community of Freelancers to stay updated of latest trends, tools, projects, and many more tips to grow.
+    			</h2>
+    			<a target="_blank" href="https://t.me/+EDk60ngNUukwMWRl" class="btn bg-white rounded-pill text-primary-300 font-semibold px-4 py-2 mt-4">Join Community <i class="fa-solid fa-angle-right ms-3"></i></a>
+    		</div>
+		</div>
+	</div>
 
 	{{-- FAQ --}}
 	<div class="mb-24 container xl:max-w-7xl mx-auto px-4 lg:px-8">
 		<div class="bg-white dark:bg-zinc-700 px-12 py-16 rounded-2xl shadow">
-
+		    
+            
 			{{-- Section heading --}}
 			<div class="text-center mb-12">
 				<h2 class="text-xl md:text-2xl font-extrabold mb-4 dark:text-gray-100">
 					@lang('messages.t_faq_full')
 				</h2>
 			</div>
+			
+			<ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+              <li class="nav-item w-1/2" role="presentation">
+                <button class="nav-link w-full active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">General</button>
+              </li>
+              <li class="nav-item w-1/2" role="presentation">
+                <button class="nav-link w-full" id="platform-tab" data-bs-toggle="tab" data-bs-target="#platform" type="button" role="tab" aria-controls="platform" aria-selected="false">Platform</button>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="home-tab">
+                 {{-- <h2 class="text-xl md:text-xl font-semibold mb-4 dark:text-gray-100">General</h2>--}}
+			        
+			        <!-- General -->
+			        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        				{{-- Question 1 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_what_can_i_sell_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_what_can_i_sell_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 2 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_much_money_can_i_make_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_much_money_can_i_make_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 3 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_much_does_it_cost_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_much_does_it_cost_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 4 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_much_time_will_i_need_invest_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_much_time_will_i_need_invest_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 5 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_do_i_price_my_service_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_do_i_price_my_service_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 6 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_do_i_get_paid_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_do_i_get_paid_answer')
+        					</p>
+        				</div>
+        				
+        			</div>
+              </div>
+              <div class="tab-pane fade" id="platform" role="tabpanel" aria-labelledby="platform-tab">
+                 {{--<h2 class="text-xl md:text-xl font-semibold mb-4 dark:text-gray-100">Platform</h2>--}}
+			        
+			        <!-- Platform -->
+			        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        				{{-- Question 1 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_what_can_i_sell_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_what_can_i_sell_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 2 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_much_money_can_i_make_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_much_money_can_i_make_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 3 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_much_does_it_cost_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_much_does_it_cost_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 4 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_much_time_will_i_need_invest_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_much_time_will_i_need_invest_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 5 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_do_i_price_my_service_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_do_i_price_my_service_answer')
+        					</p>
+        				</div>
+        	
+        				{{-- Question 6 --}}
+        				<div class="prose prose-indigo">
+        					<h4 class="dark:text-gray-300">
+        						@lang('messages.t_how_do_i_get_paid_question')
+        					</h4>
+        					<p class="dark:text-gray-100">
+        						@lang('messages.t_how_do_i_get_paid_answer')
+        					</p>
+        				</div>
+        				
+        			</div>
+              </div>
+            </div>
+            
+            <?php /* ?>
 		
 			<!-- FAQ -->
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
@@ -422,6 +536,7 @@
 				</div>
 				
 			</div>
+			<?php */ ?>
 
 		</div>
 	</div>
@@ -435,7 +550,7 @@
 				<div class="absolute inset-0 bg-emerald-200 rounded-xl transform rotate-6 scale-105"></div>
 				<div class="absolute inset-0 bg-emerald-100 rounded-xl transform -rotate-6 scale-105"></div>
 				<div class="relative">
-					<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="hi-solid hi-fire inline-block w-10 h-10"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path></svg>
+					<img src="https://www.skillmonde.com/public/storage/site/favicon/D0737D2842DB71FFB9D2.webp" alt="icon" class=""/>
 				</div>
 			</div>
 			<h2 class="text-3xl md:text-4xl font-extrabold mb-4 dark:text-gray-200">

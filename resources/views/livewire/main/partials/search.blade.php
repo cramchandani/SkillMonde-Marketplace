@@ -84,14 +84,12 @@
 
                                 {{-- List of tags --}}
                                 @foreach ($tags as $tag)
-                                    @if ($tag)
-                                        <li class="group flex cursor-default select-none items-center px-4 py-2">
-                                            <a href="{{ url('search?q=' . $tag->name) }}" class="flex items-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-none text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
-                                                <span class="ml-3 flex-auto truncate">{{ $tag->name }}</span>
-                                                </a>
-                                        </li>
-                                    @endif
+                                    <li class="group flex cursor-default select-none items-center px-4 py-2">
+                                        <a href="{{ url('gigs', $tag->slug) }}" class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-none text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+                                            <span class="ml-3 flex-auto truncate">{{ $tag->name }}</span>
+                                        </a>
+                                    </li>
                                 @endforeach
 
                             </ul>

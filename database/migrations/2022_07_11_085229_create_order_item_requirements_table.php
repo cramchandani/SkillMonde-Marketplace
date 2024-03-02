@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('form_type', ['text', 'choice', 'file']);
             $table->longText('form_value');
 
-            $table->foreign('item_id')->references('id')->on('order_items')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('item_id')->references('id')->on('order_items');
         });
     }
 

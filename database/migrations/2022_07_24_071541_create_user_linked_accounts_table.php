@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('youtube_profile', 160)->nullable();
             $table->string('vimeo_profile', 160)->nullable();
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

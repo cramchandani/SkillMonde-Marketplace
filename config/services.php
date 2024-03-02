@@ -32,7 +32,7 @@ return [
     ],
 
     'stripe' => [
-        'secret' => '',
+        'secret' => 'sk_test_LRFbNEFtDhXVrXgFJlByHw7U',
     ],
 
     /**
@@ -41,27 +41,27 @@ return [
     'github' => [
         'client_id'     => '',
         'client_secret' => '',
-        'redirect'      => '',
+        'redirect'      => 'https://skillmonde.com/auth/github/callback',
     ],
     'linkedin' => [    
         'client_id'     => '',
         'client_secret' => '',
-        'redirect'      => ''
+        'redirect'      => 'https://skillmonde.com/auth/linkedin/callback'
     ],
     'google' => [    
-        'client_id'     => '',
-        'client_secret' => '',
-        'redirect'      => ''
+        'client_id'     => '973116555044-m17hf7lhm6uuuohbmslg2b06poom0tsl.apps.googleusercontent.com',
+        'client_secret' => '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',
+        'redirect'      => 'https://skillmonde.com/auth/google/callback'
     ],
     'facebook' => [    
         'client_id'     => '',
         'client_secret' => '',
-        'redirect'      => ''
+        'redirect'      => 'https://skillmonde.com/auth/facebook/callback'
     ],
     'twitter' => [    
         'client_id'     => '',
         'client_secret' => '',
-        'redirect'      => ''
+        'redirect'      => 'https://skillmonde.com/auth/twitter/callback'
     ],
 
     // Email marketing

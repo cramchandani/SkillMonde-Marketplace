@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\GigUpgrade;
 use WireUi\Traits\Actions;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
+use App\Models\CurrencyConversion;
 
 class CartComponent extends Component
 {
@@ -33,6 +34,15 @@ class CartComponent extends Component
      */
     public function render()
     {
+        // Fetch the conversion rate from your database
+        $conversionRate = CurrencyConversion::getConversionRate('INR', 'USD');
+
+        // Calculate the total amount in INR
+        $totalAmountINR = $this->total() + $this->taxes();
+
+        // Calculate the total amount in USD
+        $totalAmountUSD = $totalAmountINR * $conversionRate;
+        
         // SEO
         $separator   = settings('general')->separator;
         $title       = __('messages.t_my_cart') . " $separator " . settings('general')->title;
@@ -59,7 +69,13 @@ class CartComponent extends Component
         $this->seo()->jsonLd()->setUrl( url()->current() );
         $this->seo()->jsonLd()->setType('WebSite');
 
-        return view('livewire.main.cart.cart')->extends('livewire.main.layout.app')->section('content');
+      //  return view('livewire.main.cart.cart')->extends('livewire.main.layout.app')->section('content');
+      
+      // Pass the conversion rate and total amount to the view
+        return view('livewire.main.cart.cart', [
+            'conversionRate' => $conversionRate,
+            'totalAmountUSD' => $totalAmountUSD,
+        ])->extends('livewire.main.layout.app')->section('content');
     }
     
 

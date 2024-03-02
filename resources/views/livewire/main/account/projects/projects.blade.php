@@ -110,7 +110,7 @@
     @endif
 
     {{-- Body --}}
-    <div class="w-full">
+    <div class="mx-auto max-w-7xl">
         @if ($projects->count())
             
             {{-- Projects --}}
@@ -350,16 +350,6 @@
                                             </div>
                                         @endif
 
-                                        {{-- Rejection reason --}}
-                                        @if ($project->status === 'rejected' && $project->rejection_reason)
-                                            <div class="flex items-center justify-center">
-                                                <button id="modal-rejection-reason-button-{{ $project->uid }}" type="button" data-tooltip-target="tooltip-actions-rejection-{{ $project->uid }}" class="p-2 border-transparent border bg-slate-100 hover:bg-slate-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 cursor-pointer rounded focus:outline-none focus:ring-0 group" data-tooltip-target="tooltip-actions-rejection-{{ $project->uid }}">
-                                                    <svg class="w-4 h-4 text-slate-500 dark:text-zinc-400 group-hover:text-slate-600 dark:group-hover:text-zinc-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 2H8C4.691 2 2 4.691 2 8v13a1 1 0 0 0 1 1h13c3.309 0 6-2.691 6-6V8c0-3.309-2.691-6-6-6zm4 14c0 2.206-1.794 4-4 4H4V8c0-2.206 1.794-4 4-4h8c2.206 0 4 1.794 4 4v8z"></path><path d="M11 6h2v8h-2zm0 10h2v2h-2z"></path></svg>
-                                                </button>
-                                                <x-forms.tooltip id="tooltip-actions-rejection-{{ $project->uid }}" :text="__('messages.t_rejection_reason')" />
-                                            </div>
-                                        @endif
-
                                         {{-- Delete --}}
                                         @if (in_array($project->status, ['pending_approval', 'pending_payment', 'active', 'rejected', 'hidden']))
                                             <div class="flex items-center justify-center">
@@ -374,27 +364,6 @@
                                 </td>
 
                             </tr>
-
-                            {{-- Rejection reason --}}
-                            @if ($project->status === 'rejected' && $project->rejection_reason)
-                                <x-forms.modal id="modal-rejection-reason-container-{{ $project->uid }}" target="modal-rejection-reason-button-{{ $project->uid }}" uid="modal_{{ uid() }}" placement="center-center" size="max-w-md">
-
-                                    {{-- Header --}}
-                                    <x-slot name="title">{{ __('messages.t_rejection_reason') }}</x-slot>
-
-                                    {{-- Body --}}
-                                    <x-slot name="content">
-
-                                        {{-- Message --}}
-                                        <div class="text-sm text-gray-500 dark:text-zinc-300 leading-relaxed">
-                                            {!! $project->rejection_reason !!}
-                                        </div>
-
-                                    </x-slot>
-
-                                </x-forms.modal>
-                            @endif
-
                         @endforeach
                     </thead>
                 </table>

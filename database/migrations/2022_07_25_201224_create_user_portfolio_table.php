@@ -26,8 +26,8 @@ return new class extends Migration
             $table->enum('status', ['pending', 'active'])->default('pending');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('thumb_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('thumb_id')->references('id')->on('file_manager');
         });
     }
 

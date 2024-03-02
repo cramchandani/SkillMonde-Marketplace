@@ -36,13 +36,26 @@ return [
     'mailers' => [
         'smtp' => [
             'transport'    => 'smtp',
-            'host'         => '',
-            'port'         => '',
-            'encryption'   => 'tls',
-            'username'     => '',
-            'password'     => '',
+            'host'         => 'mailing.skillmonde.com',
+            'port'         => '465',
+            'encryption'   => 'ssl',
+            'username'     => 'noreply@skillmonde.com',
+            'password'     => 'y5tF(6Fj6&rE',
             'timeout'      => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
+            'verify_peer'  => false,
+            'stream'       => [
+                   'ssl' => [
+                      'allow_self_signed' => true,
+                      'verify_peer'       => false,
+                      'verify_peer_name'  => false,
+                ],
+                'tls' => [
+                      'allow_self_signed' => true,
+                      'verify_peer'       => false,
+                      'verify_peer_name'  => false,
+                ],
+            ],
         ],
 
         'ses' => [
@@ -92,8 +105,8 @@ return [
     */
 
     'from' => [
-        'address' => 'test@mail.com',
-        'name'    => 'Riverr',
+        'address' => 'noreply@skillmonde.com',
+        'name'    => 'SkillMonde',
     ],
 
     /*
@@ -113,6 +126,19 @@ return [
         'paths' => [
             resource_path('views/vendor/mail'),
         ],
+    ],
+    
+    'stream' => [
+           'ssl' => [
+              'allow_self_signed' => true,
+              'verify_peer' => false,
+              'verify_peer_name' => false,
+           ],
+           'tls' => [
+              'allow_self_signed' => true,
+              'verify_peer' => false,
+              'verify_peer_name' => false,
+           ],
     ],
 
 ];

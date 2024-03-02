@@ -24,9 +24,9 @@ return new class extends Migration
             $table->unsignedBigInteger('image_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('parent_id')->references('id')->on('categories')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('icon_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('image_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('parent_id')->references('id')->on('categories');
+            $table->foreign('icon_id')->references('id')->on('file_manager');
+            $table->foreign('image_id')->references('id')->on('file_manager');
         });
     }
 

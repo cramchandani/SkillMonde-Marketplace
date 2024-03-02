@@ -26,9 +26,6 @@ class TranslateComponent extends Component
      */
     public function mount($id)
     {
-        // Clean query
-        $this->q        = clean($this->q);
-          
         // Get language
         $language       = Language::where('id', $id)->firstOrFail();
 

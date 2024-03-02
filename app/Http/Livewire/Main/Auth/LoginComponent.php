@@ -181,8 +181,40 @@ class LoginComponent extends Component
                 if (in_array(auth()->user()->status, ['active', 'verified'])) {
                     
                     // Go to home
-                    return redirect()->intended('/');
+                  //  return redirect()->intended('/');
+                  
+                         // Check if first time login
+                    if (auth()->user()->first_login == 0) {
+                        if (auth()->user()->account_type == 'seller') {
+                            
+                            auth()->user()->first_login = 1;
+                            auth()->user()->save();
+    
+                            // Redirect to account landing page
+                            return redirect('/account/landing');
+                        } else {
+                            
+                            auth()->user()->first_login = 1;
+                            auth()->user()->save();
+                            // Redirect to account settings page
+                            return redirect('/account/settings');
+                      }
+                    }
+                  
+                   
+                    
+                    // Go to settings page on first login
+                    if (auth()->user()->account_type == 'seller') {
+                        // Redirect to seller home
+                        return redirect('/seller/home');
+                    } else {
+                        // Go to home
+                        //  return redirect()->intended('/');
+                        return redirect('/account/orders');
+                    }
 
+               
+               
                 } else {
 
                     // Logout

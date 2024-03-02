@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Chat;
 
+use Cookie;
 use App\Models\User;
 use App\Utils\Chat\ChatApi;
 use Illuminate\Support\Str;
@@ -10,10 +11,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\ChMessage as Message;
-use Illuminate\Support\Facades\Cache;
 use App\Models\ChFavorite as Favorite;
 use Illuminate\Support\Facades\Response;
-use App\Notifications\User\Everyone\NewMessage;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
 
 class MessagesController extends Controller
@@ -270,29 +269,6 @@ class MessagesController extends Controller
                 'message' => $this->chat->messageCard($messageData, 'default')
             ]);
 
-            // Set a cache value
-            $notification_cache_value = 'live_chat_user_offline_notification_' . auth()->id() . '_' . $request->get('id');
-
-            // If user if offline send him a message via email
-            // We have to send a notification every 10 minutes
-            // To prevent sending a notification on every message
-            Cache::get($notification_cache_value, function () use ($request, $notification_cache_value) {
-                
-                // Get user data
-                $user = User::where('id', $request->get('id'))->first();
-                
-                // Check if user offline
-                if ($user->active_status != 1 || !$user->isOnline()) {
-                    
-                    $user->notify(new NewMessage( $user->uid ));
-
-                }
-
-                // Save cache value
-                return Cache::put($notification_cache_value, 'sent', 600);
-
-            });
-
         }
 
         // Send the response
@@ -417,7 +393,7 @@ class MessagesController extends Controller
 
         // Send response
         return Response::json([
-            'contacts'  => mb_convert_encoding($contacts, 'UTF-8', 'UTF-8'),
+            'contacts'  => $contacts,
             'total'     => $users->total() ?? 0,
             'last_page' => $users->lastPage() ?? 1,
         ], 200);
@@ -614,11 +590,11 @@ class MessagesController extends Controller
     public function deleteConversation(Request $request)
     {
         // Delete conversation
-        // $delete = $this->chat->deleteConversation($request->get('id'));
+        $delete = $this->chat->deleteConversation($request->get('id'));
 
         // send the response
         return Response::json([
-            'deleted' => 1,
+            'deleted' => $delete ? 1 : 0,
         ], 200);
     }
 

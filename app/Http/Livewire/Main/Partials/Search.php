@@ -19,17 +19,6 @@ class Search extends Component
     public $tags    = [];
 
     /**
-     * Initialize component
-     *
-     * @return void
-     */
-    public function mount()
-    {
-        // Clean query
-        $this->q = clean($this->q);
-    }
-
-    /**
      * Render component
      *
      * @return Illuminate\View\View

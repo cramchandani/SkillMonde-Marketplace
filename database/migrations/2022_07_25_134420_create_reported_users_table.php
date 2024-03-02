@@ -22,8 +22,8 @@ return new class extends Migration
             $table->boolean('is_seen')->default(false);
             $table->timestamp('created_at');
 
-            $table->foreign('reporter_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('reported_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('reporter_id')->references('id')->on('users');
+            $table->foreign('reported_id')->references('id')->on('users');
         });
     }
 

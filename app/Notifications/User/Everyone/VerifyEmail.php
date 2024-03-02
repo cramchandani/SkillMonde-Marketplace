@@ -3,9 +3,8 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class VerifyEmail extends Notification
 {
@@ -48,12 +47,12 @@ class VerifyEmail extends Notification
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_verify_ur_email');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_verify_ur_email');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_click_btn_to_verify_email')))
+                    ->line(__('messages.t_notification_click_btn_to_verify_email'))
                     ->action(__('messages.t_verify_email'), url('auth/verify?token=' . $this->verification->token . '&email=' . urlencode($this->verification->email)));
     }
 

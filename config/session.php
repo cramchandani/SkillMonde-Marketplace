@@ -2,13 +2,6 @@
 
 use Illuminate\Support\Str;
 
-// Check if https enabled
-try {
-    $is_https = request()->secure() ? true : false;
-} catch (\Throwable $th) {
-    $is_https = true;
-}
-
 return [
 
     /*
@@ -172,7 +165,7 @@ return [
     |
     */
 
-    'secure' => $is_https,
+    'secure' => true,
 
     /*
     |--------------------------------------------------------------------------

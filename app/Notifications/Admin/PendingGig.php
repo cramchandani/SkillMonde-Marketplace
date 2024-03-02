@@ -3,10 +3,9 @@
 namespace App\Notifications\Admin;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class PendingGig extends Notification implements ShouldQueue
 {
@@ -44,12 +43,12 @@ class PendingGig extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_admin_pending_gig');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_admin_pending_gig');
 
         return (new MailMessage)
                     ->subject($subject)
-                    ->greeting(new HtmlString(__('messages.t_hi_admin')))
-                    ->line(new HtmlString(__('messages.t_notification_admin_pending_gig')))
+                    ->greeting(__('messages.t_hi_admin'))
+                    ->line(__('messages.t_notification_admin_pending_gig'))
                     ->action(__('messages.t_pending_gigs'), admin_url('gigs'));
     }
 

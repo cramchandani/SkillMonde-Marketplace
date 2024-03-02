@@ -11,7 +11,6 @@ use App\Models\ProjectBid;
 use WireUi\Traits\Actions;
 use App\Models\ProjectMilestone;
 use App\Models\ChMessage as Message;
-use App\Models\CustomOffer;
 use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
 
 class HomeComponent extends Component
@@ -58,18 +57,8 @@ class HomeComponent extends Component
                                                                 ->where('status', 'paid')
                                                                 ->sum('freelancer_commission');
 
-            // Calculate earnings from custom offers (budget)
-            $earnings_from_offers_budget       = CustomOffer::where('freelancer_id', auth()->id())
-                                                            ->where('payment_status', 'released')
-                                                            ->sum('budget_amount');
-
-            // Calculate earnings from custom offers (fee)
-            $earnings_from_offers_fee          = CustomOffer::where('freelancer_id', auth()->id())
-                                                            ->where('payment_status', 'released')
-                                                            ->sum('budget_freelancer_fee');
-
             // Set total earnings
-            $this->earnings                    = (convertToNumber($earnings_from_projects_total) - convertToNumber($earnings_from_projects_commission)) + convertToNumber($earnings_from_gigs) + ( convertToNumber($earnings_from_offers_budget) - convertToNumber($earnings_from_offers_fee) );
+            $this->earnings                    = (convertToNumber($earnings_from_projects_total) - convertToNumber($earnings_from_projects_commission)) + convertToNumber($earnings_from_gigs);
 
             // Caluclate total reach
             $this->total_reach                 = Gig::where('user_id', $user_id)->sum('counter_impressions');
@@ -151,10 +140,6 @@ class HomeComponent extends Component
 
             // Get latest orders
             $this->latest_orders = OrderItem::where('owner_id', $user_id)
-                                            ->whereHas('gig', function($query) {
-                                                return $query->whereHas('category');
-                                            })
-                                            ->whereHas('order.invoice')
                                             ->latest()
                                             ->take(8)
                                             ->get();

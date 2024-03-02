@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class AccountActivated extends Notification implements ShouldQueue
 {
@@ -42,12 +41,12 @@ class AccountActivated extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_ur_account_activated');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_ur_account_activated');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_ur_account_has_been_successfully_verified_email')))
+                    ->line(__('messages.t_ur_account_has_been_successfully_verified_email'))
                     ->action(__('messages.t_start_exploring'), url('/'));
     }
 

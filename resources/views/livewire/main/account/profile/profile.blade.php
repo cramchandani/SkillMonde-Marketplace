@@ -18,9 +18,9 @@
 
                     {{-- Avatar --}}
                     <div class="relative rounded-full overflow-hidden flex-shrink-0 mx-auto" wire:ignore>
-                        <img id="profile-avatar-preview" class="relative rounded-full w-28 h-28 object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src(auth()->user()->avatar) }}" alt="{{ auth()->user()->username }}">
-                        <label for="profile-avatar-container" class="absolute inset-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center text-sm font-medium text-white opacity-0 hover:opacity-100">
-                            <span>{{ __('messages.t_change') }}</span>
+                        <img id="profile-avatar-preview " class="relative rounded-full w-28 h-28 object-cover lazy border-2 border-gray" src="{{ placeholder_img() }}" data-src="{{ src(auth()->user()->avatar) }}" alt="{{ auth()->user()->username }}">
+                        <label for="profile-avatar-container" class="absolute inset-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center text-sm font-medium text-white opacity-25 hover:opacity-100" style="pointer-events: auto;">
+                            <span><i class="fas fa-plus-circle"></i></span>
                             <input type="file" id="profile-avatar-container" wire:model="avatar" @change="avatar" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer border-gray-300 rounded-md">
                         </label>
                     </div>
@@ -149,6 +149,9 @@
             </div>
 
             {{-- Set availability --}}
+            @php
+             /*
+            @endphp
             @if (auth()->user()->account_type === 'seller')
                 <div class="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-md border {{ $availability ? 'border-b-0' : '' }} border-gray-200 dark:border-zinc-600">
 
@@ -210,6 +213,10 @@
 
                 </div>
             @endif
+            
+            @php
+            */
+            @endphp
 
             {{-- Description --}}
             <div class="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-md border border-b-0 border-gray-200 dark:border-zinc-700">
@@ -262,95 +269,94 @@
 
             </div>
 
+            @if (auth()->user()->account_type === 'seller')
             {{-- Social media accounts --}}
-            @if (settings('security')->is_social_media_accounts)
-                <div class="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-md border border-b-0 border-gray-200 dark:border-zinc-700">
+            <div class="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-md border border-b-0 border-gray-200 dark:border-zinc-700">
 
-                    {{-- Section title --}}
-                    <div class="bg-gray-50 dark:bg-zinc-700 px-5 py-4 rounded-t-md">
-                        <div class="ltr:-ml-4 rtl:-mr-4 -mt-4 flex justify-between items-center flex-wrap sm:flex-nowrap">
-                            <div class="ltr:ml-4 rtl:mr-4 mt-4">
-                                <h3 class="text-sm leading-6 font-semibold tracking-wide text-gray-600 dark:text-gray-100">{{ __('messages.t_linked_accounts') }}</h3>
-                                <p class="text-xs font-normal text-gray-400 dark:text-gray-300">{{ __('messages.t_connect_ur_social_media_accounts') }}</p>
-                            </div>
+                {{-- Section title --}}
+                <div class="bg-gray-50 dark:bg-zinc-700 px-5 py-4 rounded-t-md">
+                    <div class="ltr:-ml-4 rtl:-mr-4 -mt-4 flex justify-between items-center flex-wrap sm:flex-nowrap">
+                        <div class="ltr:ml-4 rtl:mr-4 mt-4">
+                            <h3 class="text-sm leading-6 font-semibold tracking-wide text-gray-600 dark:text-gray-100">{{ __('messages.t_linked_accounts') }}</h3>
+                            <p class="text-xs font-normal text-gray-400 dark:text-gray-300">{{ __('messages.t_connect_ur_social_media_accounts') }}</p>
                         </div>
                     </div>
+                </div>
 
-                    {{-- Section content --}}
-                    <div class="grid grid-cols-12 gap-4 py-6">
+                {{-- Section content --}}
+                <div class="grid grid-cols-12 gap-4 py-6">
+                    <?php /* ?>
+                    {{-- Facebook --}}
+                    <div class="col-span-12 px-5">
+                        <x-forms.text-input 
+                            :label="__('messages.t_facebook')"
+                            :placeholder="__('messages.t_enter_facebook_profile')"
+                            model="facebook_profile"
+                            icon="link-variant" />
+                    </div>
 
-                        {{-- Facebook --}}
-                        <div class="col-span-12 px-5">
-                            <x-forms.text-input 
-                                :label="__('messages.t_facebook')"
-                                :placeholder="__('messages.t_enter_facebook_profile')"
-                                model="facebook_profile"
-                                icon="link-variant" />
-                        </div>
+                    {{-- Twitter --}}
+                    <div class="col-span-12 px-5">
+                        <x-forms.text-input 
+                            :label="__('messages.t_twitter')"
+                            :placeholder="__('messages.t_enter_twitter_profile')"
+                            model="twitter_profile"
+                            icon="link-variant" />
+                    </div>
 
-                        {{-- Twitter --}}
-                        <div class="col-span-12 px-5">
-                            <x-forms.text-input 
-                                :label="__('messages.t_twitter')"
-                                :placeholder="__('messages.t_enter_twitter_profile')"
-                                model="twitter_profile"
-                                icon="link-variant" />
-                        </div>
+                    {{-- Dribbble --}}
+                    <div class="col-span-12 px-5">
+                        <x-forms.text-input 
+                            :label="__('messages.t_dribbble')"
+                            :placeholder="__('messages.t_enter_dribbble_profile')"
+                            model="dribbble_profile"
+                            icon="link-variant" />
+                    </div>
+                    <?php */ ?>
+                    {{-- Stackoverflow --}}
+                    <div class="col-span-12 px-5">
+                        <x-forms.text-input 
+                            :label="__('messages.t_stackoverflow')"
+                            :placeholder="__('messages.t_enter_stackoverflow_profile')"
+                            model="stackoverflow_profile"
+                            icon="link-variant" />
+                    </div>
 
-                        {{-- Dribbble --}}
-                        <div class="col-span-12 px-5">
-                            <x-forms.text-input 
-                                :label="__('messages.t_dribbble')"
-                                :placeholder="__('messages.t_enter_dribbble_profile')"
-                                model="dribbble_profile"
-                                icon="link-variant" />
-                        </div>
+                    {{-- Github --}}
+                    <div class="col-span-12 px-5">
+                        <x-forms.text-input 
+                            :label="__('messages.t_github')"
+                            :placeholder="__('messages.t_enter_github_profile')"
+                            model="github_profile"
+                            icon="link-variant" />
+                    </div>
 
-                        {{-- Stackoverflow --}}
-                        <div class="col-span-12 px-5">
-                            <x-forms.text-input 
-                                :label="__('messages.t_stackoverflow')"
-                                :placeholder="__('messages.t_enter_stackoverflow_profile')"
-                                model="stackoverflow_profile"
-                                icon="link-variant" />
-                        </div>
+                    {{-- Youtube --}}
+                    <div class="col-span-12 px-5">
+                        <x-forms.text-input 
+                            :label="__('messages.t_youtube')"
+                            :placeholder="__('messages.t_enter_youtube_profile')"
+                            model="youtube_profile"
+                            icon="link-variant" />
+                    </div>
 
-                        {{-- Github --}}
-                        <div class="col-span-12 px-5">
-                            <x-forms.text-input 
-                                :label="__('messages.t_github')"
-                                :placeholder="__('messages.t_enter_github_profile')"
-                                model="github_profile"
-                                icon="link-variant" />
-                        </div>
+                    {{-- Vimeo --}}
+                    <div class="col-span-12 px-5">
+                        <x-forms.text-input 
+                            :label="__('messages.t_vimeo')"
+                            :placeholder="__('messages.t_enter_vimeo_profile')"
+                            model="vimeo_profile"
+                            icon="link-variant" />
+                    </div>
 
-                        {{-- Youtube --}}
-                        <div class="col-span-12 px-5">
-                            <x-forms.text-input 
-                                :label="__('messages.t_youtube')"
-                                :placeholder="__('messages.t_enter_youtube_profile')"
-                                model="youtube_profile"
-                                icon="link-variant" />
-                        </div>
-
-                        {{-- Vimeo --}}
-                        <div class="col-span-12 px-5">
-                            <x-forms.text-input 
-                                :label="__('messages.t_vimeo')"
-                                :placeholder="__('messages.t_enter_vimeo_profile')"
-                                model="vimeo_profile"
-                                icon="link-variant" />
-                        </div>
-
-                        {{-- Update --}}
-                        <div class="col-span-12 px-5 mt-5">
-                            <x-forms.button action="updateSocial" :text="__('messages.t_update')" :block="true" />
-                        </div>
-
+                    {{-- Update --}}
+                    <div class="col-span-12 px-5 mt-5">
+                        <x-forms.button action="updateSocial" :text="__('messages.t_update')" :block="true" />
                     </div>
 
                 </div>
-            @endif
+
+            </div>
 
             {{-- Skills --}}
             <div class="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-md border border-b-0 border-gray-200 dark:border-zinc-700">
@@ -376,12 +382,26 @@
                     {{-- Create/Update new skill --}}  
                     <div class="px-5" x-show="isAddSkill">
 
-                        {{-- Skill name --}}
+                        {{-- Skill name 
                         <x-forms.text-input
                             :label="__('messages.t_add_skill')"
                             :placeholder="__('messages.t_eg_voice_talent')"
                             model="add_skill.name"
                             icon="bookmark-multiple" />
+                        --}}
+                        {{-- Skill name --}}
+                                                <div class="col-span-12 md:col-span-6">
+                                                    <label for="skill" class="block text-sm font-medium text-gray-700">Skill name</label>
+                                                    <select wire:model="add_skill.name" id="skill" class="form-select mt-1 block w-full">
+                                                        <option value="">{{ __('messages.t_choose_skill') }}</option>
+                                                        @foreach($projects_skills as $skill)
+                                                            <option value="{{ $skill->name }}">{{ $skill->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('add_skill.name')
+                                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                                    @enderror
+                                                </div>    
 
                         {{-- Experience --}}
                         <div class="mt-6">
@@ -503,7 +523,54 @@
                 </div>
 
             </div>
+            @endif
+            
+            @if (auth()->user()->account_type === 'seller')
+            {{-- Social media accounts --}}
+            <div class="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-md border border-b-0 border-gray-200 dark:border-zinc-700" x-data="{ open: false }">
 
+                {{-- Section title --}}
+                <div class="bg-gray-50 dark:bg-zinc-700 px-5 py-4 rounded-t-md">
+                    <div class="ltr:-ml-4 rtl:-mr-4 -mt-4 flex justify-between items-center flex-wrap sm:flex-nowrap">
+                        <div class="ltr:ml-4 rtl:mr-4 mt-4">
+                            <button @click="open = !open" type="button" class="py-3 w-full flex items-center justify-between text-sm text-gray-400 hover:text-gray-500 outline-none focus:outline-none">
+                                <h3 class="text-sm leading-6 font-semibold tracking-wide text-gray-600 dark:text-gray-100">{{ __('messages.t_define_budget') }}</h3>
+                                <span class="ltr:ml-6 rtl:mr-6 flex items-center">
+                                    <svg class="h-5 w-5" x-description="Expand icon, show/hide based on section open state. Heroicon name: solid/plus-sm" x-show="!(open)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path> </svg>
+                                    <svg class="h-5 w-5" x-description="Collapse icon, show/hide based on section open state. Heroicon name: solid/minus-sm" x-show="open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" style="display: none;"> <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"></path> </svg>
+                                </span>
+                            </button>
+                            <p class="text-xs font-normal text-gray-400 dark:text-gray-300">{{ __('messages.t_define_min_max_budget') }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+
+                {{-- Section content --}}
+                <div class="grid grid-cols-12 gap-4 py-4" x-show="open" wire:ignore="">
+                    {{-- Min Budget --}}
+                    <div class="col-span-6 px-4">
+                        <label for="budget_min">{{ __('messages.t_min') }}</label>    
+                        <input wire:model.defer="budget_min" type="number" id="budget_min" placeholder="0.00" name="budget_min" value="{{ $budget_min }}" class="focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500" />    
+                    </div>
+
+                    {{-- Max Budget --}}
+                    <div class="col-span-6 px-4">
+                        <label for="budget_max">{{ __('messages.t_max') }}</label>    
+                        <input wire:model.defer="budget_max" type="number" id="budget_max" placeholder="0.00" name="budget_max" value="{{ $budget_max }}" class="focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500" />    
+                    </div>
+
+                    {{-- Update --}}
+                    <div class="col-span-12 px-5 mt-2">
+                        <x-forms.button action="updateBudget" :text="__('messages.t_update')" :block="true" />
+                    </div>
+
+                </div>
+
+            </div>
+            @endif
+            
             {{-- Languages --}}
             <div class="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-md border border-b-0 border-gray-200 dark:border-zinc-700">
 
@@ -529,10 +596,10 @@
                     <div class="px-5" x-show="isAddLanguage">
 
                         {{-- Language name --}}
-                        <div class="relative default-select2 {{ $errors->first('add_language.name') ? 'select2-custom-has-error' : '' }}">
+                        <div class="relative {{ $errors->first('add_language.name') ? 'select2-custom-has-error' : '' }}">
                             <label class="text-xs font-medium block mb-2 {{ $errors->first('add_language.name') ? 'text-red-600 dark:text-red-500' : 'text-gray-700' }}">{{ __('messages.t_language') }}</label>
                         
-                            <select data-pharaonic="select2" data-component-id="{{ $this->id }}" wire:model.defer="add_language.name" id="select2-id-add_language.name" data-placeholder="{{ __('messages.t_choose_language') }}" class="select2" data-dir="{{ config()->get('direction') }}" wire:ignore>
+                            <select data-pharaonic="select2" data-component-id="{{ $this->id }}" wire:model.defer="add_language.name" id="select2-id-add_language.name" data-placeholder="{{ __('messages.t_choose_language') }}" data-search-off class="select2" data-dir="{{ config()->get('direction') }}" wire:ignore>
                                 <option value=""></option>
                                 @foreach (config('languages') as $code => $name)
                                     <option value="{{ $name }}">{{ $name }}</option>
@@ -842,23 +909,3 @@
     </script>
 
 @endpush
-
-@pushOnce('styles')
-
-    {{-- Select2 --}}
-    <link href="{{ url('node_modules/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
-
-@endPushOnce
-
-@pushOnce('scripts')
-
-    {{-- jQuery --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-    {{-- Select2 --}}
-    <script src="{{ url('node_modules/select2/dist/js/select2.min.js') }}"></script>
-
-    {{-- Pharaonic select2 --}}
-    <script src="{{ url('public/vendor/pharaonic/pharaonic.select2.min.js') }}"></script>
-
-@endPushOnce

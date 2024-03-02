@@ -215,7 +215,7 @@ class ChatApi
             'to_id'           => $msg->to_id,
             'message'         => $message,
             'attachment'      => [$attachment, $attachment_title, $attachment_type, $attachment_extension, $attachment_size],
-            'time'            => format_date($msg->created_at),
+            'time'            => $msg->created_at->diffForHumans(),
             'fullTime'        => $msg->created_at,
             'viewType'        => ($msg->from_id == auth()->id()) ? 'sender' : 'default',
             'seen'            => $msg->seen,

@@ -56,12 +56,20 @@
                 {{-- Actions --}}
                 <div class="mt-5 flex lg:mt-0 lg:ltr::ml-4 lg:rtl:mr-4">
         
-                    {{-- Switch to buying --}}
-                    <span class="block">
-                        <a href="{{ url('/') }}" class="inline-flex items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-[13px] font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:focus:ring-offset-zinc-900 dark:focus:ring-zinc-900">
+                    {{-- Switch to buying --
+					<span class="block">
+                        <a href="{{ url('/') }}" class="inline-flex items-center rounded-sm border border-gray-300 bg-white px-4 py-2 text-[13px] font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-offset-2 dark:bg-zinc-800 dark:border-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-900 dark:focus:ring-offset-zinc-900 dark:focus:ring-zinc-900 whitespace-nowrap">
                             @lang('messages.t_switch_to_buying')
                         </a>
                     </span>
+                    --}}
+		
+					{{-- Publish new gig --}}
+					<span class="mt-2 sm:mt-0 sm:ltr:ml-3 sm:rtl:mr-3">
+						<a href="{{ url('create') }}" class="inline-flex items-center rounded-sm border border-transparent bg-primary-600 px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-800 dark:focus:ring-zinc-800 whitespace-nowrap" id="create-gig">
+							@lang('messages.t_create_a_new_gig')
+						</a>
+					</span>
         
                 </div>
     
@@ -102,9 +110,6 @@
 
                         {{-- Profit --}}
                         <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 text-center border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md">@lang('messages.t_profit')</th>
-
-                        {{-- Buyer --}}
-                        <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 text-center border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md">@lang('messages.t_buyer')</th>
 
                         {{-- Expected delivery date --}}
                         <th class="font-bold tracking-wider text-gray-600 px-5 py-4.5 text-center border-b-0 whitespace-nowrap text-xs uppercase dark:text-zinc-300 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md">@lang('messages.t_expected_delivery_date')</th>
@@ -173,51 +178,47 @@
 
                                 {{-- Refund request --}}
                                 @if ($order->refund && $order->refund->status === 'pending')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-red-50 text-red-800 dark:text-red-400 dark:bg-transparent whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-red-50 text-red-800 dark:text-red-400 dark:bg-transparent">
                                         {{ __('messages.t_dispute_opened') }}
                                     </span>
                                 @elseif ($order->order?->invoice && $order->order->invoice->status === 'pending')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-amber-50 text-amber-800 dark:text-amber-400 dark:bg-transparent whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-amber-50 text-amber-800 dark:text-amber-400 dark:bg-transparent">
                                         {{ __('messages.t_pending_payment') }}
-                                    </span>
-                                @elseif ($order->status === 'delivered' && $order->is_finished)
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-purple-50 text-purple-800 dark:text-green-400 dark:bg-transparent whitespace-nowrap">
-                                        {{ __('messages.t_completed') }}
                                     </span>
                                 @else
                                     @switch($order->status)
 
                                         {{-- Pending --}}
                                         @case('pending')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-yellow-50 text-yellow-800 dark:text-yellow-400 dark:bg-transparent whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-yellow-50 text-yellow-800 dark:text-yellow-400 dark:bg-transparent">
                                                 {{ __('messages.t_pending') }}
                                             </span>
                                             @break
                                         
                                         {{-- Delivered --}}
                                         @case('delivered')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-green-50 text-green-800 dark:text-green-400 dark:bg-transparent whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-green-50 text-green-800 dark:text-green-400 dark:bg-transparent">
                                                 {{ __('messages.t_delivered') }}
                                             </span>
                                             @break
 
                                         {{-- Refunded --}}
                                         @case('refunded')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-red-50 text-red-800 dark:text-red-400 dark:bg-transparent whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-red-50 text-red-800 dark:text-red-400 dark:bg-transparent">
                                                 {{ __('messages.t_refunded') }}
                                             </span>
                                             @break
 
                                         {{-- Proceeded --}}
                                         @case('proceeded')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-blue-50 text-blue-800 dark:text-blue-400 dark:bg-transparent whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-blue-50 text-blue-800 dark:text-blue-400 dark:bg-transparent">
                                                 {{ __('messages.t_in_the_process') }}
                                             </span>
                                             @break
 
                                         {{-- Canceled --}}
                                         @case('canceled')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-gray-50 text-gray-800 dark:text-gray-300 dark:bg-transparent whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-xs font-medium bg-gray-50 text-gray-800 dark:text-gray-300 dark:bg-transparent">
                                                 {{ __('messages.t_canceled') }}
                                             </span>
                                             @break
@@ -234,13 +235,6 @@
                                 <div class="text-gray-900 dark:text-gray-100 text-sm font-black">
                                     @money($order->profit_value, settings('currency')->code, true)
                                 </div>
-                            </td>
-
-                            {{-- Buyer --}}
-                            <td class="px-5 py-3 first:ltr:rounded-l-md last:ltr:rounded-r-md first:rtl:rounded-r-md last:rtl:rounded-l-md text-center">
-                                <a href="{{ url('profile', $order->order?->buyer->username) }}" target="_blank" class="text-gray-900 hover:text-primary-600 dark:text-gray-100 text-sm font-medium">
-                                    {{ $order->order?->buyer->username }}
-                                </a>
                             </td>
 
                             {{-- Expected date --}}

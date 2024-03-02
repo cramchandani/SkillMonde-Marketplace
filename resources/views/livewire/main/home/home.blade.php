@@ -1,259 +1,282 @@
 <div class="w-full">
-    <div class="grid grid-cols-12 gap-6">
 
+    <div class="featured mx-sm-5 mx-2"><!--featured start-->
         {{-- Fatured categories --}}
         @if (settings('appearance')->is_featured_categories && $categories && $categories->count())
-            <div class="col-span-12 mt-6 xl:mt-6 mb-16">
-                <span class="font-semibold text-gray-400 dark:text-gray-200 uppercase tracking-wider text-center block">{{ __('messages.t_featured_categories') }}</span>
-                <div class="flex-wrap justify-center items-center mt-8 -mx-5 hidden" id="featured-categories-slick" wire:ignore>
-
-                    @foreach ($categories as $category)
-                    <a href="{{ url('categories', $category->slug) }}" class="relative !h-72 rounded-lg !p-6 !flex !flex-col overflow-hidden group mx-5">
-                        <span aria-hidden="true" class="absolute inset-0">
-                            <img src="{{ placeholder_img() }}" data-src="{{ src($category->image) }}" alt="{{ $category->name }}" class="lazy w-full h-full object-center object-cover opacity-70 group-hover:opacity-100">
-                        </span>
-                        <span aria-hidden="true" class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-gray-800 opacity-90"></span>
-                        <span class="relative mt-auto text-center text-xl font-bold text-white">{{ $category->name }}</span>
-                    </a>
-                    @endforeach
-                            
+            <div class="container-fluid px-0 text-sm-start">
+                <div class="row d-flex align-items-center">
+                    <div class="col-lg-12 col-12 text-center pb-4 mb-4">
+                        <h1 class="text-uppercase font-semibold text-4xl sm:text-lg md:text-xl">{{ __('messages.t_featured_categories') }}</h1>
+                       {{-- <p>Our Featured Category List.</p>--}}
+                    </div>
+                    <div class="col-lg-12 col-12 d-flex flex-column align-items-center">
+                        <div class="row gy-sm-0 gy-4 right w-100 featuredright">
+                           @foreach ($categories as $category)
+                            <div class="col-sm-2 col-6 first shadow-sm group relative p-4 mb-5 min-h-[190px flex]">
+                                <div class="card position-relative rounded-2 text-center text-white absolute inset-0 rounded-lg bg-primary-100 transform transition ease-out duration-150 group-hover:-rotate-2">
+                                    <div class="absolute inset-0 rounded-lg bg-primary-100 transform transition ease-out duration-150 skew-y-2 group-hover:-rotate-2"></div>
+                                    <a href="{{ url('categories', $category->slug) }}">
+                                    <img src="{{ src($category->image) }}" alt="{{ $category->name }}" class="relative rounded-lg shadow object-cover">
+                                    
+                                    {{--<div class="layer position-absolute w-100 h-100"></div>--}}
+                                    
+                                      <h6 class="text-dark leading-6 h-7" style="z-index: 99;position: relative;color: #fff !important;font-weight: 600;">{{ $category->name }}</h6>
+                                    </a>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="arrow mt-4">
+                            <i class="fa-solid fa-angle-left me-4 rounded-circle border border-1 border-dark featuredactive featuredactiveback" onclick="scrollBack()" title="Back"></i>
+                            <i class="fa-solid fa-angle-right rounded-circle border border-1 border-dark featuredactive featuredactiveforword" onclick="scrollForward()" title="Next"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
-        @endif
+            @endif
+    </div><!--featured end-->
 
-        {{-- Bestsellers --}}
-        @if (settings('appearance')->is_best_sellers && $sellers && $sellers->count())
-            <div class="col-span-12 mt-6 xl:mt-6 mb-16">
-                <span class="font-semibold text-gray-400 dark:text-gray-200 uppercase tracking-wider text-center block">{{ __('messages.t_top_sellers') }}</span>
-                <a href="{{ url('sellers') }}" class="mt-1 text-primary-600 hover:text-primary-700 text-xs font-medium uppercase tracking-widest text-center block">{{ __('messages.t_view_more') }}</a>
+    <div class="aboutus mx-sm-3 mx-2 py-4 mb-16 mt-4 bg-indigo-100"><!--about us start-->
+            <div class="container-fluid text-sm-start text-center mx-4 px-4 mb-16 mt-6">
+                <div class="row gy-lg-0 gy-4">
+                    <div class="howit col-lg-6 col-sm-12 col-12 order-lg-1 order-2 d-flex align-items-center justify-content-between position-relative red-green">
+                        <div class="left w-100 d-flex align-items-center px-3 rounded-2">
+                            <h5 class="mb-0 text-white text-start text-center" style="padding-left: 11%;font-size: 20px;text-transform: uppercase;font-weight: 600;">How<br>
+                                it<br>
+                                Works!</h5>
+                        </div>
+                        <div class="center position-absolute top-50 start-50 translate-middle shadow">
+                            <!--<video width="320" height="240" class="rounded-2" controls>
+                                <source src="{{ asset('public/img/assets/how-it-works.mp4') }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>-->
+                            <iframe class="responsive-iframe" height="215" src="https://www.youtube.com/embed/LuD13mHsyBw" title="Unlock Your Business Potential with SkillMonde&#39;s Marketplace and Managed Services" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
 
-                <ul class="flex-wrap justify-center items-center mt-8 -mx-5 hidden" id="top-sellers-slick" wire:ignore>
-                    @foreach ($sellers as $seller)
-                    <li class="col-span-1 flex flex-col text-center bg-white dark:bg-zinc-800 rounded-md shadow divide-y divide-gray-200 dark:divide-zinc-700 mx-5">
-                        <div class="px-4 py-8">
+                        <div class="right w-100 d-flex align-items-center px-3 justify-content-end rounded-2 text-center">
+                            <h5 class="mb-0 text-white text-end text-center" style="padding-right: 6%;font-size: 20px;text-transform: uppercase;font-weight: 600;">COMMENCE <br>CONNECT<br>
+                                CREATE</h5>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-12 col-12 order-lg-2 order-1 mb-6">
+                        <h3 class="pb-4 text-uppercase font-semibold text-4xl">About Us</h3>
+                        <p style="max-width: 95%;">{{ __('messages.t_home_about_us_short_descreption') }}</p>
+                        <a href="https://skillmonde.com/page/about-us" class="btn bg-white rounded-pill px-4 py-2 mt-4">Learn More<i class="fa-solid fa-angle-right ms-3"></i></a>
+                    </div>
+                </div>
+            </div>
+    </div><!--about us end-->        
+    
+        <div class="live mx-sm-5 mx-2 py-12 mb-12"><!--live start-->
+            <div class="container px-2 text-center">
+                <div class="row ">
+                    <div class="col-lg-12 col-12 mb-12">
+                        <h3 class="pb-2 text-uppercase font-semibold text-4xl">If you have Talent, We have Clients</h3>
+                        <p>Tremendous Opportunities for a Regular Income.<br>
+                        Not getting enough work from already Saturated Marketplace Platforms?
+                        </p>
+                    </div>
+                    <div class="col-lg-12 col-12">
+                        <div class="row justify-content-md-center gy-sm-0 gy-4 right w-100">
+                            <div class="col-sm-2 col-6 first ">
+                                <div class="card position-relative rounded-2 text-center text-white">
+                                    <img src="{{ asset('public/img/home/LOWEST-COMMISSION-IN-INDUSTRY.png') }}" alt="LOWEST-COMMISSION-IN-INDUSTRY" class="w-100">
+                                    <div class="layer position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 text-base bg-purple-500 uppercase">Lowest <br>Commissions</h6>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-6 second">
+                                <div class="card position-relative rounded-2 text-center text-white">
+                                    <img src="{{ asset('public/img/home/ROBUST-PLATFORM-3.png') }}" alt="LOWEST-COMMISSION-IN-INDUSTRY" class="w-100">
+                                    <div class="layer position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 text-base bg-purple-500 uppercase">Robust <br>Platform</h6>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-6 third">
+                                <div class="card position-relative rounded-2 text-center text-white">
+                                    <img src="{{ asset('public/img/home/MINIMUM-WALLET-BALANCE-5.png') }}" alt="LOWEST-COMMISSION-IN-INDUSTRY" class="w-100">
+                                    <div class="layer position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 text-base bg-purple-500 uppercase">No Minimum <br>Balance </h6>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-6 fourth">
+                                <div class="card position-relative rounded-2 text-center text-white">
+                                    <img src="{{ asset('public/img/home/NETWORK-OF-CLIENTS-3.png') }}" alt="NETWORK-OF-CLIENTS" class="w-100">
+                                    <div class="layer position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 text-base bg-purple-500 uppercase">Huge <br>Network</h6>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-6 fifth">
+                                <div class="card position-relative rounded-2 text-center text-white">
+                                    <img src="{{ asset('public/img/home/PROJECTS-FROM-SKILLMONDE.png') }}" alt="Project Opportunities from SkillMonde Managed services" class="w-100">
+                                    <div class="layer position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 text-base bg-purple-500 uppercase">Project <br>Opportunities</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="arrow mt-4">
+                            <i class="fa-solid fa-angle-left me-4 rounded-circle border border-1 border-dark"></i>
+                            <i class="fa-solid fa-angle-right rounded-circle border border-1 border-success"></i>
+                        </div>-->
+                        <div class="bottom text-center my-5">
+                            <a href="https://www.skillmonde.com/start_selling" class="btn rounded-pill btn-sm bg-primary-500 hover:bg-primary-700 text-white font-semibold text-lg px-3">Start Selling<i class="fa-solid fa-angle-right ms-2"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--live end-->
         
-                            {{-- Avatar --}}
-                            <a href="{{ url('profile', $seller->username) }}" target="_blank" class="inline-block relative">
-                                <img class="h-16 w-16 rounded-full object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src($seller->avatar) }}" alt="{{ $seller->username }}">
-                                @if ($seller->isOnline() && !$seller->availability)
-                                    <span class="absolute top-0.5 ltr:right-0.5 rtl:left-0.5 block h-3 w-3 rounded-full ring-2 ring-white dark:ring-zinc-800 bg-green-400"></span>
-                                @elseif ($seller->availability)
-                                    <span class="absolute top-0.5 ltr:right-0.5 rtl:left-0.5 block h-3 w-3 rounded-full ring-2 ring-white dark:ring-zinc-800 bg-gray-400"></span>
-                                @else
-                                    <span class="absolute top-0.5 ltr:right-0.5 rtl:left-0.5 block h-3 w-3 rounded-full ring-2 ring-white dark:ring-zinc-800 bg-red-400"></span>
-                                @endif
-                            </a>
+        <div class="top-sellers text-center px-sm-5 px-2 py-12 text-white" id="managed-services"><!--top sellers start-->
+            <div class="top mb-5">
+                <h3 class="pb-2 text-uppercase font-semibold text-4xl">Ready to Get Stuff Done? Let us do it for you</h3>
+                <p>We make SkillMonde Managed Services a seamless experience that lets you focus on growing your business. <br>Simplified Outsourcing!</p>
+            </div>
+            <div class="middle mb-sm-5 mb-4">
+                <div class="container-fluid">
+                    <div class="row gy-lg-0 gy-4">
+                        <div class="col-lg-2 col-sm-3 col-6 mt-0">
+                            <div class="card position-relative rounded-2 text-center text-white">
+                                <a href="https://www.skillmonde.com/edtech" class="text-white">
+                                    <img src="{{ asset('public/img/home/edtech-purple-skillmonde.png') }}" alt="edtech-purple-skillmonde" class="w-100">
+                                    <div class="position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 leading-6 bg-purple-500">EDTECH</h6>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-3 col-6 mt-0">
+                            <div class="card position-relative rounded-2 text-center text-white">
+                                <a href="https://www.skillmonde.com/publishers" class="text-white">
+                                    <img src="{{ asset('public/img/home/publisher-2.png') }}" alt="edtech-purple-skillmonde" class="w-100">
+                                    <div class="position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 leading-6 bg-purple-500">PUBLISHERS</h6>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-3 col-6 mt-0">
+                            <div class="card position-relative rounded-2 text-center text-white">
+                                <a href="https://www.skillmonde.com/ngo" class="text-white">
+                                    <img src="{{ asset('public/img/home/NGO.png') }}" alt="NGO" class="w-100">
+                                    <div class="position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 leading-6 bg-purple-500">NGO</h6>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-3 col-6 mt-0">
+                            <div class="card position-relative rounded-2 text-center text-white">
+                                <a href="https://www.skillmonde.com/corporate" class="text-white">
+                                    <img src="{{ asset('public/img/home/CORPORATE-2.png') }}" alt="CORPORATE" class="w-100">
+                                    <div class="position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 leading-6 bg-purple-500">CORPORATE</h6>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-3 col-6 mt-0">
+                            <div class="card position-relative rounded-2 text-center text-white">
+                                <a href="https://www.skillmonde.com/academic" class="text-white">
+                                    <img src="{{ asset('public/img/home/ACADEMIC-INSTITUTIONS-2.png') }}" alt="ACADEMIC INSTITUTIONS" class="w-100">
+                                    <div class="position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 leading-6 bg-purple-500">ACADEMIC INSTITUTIONS</h6>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-3 col-6 mt-0">
+                            <div class="card position-relative rounded-2 text-center text-white">
+                                <a href="https://www.skillmonde.com/government" class="text-white">
+                                    <img src="{{ asset('public/img/home/GOVERNMENT-2.png') }}" alt="GOVERNMENT" class="w-100">
+                                    <div class="position-absolute w-100 h-100"></div>
+                                    <h6 class="mb-0 z-10 leading-6 bg-purple-500">GOVERNMENT</h6>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<button class="btn rounded-pill bg-white px-3">SEE ALL <i class="fa-solid fa-angle-right ms-2"></i></button>-->
+        </div><!--top sellers end-->        
+    
+    <div class="blog px-sm-5 px-2"><!--blog start-->
+            <div class="top mb-4 text-center">
+                <h3 class="text-uppercase font-semibold text-4xl pb-4">Our Blog</h3>
+                <p>{{ __('messages.t_latest_appname_news', ['app_name' => config('app.name')]) }}</p>
+            </div>
+            
+            <div class="container-fluid">
+                <div class="row gy-4">
 
-                            {{-- Username --}}
-                            <a href="{{ url('profile', $seller->username) }}" target="_blank" class="mt-4 text-gray-900 dark:text-gray-200 text-sm font-bold tracking-wider flex items-center justify-center">
-                                {{ $seller->username }}
-                                @if ($seller->status === 'verified')
-                                    <img data-tooltip-target="tooltip-account-verified-{{ $seller->id }}" class="ltr:ml-0.5 rtl:mr-0.5 h-4 w-4 -mt-0.5" src="{{ url('public/img/auth/verified-badge.svg') }}" alt="{{ __('messages.t_account_verified') }}">
-                                    <div id="tooltip-account-verified-{{ $seller->id }}" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-xs font-medium text-white bg-gray-900 rounded-sm shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                        {{ __('messages.t_account_verified') }}
-                                    </div>
-                                @endif
-                            </a>
 
-                            <dl class="mt-1 flex-grow flex flex-col justify-between">
-                                <dt class="sr-only">Level</dt>
-                                <dd class="text-[11px] font-medium uppercase tracking-widest" style="color:{{ $seller->level->level_color }}">{{ $seller->level->title }}</dd>
-                                <dt class="sr-only">Skills</dt>
-                                <dd class="mt-5 space-x-1 rtl:space-x-reverse">
+<?php
+                
+                // Establish a connection to the WordPress database
+                $wpdb = new PDO('mysql:host=localhost;dbname=skillmonde_wp_kukdc;charset=utf8', 'skillmonde_wp_cdj3m', 'L4_9InBFJ2%BNiEg');
+                
+                // Set the table prefix
+                $table_prefix = 's5L2lNeX0_';
+                
+                // Query the WordPress database to retrieve the 4 most recent blog posts with their featured images
+                $blogPosts = $wpdb->query("
+SELECT 
+    {$table_prefix}posts.ID, 
+    {$table_prefix}posts.post_title, 
+    {$table_prefix}posts.post_excerpt, 
+    {$table_prefix}posts.post_name, 
+    {$table_prefix}posts.post_content,
+    SUBSTRING_INDEX(pm.meta_value, '/', -1) AS featured_image,
+    {$table_prefix}posts.post_date
+FROM 
+    {$table_prefix}posts
+    LEFT JOIN {$table_prefix}postmeta ON {$table_prefix}posts.ID = {$table_prefix}postmeta.post_id AND {$table_prefix}postmeta.meta_key = '_thumbnail_id'
+    LEFT JOIN {$table_prefix}postmeta AS pm ON pm.post_id = {$table_prefix}postmeta.meta_value AND pm.meta_key = '_wp_attached_file'
+WHERE 
+    {$table_prefix}posts.post_type = 'post' AND {$table_prefix}posts.post_status = 'publish'
+ORDER BY 
+    {$table_prefix}posts.post_date DESC
+LIMIT 4
 
-                                    {{-- Rating --}}
-                                    <div class="flex items-center justify-center mb-5" wire:ignore>
 
-                                        {{-- Star --}}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor"> <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        
-                                        {{-- Rating --}}
-                                        @if ($seller->rating() == 0)
-                                            <div class=" text-[13px] tracking-widest text-amber-500 ltr:ml-1 rtl:mr-1 font-black">{{ __('messages.t_n_a') }}</div>
-                                        @else
-                                            <div class=" text-sm tracking-widest text-amber-500 ltr:ml-1 rtl:mr-1 font-black">{{ $seller->rating() }}</div>
-                                        @endif
-                        
-                                        {{-- Reviews --}}
-                                        <div class="ltr:ml-2 rtl:mr-2 text-[13px] font-normal text-gray-400 dark:text-gray-300">
-                                            ( {{ number_format($seller->reviews()->count()) }} )
-                                        </div>
+                ")->fetchAll(PDO::FETCH_ASSOC);
+                
+                // Display the retrieved blog posts and their featured images
+                foreach ($blogPosts as $blogPost) {
+                    $year = date('Y', strtotime($blogPost['post_date']));
+                    $month = date('m', strtotime($blogPost['post_date']));
+                    // Get the post excerpt and limit it to 100 characters
+                    $excerpt = strip_tags($blogPost['post_content']);
+                    if (strlen($excerpt) > 130) {
+                        $excerpt = substr($excerpt, 0, 130) . '...';
+                    }
+                ?>
+
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="blog-card container-fluid p-0 pe-sm-3 pe-0 rounded-2 bg-white text-start">
+                            <div class="row">
+                                <div class="col-sm-6 col-12">
+                                    <a href="/blog/<?php echo $blogPost['post_name']; ?>" target="_blank">
+                                    <img src="https://www.skillmonde.com/blog/wp-content/uploads/<?php echo $year.'/'.$month.'/'.$blogPost['featured_image']; ?>" alt="<?php echo $blogPost['post_title']; ?>" class="w-100 h-100 image-size">
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-12 d-flex flex-column justify-content-between p-sm-3 p-4">
+                                    <div class="top-b">
+                                        <h5 class="text-capitalize font-semibold"><?php echo $blogPost['post_title']; ?></h5>
+                                        <p class="text-muted py-2"><?php echo $excerpt; ?>
+                                        </p>
                                         
                                     </div>
-
-                                    {{-- Skills --}}
-                                    @if ($seller->skills()->count())
-                                        <div class="h-16">
-                                            @foreach ($seller->skills()->InRandomOrder()->limit(3)->get() as $skill)
-                                                <span class="inline-flex mb-2 px-3 py-1.5 items-center text-gray-800 text-xs font-medium bg-gray-100 dark:bg-zinc-700 dark:text-zinc-300 rounded-full">
-                                                    {{ $skill->name }}
-                                                </span>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <div class="h-16"></div>
-                                    @endif
-                                    
-                                </dd>
-                            </dl>
-        
-                        </div>
-        
-                        {{-- Actions --}}
-                        <div>
-                            <div class="-mt-px flex divide-x divide-gray-200 rtl:divide-x-reverse bg-gray-100 dark:bg-zinc-700 dark:divide-zinc-700 rounded-b-lg">
-        
-                                @auth
-                                    {{-- Contact me --}}
-                                    <div class="w-0 flex-1 flex">
-                                        <a href="{{ url('messages/new', $seller->username) }}" class="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-xs text-gray-700 dark:text-zinc-300 dark:hover:text-zinc-100 font-medium border border-transparent rounded-bl-lg hover:text-gray-500">
-                                            <svg class="w-5 h-5 text-gray-400 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/> <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/> </svg>
-                                            <span class="ml-2">{{ __('messages.t_contact_me') }}</span>
-                                        </a>
-                                    </div>
-                                @endauth
-
-                                @guest
-                                    {{-- View my profile --}}
-                                    <div class="w-0 flex-1 flex">
-                                        <a href="{{ url('profile', $seller->username) }}" class="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-xs text-gray-700 dark:text-zinc-300 dark:hover:text-zinc-100 font-medium border border-transparent rounded-br-lg hover:text-gray-500">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 dark:text-gray-300" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/></svg>
-                                            <span class="ml-2">{{ __('messages.t_view_profile') }}</span>
-                                        </a>
-                                    </div>
-                                @endguest
-        
+                                    <a href="/blog/<?php echo $blogPost['post_name']; ?>" class="btn bg-white rounded-pill px-4 py-2" target="_blank">Learn More<i class="fa-solid fa-angle-right ms-sm-3 ms-2"></i></a>
+                                </div>
                             </div>
                         </div>
-        
-                    </li>
-                    @endforeach
-                </ul>
-
-            </div>
-        @endif
-
-        {{-- Random gigs --}}
-        @if ($gigs && !$gigs->isEmpty())
-            <div class="col-span-12 mb-16">
-
-                {{-- Section title --}}
-                <div class="block mb-6">
-                    <div class="flex justify-between items-center bg-transparent py-2">
-
-                        <div>
-                            <span class="font-extrabold text-xl text-gray-800 dark:text-gray-100 pb-1 block">
-                                @lang('messages.t_selected_gigs_for_u')    
-                            </span>
-                        </div>
-
-                        <div>
-                            <a href="{{ url('search') }}" class="hidden text-sm font-semibold text-primary-600 hover:text-primary-700 sm:block">
-                                {{ __('messages.t_view_more') }}
-                                
-                                {{-- LTR arrow --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden ltr:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-
-                                {{-- RTL arrow --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden rtl:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
-                            </a>
-                        </div>
-
                     </div>
-                </div>
-
-                <div class="grid grid-cols-12 sm:gap-x-9 gap-y-6">
-                    @foreach ($gigs as $gig)
-                        <div class="col-span-12 sm:col-span-6 md:col-span-6 lg:col-span-3 xl:col-span-3">
-                            @livewire('main.cards.gig', ['gig' => $gig], key('gig-item-' . $gig->uid))
-                        </div>
-                    @endforeach
+<?php } ?>
                 </div>
             </div>
-        @endif
-
-        {{-- List of categories in home --}}
-        @foreach ($categories as $category)
-            @if ($category->gigs()->active()->count())
-                
-                {{-- Section title --}}
-                <div class="col-span-12">
-                    <div class="flex justify-between items-center bg-transparent py-2">
-
-                        <div>
-                            <span class="font-extrabold text-xl text-gray-800 dark:text-gray-100 pb-1 block tracking-wider">{{ $category->name }}</span>
-                        </div>
-
-                        <div>
-                            <a href="{{ url('categories', $category->slug) }}" class="hidden text-sm font-semibold text-primary-600 hover:text-primary-700 sm:block">
-                                {{ __('messages.t_view_more') }}
-                                
-                                {{-- LTR arrow --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden ltr:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-
-                                {{-- RTL arrow --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden rtl:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-
-                {{-- List of gigs --}}
-                <div class="col-span-12 mb-16">
-                    <div class="grid grid-cols-12 sm:gap-x-9 gap-y-6">
-                        @foreach ($category->gigs()->active()->inRandomOrder()->take(4)->get() as $gig)
-                            <div class="col-span-12 sm:col-span-6 md:col-span-6 lg:col-span-4 xl:col-span-3">
-                                @livewire('main.cards.gig', ['gig' => $gig], key('gig-item-' . $category->id . '-' . $gig->uid))
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-            @endif
-        @endforeach
-
-        {{-- Latest projects --}}
-        @if (settings('projects')->is_enabled && !is_null($projects) && !$projects->isEmpty())
-            <div class="col-span-12 mb-16">
             
-                {{-- Section title --}}
-                <div class="block mb-6">
-                    <div class="flex justify-between items-center bg-transparent py-2">
-
-                        <div>
-                            <span class="font-extrabold text-xl text-gray-800 dark:text-gray-100 pb-1 block tracking-wider">
-                                @lang('messages.t_latest_projects')    
-                            </span>
-                        </div>
-
-                        <div>
-                            <a href="{{ url('explore/projects') }}" class="hidden text-sm font-semibold text-primary-600 hover:text-primary-700 sm:block">
-                                {{ __('messages.t_view_more') }}
-                                
-                                {{-- LTR arrow --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden ltr:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-
-                                {{-- RTL arrow --}}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden rtl:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-
-                {{-- Projects --}}
-                <div class="space-y-6">
-                    @foreach ($projects as $project)
-
-                        @livewire('main.cards.project', [ 'id' => $project->uid ], key('project-card-id-' . $project->uid))
-                        
-                    @endforeach
-                </div>
-
+            <div class="bottom text-center my-5">
+                <a href="{{ url('blog') }}" class="btn btn-sm rounded-pill text-white px-3">SEE ALL <i class="fa-solid fa-angle-right ms-2"></i></a>
             </div>
-        @endif
-
+        </div><!--blog end-->
+        
+    <div class="grid grid-cols-12 px-4 gap-6">
         {{-- Newsletter --}}
         @if (settings('newsletter')->is_enabled)
             <div class="col-span-12">
@@ -263,8 +286,9 @@
                         <p class="mt-2 text-sm text-gray-500 dark:text-gray-300">{{__('messages.t_sign_up_for_newsletter_subtitle')}}</p>
                         <div class="mt-4 sm:mt-6 sm:flex">
                             <label for="email-address" class="sr-only">Email address</label>
-                            <input wire:model.defer="email" id="email-address" type="text" autocomplete="email" required="" placeholder="{{ __('messages.t_enter_email_address') }}" class="h-14 appearance-none min-w-0 w-full bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-700 rounded-md shadow-sm py-2 px-4 text-sm text-gray-900 dark:text-gray-300 placeholder-gray-500 focus:outline-none focus:border-primary-600 focus:ring-1 focus:ring-primary-600" readonly onfocus="this.removeAttribute('readonly');">
-                            <div class="mt-3 sm:flex-shrink-0 sm:mt-0 ltr:sm:ml-4 rtl:sm:mr-4">
+                            <input wire:model.defer="email" id="email-address" type="text" autocomplete="email" required="" placeholder="{{ __('messages.t_enter_email_address') }}"
+                                class="h-14 appearance-none min-w-0 w-full bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-700 rounded-md shadow-sm py-2 px-4 text-sm text-gray-900 dark:text-gray-300 placeholder-gray-500 focus:outline-none focus:border-primary-600 focus:ring-1 focus:ring-primary-600">
+                            <div class=" sm:flex-shrink-0 sm:mt-0 ltr:sm:ml-4 rtl:sm:mr-4">
                                 <button wire:click="newsletter" wire:loading.attr="disabled" wire:target="newsletter" type="button" class="dark:disabled:bg-zinc-500 dark:disabled:text-zinc-400 disabled:cursor-not-allowed disabled:!bg-gray-400 disabled:text-gray-500 h-14 w-full bg-primary-600 border border-transparent rounded-md shadow-sm py-2 px-4 flex items-center justify-center text-sm font-bold tracking-wider text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-primary-600">
                                     {{ __('messages.t_signup') }}
                                 </button>
@@ -280,13 +304,10 @@
 
 @push('scripts')
 
-    {{-- Slick script --}}
-    @if (settings('appearance')->is_featured_categories || settings('appearance')->is_best_sellers)
-        <script defer type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-    @endif
-
     {{-- Slick Plugin --}}
     @if (settings('appearance')->is_featured_categories && $categories && $categories->count())
+        <script defer type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
         <script>
             document.addEventListener("DOMContentLoaded", function(){
                 // Init featured categories slick
@@ -303,14 +324,14 @@
                         breakpoint: 1024,
                             settings: {
                                 slidesToShow  : 4,
-                                slidesToScroll: 1
+                                slidesToScroll: 2
                             }
                         },
                         {
                         breakpoint: 800,
                             settings: {
                                 slidesToShow  : 3,
-                                slidesToScroll: 1
+                                slidesToScroll: 2
                             }
                         },
                         {
@@ -323,7 +344,7 @@
                         {
                         breakpoint: 480,
                             settings: {
-                                slidesToShow  : 1,
+                                slidesToShow  : 2,
                                 slidesToScroll: 1
                             }
                         }
@@ -388,8 +409,34 @@
 @push('styles')
 
     {{-- Slick Plugin --}}
-    @if (settings('appearance')->is_featured_categories || settings('appearance')->is_best_sellers)
-        <link rel="preload" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" type="text/css" as="style" onload="this.onload=null;this.rel='stylesheet';"/>
+    @if (settings('appearance')->is_featured_categories)
+    <link rel="preload" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" type="text/css" as="style" onload="this.onload=null;this.rel='stylesheet';"/>
     @endif
+<style>
+.slick-prev.slick-arrow {
+  display: none;
+}
+  .slick-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .slick-arrows {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* adjust as needed */
+  }
+
+  .slick-prev,
+  .slick-next {
+    display: inline-block;
+    margin: 0 10px;
+  }
+  .slider button {
+    white-space: nowrap;
+  }
+
+</style>
         
 @endpush

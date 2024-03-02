@@ -66,7 +66,7 @@ class OrdersComponent extends Component
             if (in_array($item->status, ['pending', 'proceeded', 'delivered']) && !$item->is_finished) {
                 
                 // Update orders in queue
-                if ($item->gig->total_orders_in_queue() > 0) {
+                if ($item->gig->orders_in_queue > 0) {
                     $item->gig()->decrement('orders_in_queue');
                 }
 

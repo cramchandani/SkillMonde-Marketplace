@@ -24,8 +24,8 @@ return new class extends Migration
             $table->boolean('is_visible')->default(true);
             $table->timestamps();
 
-            $table->foreign('icon_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('image_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('icon_id')->references('id')->on('file_manager');
+            $table->foreign('image_id')->references('id')->on('file_manager');
         });
     }
 

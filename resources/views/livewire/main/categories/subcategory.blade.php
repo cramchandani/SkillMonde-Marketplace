@@ -269,6 +269,39 @@
                     {{-- Filters --}}
                     <div class="hidden lg:block bg-white dark:bg-zinc-700 shadow-sm border rounded-md border-gray-100 dark:border-zinc-600 h-fit">
                         
+                        {{-- Category --}}
+                        <div x-data="{ open: true }" class="py-3">
+                            <h3 class="-my-3 flow-root bg-gray-50 dark:bg-zinc-700 px-4">
+                                <button @click="open = !open" type="button" class="py-3 w-full flex items-center justify-between text-sm text-gray-400 hover:text-gray-500 outline-none focus:outline-none">
+                                    <span class="font-medium text-gray-900">{{ __('messages.t_category') }}</span>
+                                    <span class="ltr:ml-6 rtl:mr-6 flex items-center">
+                                        <svg class="h-5 w-5" x-description="Expand icon, show/hide based on section open state. Heroicon name: solid/plus-sm" x-show="!(open)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path> </svg>
+                                        <svg class="h-5 w-5" x-description="Collapse icon, show/hide based on section open state. Heroicon name: solid/minus-sm" x-show="open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" style="display: none;"> <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"></path> </svg>
+                                    </span>
+                                </button>
+                            </h3>  
+                            
+                            <div class="pt-6 px-4" x-show="open" style="display: block;">
+                                <div class="space-y-4">
+                                  <ul>
+                                    @foreach ($categories as $category)
+                                      <li>
+                                        <a href="javascript:void(0)" class="category"><i class="fas fa-plus"></i> {{ $category->name }}</a>
+                                        @if (count($category->subcategories))
+                                          <ul class="subcategory-list" style="display:none;">
+                                            @foreach ($category->subcategories as $subcategory)
+                                              <li><a href="{{ url('categories/' . $category->slug . '/' . $subcategory->slug) }}">{{ $subcategory->name }}</a></li>
+                                            @endforeach
+                                          </ul>
+                                        @endif
+                                        <a href="{{ url('categories', $category->slug) }}" class="link block px-1 py-2 text-gray-500 dark:text-zinc-300 hover:text-primary-600 hover:underline text-xs tracking-wide font-semibold">Browse {{ $category->name }}</a>
+                                      </li>
+                                    @endforeach
+                                  </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
                         {{-- Rating --}}
                         <div x-data="{ open: true }" class="py-3">
                             <h3 class="-my-3 flow-root bg-gray-50 dark:bg-zinc-600 px-4 rounded-t-md">
@@ -489,5 +522,55 @@
         }
         window.AxZSIHcEeIYErvQ = AxZSIHcEeIYErvQ();
     </script>
+    <script>
+  // add event listener to category links
+  const categoryLinks = document.querySelectorAll('.category');
+  categoryLinks.forEach(link => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      const subcategoryList = link.nextElementSibling;
+      if (subcategoryList.style.display === 'none') {
+        // expand subcategory list
+        subcategoryList.style.display = 'block';
+        link.querySelector('.fa-plus').classList.replace('fa-plus', 'fa-minus');
+      } else {
+        // collapse subcategory list
+        subcategoryList.style.display = 'none';
+        link.querySelector('.fa-minus').classList.replace('fa-minus', 'fa-plus');
+      }
+    });
+  });
+</script>
 
+@endpush
+
+@push('styles')
+
+<style>
+    .category {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+    .subcategory-list {
+        display: none;
+        margin-left: 15px;
+    }
+
+    .subcategory-list.active {
+        display: block;
+    }
+    .subcategory-list.active li {
+      margin-left: 15px;
+    }
+    .fas {
+      padding-right: 10px;
+    }
+    span.category {
+      font-size: 16px;
+      font-weight: 700;
+    }
+</style>
+        
 @endpush

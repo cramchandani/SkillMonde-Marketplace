@@ -1,4 +1,4 @@
-<div class="relative md:mx-auto " x-data="window.oZcfXWmBuWfxbIo" x-init="initialize()">
+<div class="relative md:mx-auto max-w-full gig-details" x-data="window.oZcfXWmBuWfxbIo" x-init="initialize()">
 
     {{-- Check if user unavailable --}}
     @if ($gig->owner->availability)
@@ -39,7 +39,7 @@
     @endif
 
     {{-- Gig content --}}
-    <div class="bg-white dark:bg-zinc-800 shadow-sm ring-1 ring-gray-100 dark:ring-zinc-700 border border-gray-50 dark:border-zinc-700 rounded-xl px-4 py-4 lg:px-12 lg:py-12">
+    <div class="bg-white dark:bg-zinc-800 shadow-sm ring-1 ring-gray-100 dark:ring-zinc-700 border border-gray-50 dark:border-zinc-700 rounded-xl px-4 py-4 lg:px-12 lg:py-12 box">
 
         {{-- Title / Price / Stats --}}
         <div class="w-full mb-0 md:mb-12">
@@ -91,7 +91,7 @@
                 {{-- Price --}}
                 <div class="hidden items-center md:!grid">
                     <span class="uppercase text-[10px] text-gray-400 dark:text-gray-300 mb-1 tracking-widest">{{ __('messages.t_starting_at') }}</span>
-                    <span class="text-black dark:text-white text-2xl tracking-wide font-black">@money($gig->price, settings('currency')->code, true)</span>
+                    <span id="gig-amount" class="text-black dark:text-white text-2xl tracking-wide font-black">@money($gig->price, settings('currency')->code, true)</span>
                 </div>
 
             </div>
@@ -99,7 +99,7 @@
         </div>
 
         {{-- Gig --}}
-        <div class="lg:grid lg:grid-rows-1 lg:grid-cols-7 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
+        <div class="lg:grid lg:grid-rows-1 lg:grid-cols-7 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16 main">
 
             {{-- Gig carousel --}}
             <div class="lg:row-end-1 lg:col-span-4">
@@ -164,13 +164,29 @@
 
                 {{-- Title && Rating --}}
                 <div class="flex flex-col-reverse">
+                    
 
-                    <div class="mt-4">
+                    <div class="mt-4 details">
 
                         {{-- Title --}}
-                        <h1 class="text-xl font-extrabold tracking-wide leading-8 text-black dark:text-white sm:text-2xl">
+                        <h4 class="text-xl font-extrabold tracking-wide leading-8 text-black dark:text-white sm:text-2xl">
                             {{ $gig->title }}
-                        </h1>
+                        </h4>
+                        
+                    {{-- Rating  --}}
+                    <div class="flex items-center">
+                        <div class="flex items-center" wire:ignore>
+                            <div class="-mt-1">
+                                {!! render_star_rating($gig->rating, "1rem", "1rem", "#d0d0d0") !!}
+                            </div>
+                            @if ($gig->rating == 0)
+                                <div class="text-[13px] font-black  text-gray-500 ltr:ml-2 rtl:mr-2">{{ __('messages.t_n_a') }}</div>
+                            @else
+                                <div class="text-[13px] font-black  text-amber-500 ltr:ml-2 rtl:mr-2">{{ $gig->rating }}</div>
+                            @endif
+                            <div class="text-[13px] text-gray-400 font-normal ltr:ml-2 rtl:mr-2">( {{ __('messages.t_number_reviews', ['number' => $gig->counter_reviews]) }} )</div>
+                        </div>
+                    </div>
 
                         {{-- Seller && Orders in queue && Delivery date --}}
                         <div class="w-full mt-4 grid md:!flex justify-between items-center border-b border-gray-50 dark:border-zinc-700 pb-9 space-y-3 md:space-y-0 space-x-2 rtl:space-x-reverse">
@@ -199,10 +215,10 @@
                             
                             {{-- Orders in queue --}}
                             <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                @if ($gig->total_orders_in_queue() == 1 || $gig->total_orders_in_queue() == 0)
-                                    {{ __('messages.t_number_order_in_queue', ['number' => $gig->total_orders_in_queue()]) }}
+                                @if ($gig->orders_in_queue == 1 || $gig->orders_in_queue == 0)
+                                    {{ __('messages.t_number_order_in_queue', ['number' => $gig->orders_in_queue]) }}
                                 @else
-                                    {{ __('messages.t_number_orders_in_queue', ['number' => $gig->total_orders_in_queue()]) }}
+                                    {{ __('messages.t_number_orders_in_queue', ['number' => $gig->orders_in_queue]) }}
                                 @endif
                             </div>
 
@@ -250,20 +266,7 @@
                         
                     </div>
                     
-                    {{-- Rating  --}}
-                    <div class="flex items-center">
-                        <div class="flex items-center" wire:ignore>
-                            <div class="-mt-1">
-                                {!! render_star_rating($gig->rating, "1rem", "1rem", "#d0d0d0") !!}
-                            </div>
-                            @if ($gig->rating == 0)
-                                <div class="text-[13px] font-black  text-gray-500 ltr:ml-2 rtl:mr-2">{{ __('messages.t_n_a') }}</div>
-                            @else
-                                <div class="text-[13px] font-black  text-amber-500 ltr:ml-2 rtl:mr-2">{{ $gig->rating }}</div>
-                            @endif
-                            <div class="text-[13px] text-gray-400 font-normal ltr:ml-2 rtl:mr-2">( {{ __('messages.t_number_reviews', ['number' => $gig->counter_reviews]) }} )</div>
-                        </div>
-                    </div>
+                    
 
                 </div>
 
@@ -295,7 +298,7 @@
                 @endif
 
                 {{-- Actions --}}
-                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 buttons d-flex justify-content-between my-2">
 
                     {{-- Add to cart --}}
                     <button 
@@ -303,7 +306,7 @@
                         wire:loading.class="bg-gray-200 hover:bg-gray-300 text-gray cursor-not-allowed"
                         wire:loading.class.remove="bg-primary-600 hover:bg-primary-700 text-white cursor-pointer"
                         wire:loading.attr="disabled"
-                        class="w-full text-[13px] font-medium flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer"
+                        class="w-full text-[13px] font-medium flex justify-center bg-primary-600 hover:bg-primary-700 text-white py-4 px-8 rounded tracking-wide focus:outline-none focus:shadow-outline cursor-pointer btn rounded-pill w-100 add-cart text-white"
                         >
 
                         {{-- Loading indicator --}}
@@ -321,7 +324,7 @@
                     </button>
 
                     {{-- Contact seller --}}
-                    <a href="{{ url('messages/new', $gig->owner->username) }}" target="_blank" class="w-full bg-primary-100 border border-transparent rounded-md py-4 px-8 flex items-center justify-center text-[13px] font-medium text-primary-600 hover:bg-primary-200 focus:outline-none">{{ __('messages.t_contact_seller') }}</a>
+                    <a href="{{ url('messages/new', $gig->owner->username) }}" target="_blank" class="w-full bg-primary-100 border border-transparent rounded-md py-4 px-8 flex items-center justify-center text-[13px] font-medium text-primary-600 hover:bg-primary-200 focus:outline-none btn rounded-pill w-100 seller">{{ __('messages.t_contact_seller') }}</a>
 
                 </div>
 
@@ -460,18 +463,16 @@
                     <div id="tab-panel-reviews" class="-mb-10" x-data="Components.tabPanel(0)" aria-labelledby="tab-reviews" x-init="init()" x-show="selected" @tab-select.window="onTabSelect" role="tabpanel" tabindex="0">
 
                         {{-- Description --}}
-                        <div class="pt-6 dark:text-zinc-200 quill-container text-base" style="word-break: break-word;">
+                        <div class="pt-6 dark:text-zinc-200 quill-container text-base break-all">
                             {!! $gig->description !!}
                         </div>
 
                         {{-- Tags --}}
                         <div class="py-6">
                             @foreach ($gig->tags as $tag)
-                                @if ($tag)
-                                    <a href="{{ url('search?q=' . $tag->name) }}" class="mb-3 text-xs font-semibold inline-block py-2 px-4 rounded text-slate-600 dark:text-zinc-400 bg-gray-100 dark:bg-zinc-700 dark:hover:bg-zinc-600 hover:bg-gray-200 last:mr-0 ltr:mr-1 rtl:ml-1">
-                                        {{ $tag->name }}
-                                    </a>
-                                @endif
+                                <a href="{{ url('search?q=' . $tag->slug) }}" class="mb-3 text-xs font-semibold inline-block py-2 px-4 rounded text-slate-600 dark:text-zinc-400 bg-gray-100 dark:bg-zinc-700 dark:hover:bg-zinc-600 hover:bg-gray-200 last:mr-0 ltr:mr-1 rtl:ml-1">
+                                    {{ $tag->name }}
+                                </a>
                             @endforeach
                         </div>
 
@@ -672,7 +673,7 @@
 
         {{-- Content --}}
         <x-slot name="content">
-            <div class="items-center justify-center md:flex md:space-y-0 space-y-4">
+            <div class="flex items-center justify-center">
 
                 {{-- Facebook --}}
                 <div class="grid items-center justify-center mx-4">

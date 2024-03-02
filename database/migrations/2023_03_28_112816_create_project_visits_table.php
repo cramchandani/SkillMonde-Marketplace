@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('first_visit')->nullable();
             $table->timestamp('last_visit')->nullable();
 
-            $table->foreign('project_id')->references('id')->on('projects')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('project_id')->references('id')->on('projects');
         });
     }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="{{ config()->get('direction') }}" @class(['dark' => current_theme() === 'dark'])>
+<html lang="{{ app()->getLocale() }}" dir="{{ config()->get('direction') }}">
     
     <head>
 
@@ -71,7 +71,7 @@
             
             <div class="hidden w-full place-items-center lg:grid">
                 <div class="w-full px-2 py-40 sm:py-48 sm:px-12 flex flex-col justify-center relative bg-no-repeat bg-center bg-cover h-full" @if(settings('auth')->wallpaper) style="background-image: url({{ src(settings('auth')->wallpaper) }})" @endif>
-                    <span class="absolute bg-gradient-to-b from-primary-500 to-primary-400 opacity-75 inset-0 z-0"></span>
+                    <span class="absolute bg-gradient-to-b from-primary-500 to-primary-400 opacity-0 inset-0 z-0"></span>
 
                     {{-- Logo --}}
                     <div class="fixed top-0 ltr:left-0 rtl:right-0 hidden p-6 lg:block lg:px-12">
@@ -93,7 +93,7 @@
 
                 </div>
             </div>
-            <main class="flex w-full flex-col items-center bg-white dark:bg-zinc-800 lg:max-w-md">
+            <main class="flex w-full flex-col items-center bg-white dark:bg-navy-700 lg:max-w-md">
                 @yield('content')
             </main>
         </div>
@@ -117,7 +117,7 @@
         @if (settings('appearance')->custom_code_footer_main_layout)
             {!! settings('appearance')->custom_code_footer_main_layout !!}
         @endif
-
+        
     </body>
 
 </html>

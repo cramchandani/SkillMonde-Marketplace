@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('projects_categories', function (Blueprint $table) {
             $table->unsignedBigInteger('thumbnail_id')->nullable()->after('seo_description');
-            $table->foreign('thumbnail_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('thumbnail_id')->references('id')->on('file_manager');
         });
     }
 

@@ -20,9 +20,9 @@ class EditValidator
 
             // Set rules
             $rules    = [
-                'name'        => ['required', 'max:60', Rule::unique('categories')->ignore($request->category->id)],
-                'slug'        => ['required', 'max:60', Rule::unique('categories')->ignore($request->category->id)],
-                'description' => 'nullable|max:300',
+                'name'        => ['required', 'max:100', Rule::unique('categories')->ignore($request->category->id)],
+                'slug'        => ['required', 'max:100', Rule::unique('categories')->ignore($request->category->id)],
+                'description' => 'nullable|max:1000',
                 'icon'        => 'nullable|image|mimes:jpg,jpeg,png',
                 'image'       => 'nullable|image|mimes:jpg,jpeg,png',
                 'is_visible'  => 'boolean'
@@ -31,12 +31,12 @@ class EditValidator
             // Set errors messages
             $messages = [
                 'name.required'      => __('messages.t_validator_required'),
-                'name.max'           => __('messages.t_validator_max', ['max' => 60]),
+                'name.max'           => __('messages.t_validator_max', ['max' => 100]),
                 'name.unique'        => __('messages.t_validator_unique'),
                 'slug.required'      => __('messages.t_validator_required'),
-                'slug.max'           => __('messages.t_validator_max', ['max' => 60]),
+                'slug.max'           => __('messages.t_validator_max', ['max' => 100]),
                 'slug.unique'        => __('messages.t_validator_unique'),
-                'description.max'    => __('messages.t_validator_max', ['max' => 300]),
+                'description.max'    => __('messages.t_validator_max', ['max' => 1000]),
                 'icon.image'         => __('messages.t_validator_image'),
                 'icon.mimes'         => __('messages.t_validator_mimes'),
                 'image.image'        => __('messages.t_validator_image'),

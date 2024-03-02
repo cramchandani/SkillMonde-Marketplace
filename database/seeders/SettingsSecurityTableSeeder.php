@@ -18,9 +18,8 @@ class SettingsSecurityTableSeeder extends Seeder
         \DB::table('settings_security')->insert(array (
             0 => 
             array (
-                'id'                       => 1,
-                'is_recaptcha'             => 0,
-                'is_social_media_accounts' => 0
+                'id' => 1,
+                'is_recaptcha' => 0,
             ),
         ));
         

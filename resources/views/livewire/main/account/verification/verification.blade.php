@@ -464,14 +464,14 @@
 
                                 {{-- Set document files --}}
                                 @if ($currentStep === 2)
-                                    <div class="py-4 px-4 flex justify-end sm:px-6">
+                                    <div class="py-4 px-4 flex justify-end sm:px-6" id="verification-button">
                                         <x-forms.button action="setDocumentFiles" text="{{ __('messages.t_next_step') }}" block="0" />
                                     </div>
                                 @endif
 
                                 {{-- Finish --}}
                                 @if ($currentStep === 3)
-                                    <div class="py-4 px-4 flex justify-end sm:px-6">
+                                    <div class="py-4 px-4 flex justify-end sm:px-6" id="finish-snapshot">
                                         <x-forms.button action="finish" text="{{ __('messages.t_finish') }}" block="0" />
                                     </div>
                                 @endif

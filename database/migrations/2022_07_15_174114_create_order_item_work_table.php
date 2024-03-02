@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('quick_response')->nullable();
             $table->timestamps();
 
-            $table->foreign('order_item_id')->references('id')->on('order_items')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('order_item_id')->references('id')->on('order_items');
         });
     }
 

@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\HtmlString;
 
 class DeliveredWorkNewMessage extends Notification implements ShouldQueue
 {
@@ -46,12 +45,12 @@ class DeliveredWorkNewMessage extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_seller_delivered_work_new_msg');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_seller_delivered_work_new_msg');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_seller_line_1_delivered_work_msg')))
+                    ->line(__('messages.t_notification_seller_line_1_delivered_work_msg'))
                     ->action(__('messages.t_delivered_work'), url('seller/orders/deliver', $this->item->uid));
     }
 

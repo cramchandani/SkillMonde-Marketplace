@@ -27,7 +27,6 @@ class SettingsValidator
                 'commission_from_freelancer' => 'required|numeric',
                 'commission_from_publisher'  => 'required|numeric',
                 'who_can_post'               => 'required|in:seller,buyer,both',
-                'max_skills'                 => 'required|integer'
             ];
 
             // Set errors messages
@@ -44,8 +43,6 @@ class SettingsValidator
                 'commission_from_publisher.numeric'   => __('messages.t_validator_numeric'),
                 'who_can_post.required'               => __('messages.t_validator_required'),
                 'who_can_post.in'                     => __('messages.t_validator_in'),
-                'max_skills.required'                 => __('messages.t_validator_required'),
-                'max_skills.integer'                  => __('messages.t_validator_integer')
             ];
 
             // Set data to validate
@@ -57,8 +54,7 @@ class SettingsValidator
                 'commission_type'            => $request->commission_type,
                 'commission_from_freelancer' => $request->commission_from_freelancer,
                 'commission_from_publisher'  => $request->commission_from_publisher,
-                'who_can_post'               => $request->who_can_post,
-                'max_skills'                 => $request->max_skills
+                'who_can_post'               => $request->who_can_post
             ];
 
             // Validate data

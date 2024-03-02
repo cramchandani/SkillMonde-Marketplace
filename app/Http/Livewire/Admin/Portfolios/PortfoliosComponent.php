@@ -89,7 +89,7 @@ class PortfoliosComponent extends Component
     public function activate($id)
     {
         // Get portfolio
-        $portfolio         = UserPortfolio::where('id', $id)->where('status', 'pending')->with('user')->firstOrFail();
+        $portfolio         = UserPortfolio::where('id', $id)->where('status', 'pending')->firstOrFail();
 
         // Activate portfolio
         $portfolio->status = 'active';
@@ -101,7 +101,7 @@ class PortfoliosComponent extends Component
         // Send notification
         notification([
             'text'    => 't_ur_portfolio_title_has_been_published',
-            'action'  => url('profile/' . $portfolio->user->username . '/portfolio/' . $portfolio->slug),
+            'action'  => url('projects', $portfolio->slug),
             'user_id' => $portfolio->user_id,
             'params'  => ['title' => $portfolio->title]
         ]);

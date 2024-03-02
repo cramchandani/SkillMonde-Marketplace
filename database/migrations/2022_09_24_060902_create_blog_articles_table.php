@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('reading_time')->default(5);
             $table->timestamps();
 
-            $table->foreign('image_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('image_id')->references('id')->on('file_manager');
         });
     }
 

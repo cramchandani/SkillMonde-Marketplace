@@ -235,4 +235,39 @@ class User extends Authenticatable
     {
         return $this->chat_contacts_to->merge($this->chat_contacts_from);
     }
+    
+    public function scopeByValueRange($query, $budget_min, $budget_max)
+    {
+        return $query->whereBetween('value', [$budget_min, $budget_max]);
+    }
+    
+    /**
+     * Get user's available balance
+     *
+     * @return float
+     */
+    public function getAvailableBalance()
+    {
+        // Calculate the user's available balance logic here
+        // This could involve summing up credits, debits, or any other relevant logic in your application
+        
+        $totalCredits = $this->credits()->sum('amount'); // Assuming you have a 'credits' relationship
+        $totalDebits = $this->debits()->sum('amount');    // Assuming you have a 'debits' relationship
+    
+        $availableBalance = $totalCredits - $totalDebits;
+    
+        return $availableBalance;
+    }
+    
+    /**
+     * Define a relationship to get the user's credits.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function credits()
+    {
+        return $this->hasMany(UserCredit::class, 'user_id');
+    }
+    
+
 }

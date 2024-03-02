@@ -17,7 +17,10 @@
                         :label="__('messages.t_name')"
                         :placeholder="__('messages.t_enter_skill_name')"
                         model="name"
-                        icon="format-title" />
+                        icon="format-title" 
+                        wire:model.defer="name"
+                        wire:change="setSlug"
+                        wire:keydown.debounce.500ms="setSlug" />
                 </div>
 
                 {{-- Slug --}}
@@ -26,7 +29,9 @@
                         :label="__('messages.t_slug')"
                         :placeholder="__('messages.t_enter_slug')"
                         model="slug"
-                        icon="link-variant" />
+                        icon="link-variant" 
+                        wire:model="slug"
+                        wire:model.defer="slug"/>
                 </div>
 
                 {{-- Category --}}
@@ -57,3 +62,12 @@
     </div>
 
 </div>    
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:load', function () {
+            Livewire.on('setSlug', (name) => {
+                Livewire.emit('updateSlug', title.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+            });
+        });
+    </script>
+@endpush

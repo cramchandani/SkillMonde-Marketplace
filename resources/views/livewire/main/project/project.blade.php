@@ -1,4 +1,4 @@
-<div class="w-full" x-data="window.LVoePqYZdmjQURo" x-init="initialize">
+<div class="w-full md:mx-auto gig-details" x-data="window.LVoePqYZdmjQURo" x-init="initialize">
 
     {{-- Breadcrumbs --}}
     <nav class="hidden justify-between px-4 py-3 text-gray-700 rounded-lg sm:flex sm:px-5 bg-white dark:bg-zinc-700/40 dark:border-zinc-700 shadow" aria-label="Breadcrumb">
@@ -111,11 +111,17 @@
 							{{-- Bid Now --}}
 							@auth
 								@if (auth()->id() != $project->user_id && $project->status === 'active' && !$already_submitted_proposal && auth()->user()->account_type === 'seller')
-									<button id="modal-bid-button" type="button" class="inline-flex justify-center items-center rounded border font-semibold tracking-wide focus:outline-none px-4 py-2 shadow-sm hover:shadow-none leading-5 text-[13px] border-gray-200 bg-white text-gray-600 hover:text-gray-700 hover:bg-gray-100 hover:border-gray-200 focus:ring focus:ring-gray-200 focus:ring-opacity-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:focus:ring-zinc-400 dark:hover:bg-zinc-600 dark:hover:text-zinc-100 dark:focus:border-zinc-500">
+									<button id="modal-bid-button" type="button" class="inline-flex justify-center items-center rounded border font-semibold tracking-wide focus:outline-none px-4 py-2 shadow-sm hover:shadow-none leading-5 text-[13px] border-gray-200 bg-primary-500 text-white hover:text-gray-700 hover:border-gray-200 focus:ring focus:ring-gray-200 focus:ring-opacity-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:focus:ring-zinc-400 dark:hover:bg-zinc-600 dark:hover:text-zinc-100 dark:focus:border-zinc-500">
 										<span>@lang('messages.t_bid_on_this_project')</span>
 									</button>
 								@endif
 							@endauth
+							
+							@guest
+							    <a href="https://skillmonde.com/auth/login" class="inline-flex justify-center items-center rounded border font-semibold tracking-wide focus:outline-none px-4 py-2 shadow-sm hover:shadow-none leading-5 text-[13px] border-gray-200 primary-btn text-white hover:text-gray-700 hover:border-gray-200 focus:ring focus:ring-gray-200 focus:ring-opacity-50 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:focus:ring-zinc-400 dark:hover:bg-zinc-600 dark:hover:text-zinc-100 dark:focus:border-zinc-500">
+										<span>@lang('messages.t_login_to_bid_on_this_project')</span>
+								</a>
+							@endguest
 
 						</div>
 
@@ -126,7 +132,7 @@
 							<h2 class="mb-4 font-bold text-zinc-600 dark:text-zinc-300 text-sm">
 								{{ __('messages.t_description') }}
 							</h2>  
-							<div class="text-base font-normal leading-relaxed text-zinc-500 dark:text-zinc-200 mb-12 block break-all" style="word-break: break-word;">
+							<div class="text-base font-normal leading-relaxed text-zinc-500 dark:text-zinc-200 mb-12 block break-all">
 								{!! htmlspecialchars_decode(nl2br($project->description)) !!}
 							</div>
 
@@ -319,15 +325,27 @@
                         <dl>
 
                             {{-- Budget --}}
-                            <div class="bg-white dark:bg-zinc-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <div class="bg-white dark:bg-zinc-700 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                 <dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_budget')</dt>
                                 <dd class="mt-1 text-sm text-zinc-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
-                                    @money($project->budget_min, settings('currency')->code, true) – @money($project->budget_max, settings('currency')->code, true)
+                                   <span id="inr-min"> @money($project->budget_min, settings('currency')->code, true)<span> – <span id="inr-max">@money($project->budget_max, settings('currency')->code, true)</span>
+                                </dd>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">
+                                    <button type="button" data-tooltip-target="usd-message" class="ltr:ml-2 rtl:mr-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
+                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"> <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/> </svg>
+                                    </button>
+                                    <div id="usd-message" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                         {{ __('messages.t_currency_conversion_info') }}       
+                                    </div>
+                                </dt>
+                                <dd id="approx-usd" class="mt-1 text-sm text-zinc-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
+                                   ${{ number_format($minBudgetUSD, 2) }} – ${{ number_format($maxBudgetUSD, 2) }}
                                 </dd>
                             </div>
 
 							{{-- Budget type --}}
-							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+							@if (in_array($project->budget_type, ['fixed', 'per_others']))
+							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                 <dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_budget_type')</dt>
                                 <dd class="mt-1 text-sm text-zinc-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
                                     @if ($project->budget_type === 'fixed')
@@ -337,9 +355,123 @@
 									@endif
                                 </dd>
                             </div>
+                            @endif
+                            
+                            {{-- Approx work --}}
+							@if (!in_array($project->budget_type, ['fixed', 'per_others']))
+							<div class="bg-white dark:bg-zinc-700 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+								<dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_enter_the_post_number')</dt>
+								<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">
+								    @switch($project->budget_type)
+
+										{{-- Hourly --}}
+										@case('hourly')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Hours
+											</span>
+											@break
+											
+										{{-- Word --}}
+										@case('per_word')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Words
+											</span>
+											@break
+										
+										{{-- Minute --}}
+										@case('per_minute')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Minutes
+											</span>
+											@break
+											
+										{{-- Unit --}}
+										@case('per_unit')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Units
+											</span>
+											@break
+											
+										{{-- question --}}
+										@case('per_question')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Questions
+											</span>
+											@break
+											
+										{{-- Art/Image --}}
+										@case('per_art_image')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Arts/Images
+											</span>
+											@break
+											
+										{{-- Second --}}
+										@case('per_second')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Seconds
+											</span>
+											@break
+											
+										{{-- Book --}}
+										@case('per_book')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Book
+											</span>
+											@break
+											
+										{{-- Cover --}}
+										@case('per_cover')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Cover
+											</span>
+											@break
+											
+										{{-- Book --}}
+										@case('per_course')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Course
+											</span>
+											@break
+										
+										{{-- Video --}}
+										@case('per_video')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Video
+											</span>
+											@break
+											
+										{{-- Animation --}}
+										@case('per_animation')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Animation
+											</span>
+											@break
+											
+										{{-- Chpter --}}
+										@case('per_chapter')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Chapter
+											</span>
+											@break
+											
+										{{-- page --}}
+										@case('per_page')
+											<span class="bg-purple-100 text-gray-700 mt-1 inline-block sm:mt-0 sm:rounded-3xl py-2 px-5 font-semibold text-xs">
+												{{ $project->total_numbers }} Page
+											</span>
+											@break
+
+										@default
+											
+									@endswitch
+
+								</dd>
+							</div>
+							@endif
 							
 							{{-- Total bids --}}
-							<div class="bg-white dark:bg-zinc-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+							<div class="bg-white dark:bg-zinc-700 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
 								<dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_bids')</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
 									{{ $project->bids_count }}
@@ -347,15 +479,16 @@
 							</div>
 
 							{{-- Avg bid --}}
-							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
 								<dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_avg_bid')</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
 									@money($avg_bid, settings('currency')->code, true)
 								</dd>
 							</div>
+							
 
 							{{-- Status --}}
-							<div class="bg-white dark:bg-zinc-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+							<div class="bg-white dark:bg-zinc-700 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
 								<dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_status')</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">
 									
@@ -439,7 +572,7 @@
 							</div>
 
 							{{-- Clicks --}}
-							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
 								<dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_clicks')</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
 									{{ number_format($project->counter_views) }}
@@ -447,7 +580,7 @@
 							</div>
 
 							{{-- Impressions --}}
-							<div class="bg-white dark:bg-zinc-700 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+							<div class="bg-white dark:bg-zinc-700 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
 								<dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_impressions')</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
 									{{ number_format($project->counter_impressions) }}
@@ -455,7 +588,7 @@
 							</div>
 
 							{{-- Created date --}}
-							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+							<div class="bg-gray-50 dark:bg-zinc-600 px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
 								<dt class="text-sm font-medium text-gray-500 dark:text-zinc-300">@lang('messages.t_posted_date')</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-semibold">
 									{{ format_date($project->created_at, 'ago') }}
@@ -961,4 +1094,5 @@
 		}
 		window.LVoePqYZdmjQURo = LVoePqYZdmjQURo();
 	</script>
+
 @endpush

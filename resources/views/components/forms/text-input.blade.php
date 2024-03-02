@@ -1,14 +1,12 @@
-@props(['label' => null, 'placeholder' => null, 'model', 'type' => 'text', 'icon' => null, 'svg_icon' => null, 'suffix' => false, 'hint' => null])
+@props(['label', 'placeholder' => null, 'model', 'type' => 'text', 'icon' => null, 'svg_icon' => null, 'suffix' => false, 'hint' => null])
 
 <div>
 
     {{-- Label --}}
-    @if ($label)
-        <label for="text-input-component-id-{{ $model }}" class="block text-sm font-medium tracking-wide {{ $errors->first($model) ? 'text-red-600 dark:text-red-500' : 'text-gray-600 dark:text-white' }}">{{ htmlspecialchars_decode($label) }}</label>
-    @endif
+    <label for="text-input-component-id-{{ $model }}" class="block text-[0.8125rem] font-medium tracking-wide {{ $errors->first($model) ? 'text-red-600 dark:text-red-500' : 'text-gray-700 dark:text-white' }}">{{ htmlspecialchars_decode($label) }}</label>
     
     {{-- Form --}}
-    <div class="{{ $label ? 'mt-2.5' : '' }} relative">
+    <div class="mt-2 relative">
 
         {{-- Input --}}
         <input 
@@ -23,7 +21,7 @@
 
         @if ($suffix)
             {{-- Suffix --}}
-            <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 ltr:pr-3 rtl:pl-3 flex items-center pointer-events-none text-sm font-medium tracking-wider">
+            <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 ltr:pr-3 rtl:pl-3 flex items-center pointer-events-none text-xs font-bold tracking-wider">
                 <span class="{{ $errors->first($model) ? 'text-red-400' : 'text-gray-400' }}">{{ $suffix }}</span>
             </div>
         @elseif ($icon)

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('is_seen')->default(false);
             $table->timestamp('created_at');
 
-            $table->foreign('item_id')->references('id')->on('order_items')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('item_id')->references('id')->on('order_items');
         });
     }
 

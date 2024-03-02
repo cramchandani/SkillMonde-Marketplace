@@ -3,7 +3,6 @@
 namespace App\Notifications\Admin;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -46,7 +45,7 @@ class SiteIsDown extends Notification
 
         return (new MailMessage)
                     ->subject($subject)
-                    ->greeting(new HtmlString(__('messages.t_hi_admin')))
+                    ->greeting(__('messages.t_hi_admin'))
                     ->line("To access your website again please click the link below")
                     ->action('Access website', url($this->secret));
     }

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('slug', 100)->index();
             $table->enum('experience', ['beginner', 'intermediate', 'pro']);
 
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

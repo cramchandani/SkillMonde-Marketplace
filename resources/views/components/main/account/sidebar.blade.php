@@ -3,10 +3,10 @@
 <nav class="w-full {{ $class ? $class : '' }}">
 
     @php
-        $link_active_class = 'bg-primary-100/25 border-primary-600 text-primary-700 dark:text-white hover:bg-primary-100/25 hover:text-primary-700';
-        $link_basic_class  = 'border-transparent text-gray-500 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-600 hover:text-gray-900';
-        $icon_active_class = 'text-primary-600 dark:text-gray-50 group-hover:text-primary-600 dark:group-hover:text-white';
-        $icon_basic_class  = 'text-gray-400 dark:text-gray-300 dark:group-hover:text-white group-hover:text-gray-500';
+        $link_active_class = 'bg-primary-100/25 border-primary-600 text-white dark:text-white hover:bg-primary-100/25 hover:text-primary-700';
+        $link_basic_class  = 'border-transparent text-gray-50 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-zinc-600 hover:text-gray-900';
+        $icon_active_class = 'text-white dark:text-gray-50 group-hover:text-whote dark:group-hover:text-white';
+        $icon_basic_class  = 'text-gray-50 dark:text-gray-300 dark:group-hover:text-white group-hover:text-gray-500';
         $id                = uid();
     @endphp
 
@@ -17,7 +17,7 @@
                     <img class="w-20 h-20 flex-shrink-0 mx-auto rounded-full object-cover lazy" src="{{ placeholder_img() }}" data-src="{{ src(auth()->user()->avatar) }}" alt="{{ auth()->user()->username }}">
                 </a>
                 <h3 class="mt-6 text-gray-700 dark:text-white text-sm font-medium flex items-center justify-center">
-                    <span class="text-sm font-bold tracking-wider text-gray-700 dark:text-gray-100">{{ auth()->user()->username }}</span>
+                    <span class="text-sm font-bold tracking-wider text-gray-50 dark:text-gray-100">{{ auth()->user()->username }}</span>
                     @if (auth()->user()->status === 'verified')
                         <img data-tooltip-target="tooltip-account-verified-{{ $id }}" class="ltr:ml-0.5 rtl:mr-0.5 h-4 w-4 -mt-0.5" src="{{ url('public/img/auth/verified-badge.svg') }}" alt="{{ __('messages.t_account_verified') }}">
                         <div id="tooltip-account-verified-{{ $id }}" role="tooltip"
@@ -111,21 +111,6 @@
 
                 {{-- text --}}
                 <span class="truncate text-sm font-semibold"> {{ __('messages.t_my_projects') }} </span>
-
-            </a>
-        @endif
-
-        {{-- Submitted offers --}}
-        @if (settings('publish')->enable_custom_offers)
-            <a href="{{ url('account/offers') }}" class="{{ Request::is('account/offers') ? $link_active_class : $link_basic_class }} group ltr:border-l-4 rtl:border-r-4 px-5 py-3 flex items-center text-sm font-medium">
-
-                {{-- icon --}}
-                <svg class="{{ Request::is('account/offers') ? $icon_active_class : $icon_basic_class }} flex-shrink-0 ltr:-ml-1 rtl:-mr-1 ltr:mr-3 rtl:ml-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
-                </svg>
-
-                {{-- text --}}
-                <span class="truncate text-sm font-semibold"> {{ __('messages.t_submitted_offers') }} </span>
 
             </a>
         @endif
@@ -260,21 +245,6 @@
         </a>
 
     </div>
-
-    {{-- Browser sessions --}}
-    @if (auth()->user()->password)
-        <a href="{{ url('account/sessions') }}" class="{{ Request::is('account/sessions') ? $link_active_class : $link_basic_class }} group ltr:border-l-4 rtl:border-r-4 px-5 py-3 flex items-center text-sm font-medium">
-
-            {{-- icon --}}
-            <svg class="{{ Request::is('account/sessions') ? $icon_active_class : $icon_basic_class }} flex-shrink-0 ltr:-ml-1 rtl:-mr-1 ltr:mr-3 rtl:ml-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-
-            {{-- text --}}
-            <span class="truncate text-sm font-semibold"> {{ __('messages.t_browser_sessions') }} </span>
-
-        </a>
-    @endif
 
     {{-- Logout --}}
     <a href="{{ url('auth/logout') }}"

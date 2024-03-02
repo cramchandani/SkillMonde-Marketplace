@@ -8,8 +8,8 @@
             
             {{-- Modal header --}}
             @if ($title ?? null)
-                <div class="flex justify-between items-center py-5 px-6 rounded-t border-b border-gray-100 dark:border-zinc-600 bg-slate-50 dark:bg-transparent">
-                    <h3 class="text-[15px] font-semibold text-slate-600 dark:text-white">
+                <div class="flex justify-between items-center py-4 px-6 rounded-t border-b dark:border-zinc-600">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
                         {{ $title }}
                     </h3>
                     <button x-on:click="close" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ltr:ml-auto rtl:mr-auto inline-flex items-center dark:hover:bg-zinc-600 dark:hover:text-white">
@@ -19,7 +19,7 @@
             @endif
 
             {{-- Modal body --}}
-            <div class="p-6 space-y-6 w-full overflow-y-auto max-h-[calc(100vh-15rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-zinc-900 dark:scrollbar-track-zinc-600 relative">
+            <div class="p-6 space-y-6 w-full overflow-y-auto max-h-[calc(100vh-15rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-zinc-900 dark:scrollbar-track-zinc-600">
                 {{ $content }}
             </div>
             
@@ -36,7 +36,7 @@
 
 @push('scripts')
     <script>
-        function {{  str_replace(['.', '-', "'", '"'], "_", $uid) }}() {
+        function {{ $uid }}() {
             return {
 
                 modal: null,
@@ -54,9 +54,6 @@
                             backdropClasses: 'bg-zinc-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40 overflow-x-hidden',
                             onHide         : () => {
 
-                                // Hide body scroll bar
-                                $("body").css("overflow-y", "auto");
-
                                 const elems = document.querySelectorAll('[modal-backdrop]');
 
                                 [].forEach.call(elems, function(elem) {
@@ -64,12 +61,7 @@
                                 });
 
                             },
-                            onShow         : () => {
-
-                                // Hide body scroll bar
-                                $("body").css("overflow", "hidden");
-
-                            },
+                            onShow         : () => {},
                             onToggle       : () => {}
                         };
     
@@ -114,6 +106,7 @@
 
                     }
 
+
                 },
 
                 // Close modal
@@ -122,6 +115,6 @@
                 }
             }
         }
-        window.{{  str_replace(['.', '-', "'", '"'], "_", $uid) }} = {{  str_replace(['.', '-', "'", '"'], "_", $uid) }}();
+        window.{{ $uid }} = {{ $uid }}();
     </script>
 @endpush

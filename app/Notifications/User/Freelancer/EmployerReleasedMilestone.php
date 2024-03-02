@@ -3,7 +3,6 @@
 namespace App\Notifications\User\Freelancer;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -39,12 +38,12 @@ class EmployerReleasedMilestone extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_freelancer_employer_released_funds');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_freelancer_employer_released_funds');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_notification_freelancer_employer_has_released_funds')))
+                    ->line(__('messages.t_notification_freelancer_employer_has_released_funds'))
                     ->action(__('messages.t_awarded_projects'), url('seller/projects'));
     }
 

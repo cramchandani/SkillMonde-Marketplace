@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('gateway_provider_name', 20)->default('paypal');
             $table->string('gateway_provider_id', 60)->nullable();
             
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

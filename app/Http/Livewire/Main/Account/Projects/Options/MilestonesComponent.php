@@ -12,6 +12,10 @@ use Artesaos\SEOTools\Traits\SEOTools as SEOToolsTrait;
 use App\Notifications\User\Freelancer\EmployerFundedMilestone;
 use App\Notifications\User\Freelancer\EmployerReleasedMilestone;
 use App\Http\Validators\Main\Account\Projects\Employer\MilestoneValidator;
+use App\Models\ProjectRevision;
+use App\Models\ProjectBid;
+//use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MilestonesComponent extends Component
 {
@@ -25,6 +29,35 @@ class MilestonesComponent extends Component
     // Milestone form
     public $milestone_amount;
     public $milestone_description;
+    
+    // Project revision form
+    //New Functionality
+    public $reject_reason;
+    
+    public $projectId;
+
+    public $showRevisionModal = false;
+    public $revisedAmount;
+    public $pdescription;
+    
+    public $proposedCost;
+    public $proposedDays;
+    
+    public $buyerRequestedRevision = false;
+    public $buyerRevisionDescription = '';
+    public $project_Id;
+    public $projectUId;
+    
+    public $previousRevisionStatus;
+    
+    public $amount;
+    public $days;
+    public $revDescription;
+    public $revStatus;
+  //  public $buyer_requested_revision;
+
+
+    
 
     /**
      * Init component
@@ -70,6 +103,35 @@ class MilestonesComponent extends Component
             $this->expected_delivery_date = null;
 
         }
+        
+        //New Function
+        // Set $buyerRequestedRevision based on the project's revision status
+        $this->buyerRequestedRevision = ProjectRevision::where('project_id', $project->id)
+        ->where('created_by', 'freelancer')
+        ->where('status', ['requested', 'rejected', 'approved'])
+        ->exists();
+        
+        // Debugging: Output the value of $this->buyerRequestedRevision to the Laravel log
+        //\Log::info('buyerRequestedRevision: ' . ($this->buyerRequestedRevision ? 'true' : 'false'));
+        
+        if ($project) {
+            // Retrieve the bid details from the project_bids table
+            $projectRev = ProjectRevision::where('project_id', $project->id)->first();
+    
+            // Check if the project bid exists
+            if ($projectRev) {
+                $this->amount = $projectRev->amount;
+                $this->days = $projectRev->days;
+                $this->revDescription = $projectRev->description;
+                $this->revStatus = $projectRev->status;
+            } else {
+                // Set default values if the bid doesn't exist
+                $this->amount = null;
+                $this->days = null;
+                $this->revDescription = null;
+            }
+        }
+        
     }
 
 
@@ -806,5 +868,297 @@ class MilestonesComponent extends Component
         // Set value
         $this->payments_in_progress = convertToNumber($amount);
     }
+    
+    
+    //New Function
+    public function loadProject($projectUid)
+    {
+        // Load the project based on the $projectUid
+        $project = Project::where('uid', $projectUid)
+            ->where('awarded_freelancer_id', auth()->id())
+            ->whereIn('status', ['under_development']) // Modify the project statuses as needed
+            ->whereHas('awarded_bid', function($query) {
+                return $query->where('user_id', auth()->id())
+                    ->where('is_freelancer_accepted', true)
+                    ->where('status', 'active');
+            })
+            ->first();
+    
+        if ($project) {
+            // Retrieve the bid details from the project_revision table
+            $projectRev = ProjectRevision::where('project_id', $project->id)->first();
+    
+            // Check if the project revision exists
+            if ($projectRev) {
+                $this->amount = $projectRev->amount;
+                $this->days = $projectRev->days;
+                $this->revDescription = $projectRev->description;
+                
+                // Add some debug statements here
+              //  dd($this->amount, $this->days, $this->revDescription);
+            } else {
+                // Set default values if the revision doesn't exist
+                $this->amount = null;
+                $this->days = null;
+                $this->revDescription = null;
+            }
+        }
+    }
+     
+
+
+
+
+    public function showRevisionModal()
+    {
+        $this->showRevisionModal = true;
+    }
+
+
+    public function submitRevision($id, $uid)
+    {
+        try {
+            // Validation rules for Proposed Cost and Proposed Days (add your own validation logic)
+            $this->validate([
+                'proposedCost' => 'required|numeric',
+                'proposedDays' => 'required|numeric',
+                'buyerRevisionDescription' => 'required|string',
+            ], [
+                'proposedCost.required' => 'The proposed cost is required.',
+                'proposedCost.numeric' => 'The proposed cost must be a numeric value.',
+                'proposedDays.required' => 'The proposed days are required.',
+                'proposedDays.numeric' => 'The proposed days must be a numeric value.',
+                'buyerRevisionDescription.required' => 'Add description of this Amount Revision',
+            ]);
+            
+            // Check if the freelancer has already initiated a revision request for this project
+            $existingRevision = ProjectRevision::where('project_id', $id)
+                ->where('created_by', 'employer')
+                ->whereIn('status', ['request', 'rejected']) // Consider only 'request' and 'rejected' statuses
+                ->first();
+    
+            if ($existingRevision) {
+                // Display the previous status of the revision request
+                // You can use a variable to store and display the status in your blade template
+                $this->previousRevisionStatus = $existingRevision->status;
+    
+                // Optionally, you can notify the freelancer about the previous status
+                $this->notification([
+                    'title' => __('messages.t_info'),
+                    'description' => 'You already have a revision request with status: ' . $existingRevision->status,
+                    'icon' => 'info',
+                ]);
+    
+                return;
+            }
+        
+            // Get project where awarded_freelancer_id is not empty (not null) and uid is $uid
+            $project = Project::where('uid', $uid)
+                ->whereNotNull('awarded_freelancer_id')
+                ->first();
+
+            
+           // Log::info('Retrieved Project: ' . print_r($project, true));
+
+            // Retrieve the corresponding ProjectBid object for the awarded project
+            $projectBid = ProjectBid::where('project_id', $id)
+                ->where('is_awarded', true)
+                ->first();
+                
+           // Log::info('Retrieved Project Bid: ' . print_r($projectBid, true));
+        
+        
+            if (!$projectBid) {
+                // Handle the case where the awarded project bid is not found.
+                // Log an error message for debugging purposes.
+                Log::error('Awarded project bid not found when requesting revision.');
+                $this->notification([
+                    'title' => __('messages.t_error'),
+                    'description' => 'Awarded project bid not found when requesting revision', // Customize the error message
+                    'icon' => 'error'
+                ]);
+                return;
+            }
+        
+            // Insert the revision data into the project_revision table
+            ProjectRevision::create([
+                'uid'   => $projectBid->uid,
+                'project_id' => $projectBid->project_id,
+                'created_by' => 'employer',
+                'freelancer_id' => $project->user_id,
+                'employer_id'   => $projectBid->user_id,
+                'amount' => $this->proposedCost,
+                'days'   => $this-> proposedDays,
+                'description' => $this->buyerRevisionDescription,
+                'status' => 'requested',
+            ]);
+        
+            // Notify the buyer about the revision request (you can implement this).
+        
+            // Reset form inputs and close the modal.
+            $this->proposedCost = null;
+            $this->proposedDays = null;
+            $this->buyerRevisionDescription = null;
+            $this->showRevisionModal = false;
+            
+            // Refresh the component
+            $this->loadProject($this->project->uid);
+        
+            // Refresh the component to reflect the updated state.
+            $this->notification([
+                    'title' => __('messages.t_success'),
+                    'description' => 'Project revise request sent', // Customize the success message
+                    'icon' => 'success'
+                ]);
+            
+            
+        } catch (\Throwable $th) {
+            
+            // Error
+            $this->notification([
+                'title'       => __('messages.t_error'),
+               // 'description' => $th->getMessage(),
+                'description' => 'You may revise the project cost only once.',
+                'icon'        => 'error'
+            ]);
+
+        }
+    }       
+
+
+
+    // ...
+
+    public function approveRevision($projectId, $projectUid)
+    {
+        try {
+            // Ensure that the buyer has requested a revision
+            if (!$this->buyerRequestedRevision) {
+                return;
+            }
+    
+            // Retrieve the project based on the provided UID
+            $project = Project::where('uid', $projectUid)->first();
+    
+            if (!$project) {
+                // Handle the case where the project does not exist
+                // Log an error and return or show an error message
+                Log::error('Project not found for UID: ' . $projectUid);
+                return;
+            }
+    
+            // Validate the buyer's revision description
+            $validatedData = $this->validate([
+                'buyerRevisionDescription' => 'required|string',
+            ]);
+    
+            // Load the project revision data
+            $projectRevision = ProjectRevision::where('project_id', $project->id)->first();
+    
+            if ($projectRevision) {
+                // Update the project's status to "approved"
+               // $project->status = 'approved';
+              //  $project->save();
+                $projectRevision->description=$validatedData['buyerRevisionDescription'];
+                $projectRevision->status="approved";
+                $projectRevision->save();
+                
+                // Update the corresponding bid with the revised amount and days
+                $projectBid = $project->awarded_bid;
+                $projectBid->amount = $projectRevision->amount;
+                $projectBid->days = $projectRevision->days;
+                $projectBid->message = $projectRevision->description;
+                $projectBid->save();
+            }
+            
+    
+            // Notify the seller or show a confirmation message
+            
+            // Refresh the component to reflect the updated state.
+            $this->notification([
+                    'title' => __('messages.t_success'),
+                    'description' => 'Project revise request has been approved', // Customize the success message
+                    'icon' => 'success'
+                ]);
+    
+            // Reset form inputs and close the modal.
+            $this->buyerRevisionDescription = null;
+            $this->buyerRequestedRevision = false;
+            $this->showRevisionModal = false;
+    
+            // Refresh the component to reflect the updated state.
+            $this->emit('refreshComponent');
+        } catch (\Throwable $th) {
+            // Log the error for debugging
+            Log::error('Error in approveRevision: ' . $th->getMessage());
+    
+            // Handle errors if needed
+            $this->notification([
+                'title' => __('messages.t_error'),
+                'description' => $th->getMessage(),
+                'icon' => 'error'
+            ]);
+        }
+    }
+
+
+
+    public function rejectRevision($projectId, $projectUid)
+    {
+        try {
+            // Ensure that the buyer has requested a revision
+            if (!$this->buyerRequestedRevision) {
+                return;
+            }
+            
+            // Validate the buyer's revision description
+            $validatedData = $this->validate([
+                'buyerRevisionDescription' => 'required|string',
+            ]);
+    
+            // Retrieve the project based on the provided UID
+            $project = Project::where('uid', $projectUid)->first();
+    
+            if (!$project) {
+                // Handle the case where the project does not exist
+                // You can show an error message or log an error
+                return;
+            }
+    
+            // Update the Project Revision status to "rejected" and set the rejection description
+            ProjectRevision::where('project_id', $project->id)
+                ->where('created_by', 'freelancer')
+                ->where('status', 'requested')
+                ->update([
+                    'status' => 'rejected',
+                    'description' => $this->buyerRevisionDescription,
+                ]);
+    
+            // Notify the seller or show a confirmation message
+            // Refresh the component to reflect the updated state.
+            $this->notification([
+                    'title' => __('messages.t_success'),
+                    'description' => 'Project revise request has been Rejected', // Customize the success message
+                    'icon' => 'success'
+                ]);
+    
+            // Reset form inputs and close the modal.
+            $this->buyer_requested_revision = false;
+            $this->buyerRevisionDescription = null;
+            $this->showRevisionModal = false;
+    
+            // Refresh the component to reflect the updated state.
+            $this->emit('refreshComponent');
+        } catch (\Throwable $th) {
+            // Handle errors if needed
+            $this->notification([
+                'title' => __('messages.t_error'),
+                'description' => $th->getMessage(),
+                'icon' => 'error'
+            ]);
+        }
+    }    
+    
+    
     
 }

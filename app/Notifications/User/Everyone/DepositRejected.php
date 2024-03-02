@@ -3,10 +3,9 @@
 namespace App\Notifications\User\Everyone;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\HtmlString;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class DepositRejected extends Notification implements ShouldQueue
 {
@@ -46,15 +45,15 @@ class DepositRejected extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         // Set subject
-        $subject = __('messages.t_subject_everyone_recent_deposit_rejected');
+        $subject = "[" . config('app.name') . "] " . __('messages.t_subject_everyone_recent_deposit_rejected');
 
         return (new MailMessage)
                     ->subject($subject)
                     ->greeting(__('messages.t_hello_username', ['username' => $notifiable->username]))
-                    ->line(new HtmlString(__('messages.t_deposit_of_this_amount')))
-                    ->line(new HtmlString(money($this->transaction->amount_total, $this->transaction->currency, true)))
-                    ->line(new HtmlString(__('messages.t_has_been_rejected_for_this_reason')))
-                    ->line(new HtmlString($this->reason))
+                    ->line(__('messages.t_deposit_of_this_amount'))
+                    ->line(money($this->transaction->amount_total, $this->transaction->currency, true))
+                    ->line(__('messages.t_has_been_rejected_for_this_reason'))
+                    ->line($this->reason)
                     ->action(__('messages.t_deposit_history'), url('account/deposit/history'));
     }
 

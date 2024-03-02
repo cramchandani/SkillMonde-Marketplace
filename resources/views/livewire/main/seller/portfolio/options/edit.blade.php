@@ -73,7 +73,7 @@
                         {{-- Project title --}}
                         <div class="col-span-12">
                             <x-forms.text-input 
-                                :label="__('messages.t_project_title')"
+                                :label="__('messages.t_previous_project_title')"
                                 :placeholder="__('messages.t_enter_project_title')"
                                 model="title"
                                 maxlength="100"
@@ -83,7 +83,7 @@
                         {{-- Project description --}}
                         <div class="col-span-12">
                             <x-forms.textarea
-                                :label="__('messages.t_project_description')"
+                                :label="__('messages.t_previous_project_description')"
                                 :placeholder="__('messages.t_enter_project_description')"
                                 model="description"
                                 :rows="10"

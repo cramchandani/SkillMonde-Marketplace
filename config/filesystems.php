@@ -39,7 +39,7 @@ return [
         'public' => [
             'driver'     => 'local',
             'root'       => storage_path('app/public'),
-            'url'        => 'https://store.localhost/skillmonde/riverr_1_3_3/storage',
+            'url'        => 'https://www.skillmonde.com/storage',
             'visibility' => 'public',
             'throw'      => false,
         ],
@@ -47,7 +47,7 @@ return [
         'custom' => [
             'driver'     => 'local',
             'root'       => public_path('storage'),
-            'url'        => 'https://store.localhost/skillmonde/riverr_1_3_3/public/storage',
+            'url'        => 'https://www.skillmonde.com/public/storage',
             'visibility' => 'public',
             'throw'      => false,
         ],
@@ -55,7 +55,7 @@ return [
         'chat' => [
             'driver'     => 'local',
             'root'       => public_path('storage/chat'),
-            'url'        => 'https://store.localhost/skillmonde/riverr_1_3_3/public/storage/chat',
+            'url'        => 'https://www.skillmonde.com/public/storage/chat',
             'visibility' => 'public',
             'throw'      => false,
         ],

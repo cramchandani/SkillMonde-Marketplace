@@ -19,7 +19,7 @@ class EpointSettingsTableSeeder extends Seeder
             array (
                 'id'            => 1,
                 'name'          => 'Epoint',
-                'is_enabled'    => 0,
+                'is_enabled'    => 1,
                 'logo_id'       => null,
                 'currency'      => 'AZN',
                 'exchange_rate' => '1.70',

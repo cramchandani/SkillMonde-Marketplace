@@ -3,6 +3,7 @@
     {{-- Loading --}}
     <x-forms.loading />
     
+    
     {{-- Heading --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 mb-16">
         <div class="mx-auto max-w-7xl">
@@ -255,7 +256,22 @@
                                                 <svg class="md:ltr:mr-2.5 md:rtl:ml-2.5 h-5 w-5 text-gray-400 dark:text-zinc-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"></path><path d="M12.414 5H21a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h7.414l2 2zM13 13h3l-4-4-4 4h3v4h2v-4z"></path></g></svg>
                                                 <span class="hidden md:block">@lang('messages.t_share_a_file')</span>
                                             </a>
+                                            
+                                            {{-- Display a button to request a revision --}}
+                                            <?php /* ?>
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#modal-reqest-revision-{{ $project->uid }}" class="relative ltr:-ml-px rtl:-mr-px items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 focus:z-10 inline-flex whitespace-nowrap dark:bg-zinc-700/40 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700">
+                                                <i class="fas fa-undo-alt"></i> &nbsp; @lang('messages.t_revision_request')
+                                            </button>
+                                            <?php */ ?>
+                                           
+                                            <button type="button" id="modal-revision-button-{{ $project->uid }}" 
+                                                wire:click="loadProject('{{ $project->id }}')"
+                                                class="relative ltr:-ml-px rtl:-mr-px items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 focus:z-10 inline-flex whitespace-nowrap dark:bg-zinc-700/40 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700">
+                                                <svg class="md:ltr:mr-2.5 md:rtl:ml-2.5 h-5 w-5 text-gray-400 dark:text-zinc-300" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"></path><path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"></path></svg>
+                                                <span class="hidden md:block">@lang('messages.t_revision_request')</span>
+                                            </button>
 
+                                            
                                         </span>
             
                                         {{-- Cancel project --}}
@@ -293,7 +309,129 @@
                     </div>
 
                 </div>
+                
+                
 
+                <x-forms.modal id="modal-revision-{{ $project->uid }}" target="modal-revision-button-{{ $project->uid }}" uid="modal_revision_uid_{{ $project->uid }}" placement="center-center" size="max-w-md">
+                    <!-- Modal title -->
+                    <x-slot name="title">{{ __('messages.t_my_revision_request') }}</x-slot>
+                
+                    <!-- Modal content -->
+                    <x-slot name="content">
+                        @if ($freelancerRequestedRevision)
+                        <form>
+                            <div>
+                                <!-- Display current Project cost / days -->
+                                <p>Current Project Cost : {{ $project->awarded_bid->amount }} </p>
+                                <p>Current Project Days: {{ $project->awarded_bid->days }}</p>
+                                
+                                <!-- Display Proposed Cost / Days -->
+                                <div class="pt-2">
+                                    <label for="proposedCost" class="block text-[0.8125rem] font-medium tracking-wide text-gray-700 dark:text-white">Proposed Cost:</label>
+                                    <div class="mt-2 relative">
+                                        <input 
+                                        wire:model.defer="proposedCosting" 
+                                        type="number" 
+                                        id="proposedCosting" 
+                                        class="disabled:cursor-not-allowed focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500" disabled/>
+                                        
+                                    </div>
+                                </div>
+                                <div class="pt-2">
+                                    <label for="proposedDuration" class="block text-[0.8125rem] font-medium tracking-wide text-gray-700 dark:text-white">Proposed Days:</label>
+                                    <div class="mt-2 relative">
+                                        <input wire:model.defer="proposedDuration" 
+                                            type="number" 
+                                            id="proposedDuration" 
+                                            class="disabled:cursor-not-allowed focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500" disabled>
+                                        
+                                    </div>
+                                </div>
+                
+                                <!-- Textarea for Buyer's Revision Description -->
+                                <div class="pt-2">
+                                    <label for="revDescription" class="block text-[0.8125rem] font-medium tracking-wide text-gray-700 dark:text-white">Revision Description:</label>
+                                    <div class="mt-2 relative">
+                                        <textarea wire:model.defer="revDescription" 
+                                            id="revDescription" 
+                                            name="revDescription" 
+                                            class="disabled:cursor-not-allowed resize-none focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-zinc-900 dark:scrollbar-track-zinc-600" disabled></textarea>
+                                        
+                                    </div>
+                                </div>
+                                
+                                <div class="pt-2">
+                                    Status: <span class="text-red-600 uppercase">{{ $revStatus }}</span>
+                                </div>
+                              <?php /*  @dump($proposedCosting, $proposedDuration, $revDescription, $freelancerRequestedRevision) */ ?>
+                            </div>
+                        </form>
+                        @else
+                        <form wire:submit.prevent="revisionRevision">
+                                
+                                <!-- Display current Project cost / days -->
+                                <div class="bg-gray-50 dark:bg-zinc-700/40 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-md">
+                                    <div class="flex justify-between items-center w-full">
+                                        <p>Current Project Cost: <strong>@money($project->awarded_bid->amount, settings('currency')->code, true)</strong> </p>
+                                    </div>
+                
+                                    <div class="flex justify-between items-center w-full">
+                                        <p>Current Project Days: <strong>{{ $project->awarded_bid->days }}</strong></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Display Proposed Cost / Days -->
+                                <div class="pt-2">
+                                    <label for="proposedCost" class="block text-[0.8125rem] font-medium tracking-wide text-gray-700 dark:text-white">Proposed Cost:</label>
+                                    <div class="mt-2 relative">
+                                        <input wire:model.defer="proposedCost" type="number" id="proposedCost" placeholder="0.00" name="proposedCost" class="disabled:cursor-not-allowed focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500" />
+                                        @error('proposedCost') <span class="text-red-500">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                                <div class="pt-2">
+                                    <label for="proposedDays" class="block text-[0.8125rem] font-medium tracking-wide text-gray-700 dark:text-white">Proposed Days:</label>
+                                    <div class="mt-2 relative">
+                                        <input wire:model.defer="proposedDays" type="number" id="proposedDays" name="proposedDays" class="disabled:cursor-not-allowed focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500">
+                                        @error('proposedDays') <span class="text-red-500">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                
+                                <!-- Textarea for Buyer's Revision Description -->
+                                <div class="pt-2">
+                                    <label for="buyerRevisionDescription" class="block text-[0.8125rem] font-medium tracking-wide text-gray-700 dark:text-white">Revision Description:</label>
+                                    <div class="mt-2 relative">
+                                        <textarea wire:model.defer="buyerRevisionDescription" id="buyerRevisionDescription" name="buyerRevisionDescription" class="disabled:cursor-not-allowed resize-none focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-zinc-900 dark:scrollbar-track-zinc-600" placeholder="Buyer's Revision Description"></textarea>
+                                        @error('buyerRevisionDescription') <span class="text-red-500">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            
+                                <button
+                                    type="button" 
+                                    wire:click="revisionRevision('{{ $project->id }}','{{ $project->uid }}')"
+                                    wire:loading.attr="disabled"
+                                    class="mt-2 inline-flex justify-center items-center rounded border font-semibold focus:outline-none px-3 py-2 leading-5 text-xs tracking-wide border-transparent bg-primary-600 text-white hover:bg-primary-700 focus:ring focus:ring-primary-500 focus:ring-opacity-25 disabled:bg-gray-200 disabled:hover:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                >
+                                    <!-- Loading indicator -->
+                                    <div wire:loading wire:target="revisionRevision">
+                                        <svg role="status" class="inline w-4 h-4 text-gray-700 animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- Loading animation SVG -->
+                                        </svg>
+                                    </div>
+                                
+                                    <!-- Button text -->
+                                    <div wire:loading.remove wire:target="revisionRevision">
+                                        Request Revision
+                                    </div>
+                                </button>
+                            <?php /*    @dump($proposedCost, $proposedDays, $revDescription, $buyerRevisionDescription)  */?>
+                         </form>
+                        @endif
+                    </x-slot>
+                </x-forms.modal>
+
+
+                 
+                
                 {{-- Accept modal --}}
                 <x-forms.modal id="modal-accept-project-container-{{ $project->uid }}" target="modal-accept-project-button-{{ $project->uid }}" uid="modal_accept_uid_{{ $project->uid }}" placement="center-center" size="max-w-md">
 
@@ -484,3 +622,30 @@
     @endif
 
 </div>
+@push('styles')
+<?php /*
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.3.1/css/all.min.css" integrity="sha512-KulI0psuJQK8UMpOeiMLDXJtGOZEBm8RZNTyBBHIWqoXoPMFcw+L5AEo0YMpsW8BfiuWrdD1rH6GWGgQBF59Lg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+*/?>
+@endpush
+@push('scripts')
+<script>
+    $(document).ready(function () {
+        $('#revision').submit(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            var projectId = $('#project_Id').val();
+            var proposedCost = $('#proposedCost').val();
+            var proposedDays = $('#proposedDays').val();
+            var buyerRevisionDescription = $('#buyerRevisionDescription').val();
+
+            // Now you can use the projectId variable as needed, e.g., send it via AJAX or perform any other action.
+
+            // If you want to submit the form, you can do so like this:
+            // $(this).unbind('submit').submit();
+        });
+    });
+</script>
+
+@endpush

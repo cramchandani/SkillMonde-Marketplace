@@ -64,7 +64,7 @@
                                                         <span class="ltr:ml-1 rtl:mr-1 text-red-600 font-light text-xs italic lowercase">{{ __('messages.t_required') }}</span>
                                                     @endif
                                                 </label>
-                                                <div class="mt-2.5 relative">
+                                                <div class="mt-2 relative">
                                                     <textarea placeholder="{{ __('messages.t_type_ur_message_here') }}" wire:model.defer="requirements.{{ $req->id }}.value" rows="8" id="requirements-text-{{ $key }}-{{ $item->uid }}" class="dark:bg-transparent block w-full text-xs rounded border-2 ltr:pr-10 rtl:pl-10 ltr:pl-3 rtl:pr-3 py-3 font-normal resize-none border-gray-200 dark:border-zinc-600 placeholder-gray-400 focus:ring-primary-600 focus:border-primary-600 dark:text-gray-50"></textarea>
                                                     <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 ltr:pr-3 rtl:pl-3 flex items-center pointer-events-none">
                                                         <svg class="text-gray-400 w-5 h-5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.045 7.401c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.378-.378-.88-.586-1.414-.586s-1.036.208-1.413.585L4 13.585V18h4.413L19.045 7.401zm-3-3 1.587 1.585-1.59 1.584-1.586-1.585 1.589-1.584zM6 16v-1.585l7.04-7.018 1.586 1.586L7.587 16H6zm-2 4h16v2H4z"></path></svg>
@@ -84,7 +84,7 @@
                                                         <span class="ltr:ml-1 rtl:mr-1 text-red-600 font-light text-xs italic lowercase">{{ __('messages.t_required') }}</span>
                                                     @endif
                                                 </label>
-                                                <div class="mt-2.5 relative">
+                                                <div class="mt-2 relative">
                                                     <input type="file" x-on:change="fileInputChanged($event, 'requirements.{{ $req->id }}.value')" accept="{{ acceptableRequirementsMimeTypes() }}"  id="requirements-file-{{ $key }}-{{ $item->uid }}" class="block w-full text-xs text-gray-700 font-medium bg-gray-100 rounded-md cursor-pointer focus:ring-0 focus:outline-none" />
                                                 </div>
                                                 <span class="text-xs text-gray-400 dark:text-gray-300 font-normal">Only <span class="text-gray-600 dark:text-white">{{ settings('media')->requirements_file_allowed_extensions }}</span> file extensions are allowed. Max file size is: <span class="text-gray-600 dark:text-white">{{ settings('media')->requirements_file_max_size }} MB</span></span>

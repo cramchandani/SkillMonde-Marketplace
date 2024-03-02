@@ -1,8 +1,8 @@
-<div class="w-full">
+<div class="w-full container sm:px-2 md:px-4 lg:px-6">
 
 	{{-- Hero section --}}
-	<div class="rounded-xl px-7 pt-2.5 lg:min-h-[530px] md:bg-[120%] md:rtl:bg-[0] xl:bg-[100%] xl:rtl:bg-[0] bg-white shadow-sm border border-gray-100 bg-contain bg-no-repeat  relative mx-auto dark:bg-zinc-800 dark:border-transparent lg:bg-[image:var(--projects-image-url)]" style="--projects-image-url: url({{ url('public/img/explore/projects/1.jpg') }});">
-		<div class="lg:max-w-xl w-full py-12 rtl:pl-5">
+	<div class="rounded-xl px-8 pt-2.5 lg:min-h-[530px] md:bg-[120%] xl:bg-[100%] bg-white shadow-sm border border-gray-100 bg-contain bg-no-repeat  relative mx-auto dark:bg-zinc-800 dark:border-transparent lg:bg-[image:var(--projects-image-url)]" style="--projects-image-url: url({{ url('public/img/assets/project-20230905102649yBKb.png') }});">
+		<div class="lg:max-w-xl w-full py-12">
 	
 			{{-- Headline --}}
 			<h2 class="mb-5 lg:leading-[62px] text-2xl leading-[32px] sm:text-3xl md:text-4xl lg:text-6xl font-bold text-zinc-900 dark:text-white">
@@ -174,6 +174,9 @@
 			$('#featured-categories-slick').removeClass('hidden');
 		});
 	</script>
+	
+
+
 @endpush
 
 @push('styles')

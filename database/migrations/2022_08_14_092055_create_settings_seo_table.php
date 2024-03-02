@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('ogimage_id')->nullable();
             $table->boolean('is_sitemap')->default(true);
 
-            $table->foreign('ogimage_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('ogimage_id')->references('id')->on('file_manager');
         });
     }
 

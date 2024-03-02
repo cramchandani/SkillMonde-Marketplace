@@ -42,10 +42,7 @@ class CreateComponent extends Component
         }
 
         // Get review if eists
-        $review = Review::where('user_id', auth()->id())
-                        ->where('gig_id', $item->gig_id)
-                        ->where('order_item_id', $item->id)
-                        ->first();
+        $review = Review::where('user_id', auth()->id())->where('gig_id', $item->gig_id)->first();
 
         // Check if review exists
         if ($review) {
@@ -107,14 +104,13 @@ class CreateComponent extends Component
             CreateValidator::validate($this);
 
             // Create new review
-            $review                = new Review();
-            $review->uid           = uid();
-            $review->user_id       = auth()->id();
-            $review->seller_id     = $this->item->owner_id;
-            $review->gig_id        = $this->item->gig_id;
-            $review->order_item_id = $this->item->id;
-            $review->rating        = $this->rating;
-            $review->message       = clean($this->message);
+            $review            = new Review();
+            $review->uid       = uid();
+            $review->user_id   = auth()->id();
+            $review->seller_id = $this->item->owner_id;
+            $review->gig_id    = $this->item->gig_id;
+            $review->rating    = $this->rating;
+            $review->message   = clean($this->message);
             $review->save();
 
             // Count total stars for this gig

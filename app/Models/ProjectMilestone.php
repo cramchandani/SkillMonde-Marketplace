@@ -29,9 +29,7 @@ class ProjectMilestone extends Model
         'employer_id',
         'amount',
         'description',
-        'status',
-        'employer_commission',
-        'freelancer_commission'
+        'status'
     ];
 
     /**

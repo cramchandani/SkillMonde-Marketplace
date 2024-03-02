@@ -28,9 +28,9 @@ return new class extends Migration
             $table->string('social_youtube')->nullable();
             $table->string('social_github')->nullable();
 
-            $table->foreign('logo_id')->references('id')->on('file_manager')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('page_terms_id')->references('id')->on('pages')->onUpdate('no action')->onDelete('no action');
-            $table->foreign('page_policy_id')->references('id')->on('pages')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('logo_id')->references('id')->on('file_manager');
+            $table->foreign('page_terms_id')->references('id')->on('pages');
+            $table->foreign('page_policy_id')->references('id')->on('pages');
 
         });
     }

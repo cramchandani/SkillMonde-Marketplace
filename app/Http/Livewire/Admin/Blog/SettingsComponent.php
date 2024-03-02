@@ -29,9 +29,9 @@ class SettingsComponent extends Component
 
         // Fill form
         $this->fill([
-            'enable_blog'           => $settings->enable_blog ? 1 : 0,
-            'enable_comments'       => $settings->enable_comments ? 1 : 0,
-            'auto_approve_comments' => $settings->auto_approve_comments ? 1 : 0,
+            'enable_blog'           => $settings->enable_blog,
+            'enable_comments'       => $settings->enable_comments,
+            'auto_approve_comments' => $settings->auto_approve_comments,
         ]);
     }
 
@@ -65,9 +65,9 @@ class SettingsComponent extends Component
 
             // Update blog settings
             BlogSettings::first()->update([
-                'enable_blog'           => $this->enable_blog ? 1 : 0,
-                'enable_comments'       => $this->enable_comments ? 1 : 0,
-                'auto_approve_comments' => $this->auto_approve_comments ? 1 : 0
+                'enable_blog'           => $this->enable_blog,
+                'enable_comments'       => $this->enable_comments,
+                'auto_approve_comments' => $this->auto_approve_comments
             ]);
             
             // Refresh cache

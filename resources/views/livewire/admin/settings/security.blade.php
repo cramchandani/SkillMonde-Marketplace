@@ -12,19 +12,7 @@
             {{-- Section content --}}
             <div class="grid grid-cols-12 md:gap-x-8 gap-y-8 mb-6">
 
-                {{-- Allow users to share their social media accounts in their profiles --}}
-                <div class="col-span-12">
-                    <x-forms.checkbox
-                        :label="__('messages.t_allow_users_share_social_account_in_profile')"
-                        model="is_social_media_accounts" />
-                </div>
-
-                {{-- Application Debug Mode --}}
-                <div class="col-span-12">
-                    <x-forms.checkbox
-                        :label="__('dashboard.t_enable_app_debug_mode')"
-                        model="debug" />
-                </div>
+                
 
             </div>
 

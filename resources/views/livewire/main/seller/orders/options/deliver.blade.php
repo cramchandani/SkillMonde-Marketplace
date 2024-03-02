@@ -181,7 +181,7 @@
                                 <label for="deliver-work-quick-response" class="block text-[0.8125rem] font-semibold text-gray-700 dark:text-white">
                                     {{ __('messages.t_quick_response') }}
                                 </label>
-                                <div class="mt-2.5 relative">
+                                <div class="mt-2 relative">
                                     <textarea placeholder="{{ __('messages.t_describe_ur_delivery_in_detail') }}" wire:model.defer="quick_response" rows="8" id="deliver-work-quick-response" class="resize-none focus:!ring-1 block w-full ltr:pr-10 ltr:pl-4 rtl:pl-10 rtl:!pr-4 py-3.5 placeholder:font-normal placeholder:text-[13px] dark:placeholder-zinc-300 text-sm font-medium text-zinc-800 dark:text-white rounded-md dark:bg-transparent focus:!ring-primary-600 focus:!border-primary-600 border-gray-300 dark:border-zinc-500" maxlength="2500"></textarea>
                                     <div class="absolute inset-y-0 ltr:right-0 rtl:left-0 ltr:pr-3 rtl:pl-3 flex items-center pointer-events-none">
                                         <svg class="text-gray-400 w-5 h-5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 7h10v2H7zm0 4h7v2H7z"></path><path d="M20 2H4c-1.103 0-2 .897-2 2v18l5.333-4H20c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm0 14H6.667L4 18V4h16v12z"></path></svg>

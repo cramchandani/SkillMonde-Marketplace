@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('file_mime', 20)->nullable();
             $table->timestamps();
 
-            $table->foreign('project_id')->references('id')->on('projects')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('project_id')->references('id')->on('projects');
         });
     }
 

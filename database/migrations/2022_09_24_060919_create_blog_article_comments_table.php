@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'active', 'hidden'])->default('pending');
             $table->timestamps();
 
-            $table->foreign('article_id')->references('id')->on('blog_articles')->onUpdate('no action')->onDelete('no action');
+            $table->foreign('article_id')->references('id')->on('blog_articles');
         });
     }
 
